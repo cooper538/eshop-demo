@@ -14,6 +14,7 @@ Create properly formatted git commits following the project's commit convention.
 /commit                          # Interactive mode
 /commit fix                      # Force type to "fix"
 /commit feat add user auth       # Type + description
+/commit --meta                   # Use [00-00] prefix for meta changes
 ```
 
 ## Commit Convention
@@ -21,6 +22,15 @@ Create properly formatted git commits following the project's commit convention.
 [XX-YY] <type>: <description>
 ```
 Where XX = phase number, YY = task number (e.g., `[01-02]` = Phase 1, Task 2)
+
+### Meta Commits [00-00]
+Use `--meta` flag for changes that are NOT part of any specific task:
+- New project specifications
+- Task/phase restructuring
+- Workflow tooling changes
+- Documentation about work organization
+
+Meta commits ALWAYS use the format `[00-00] meta: <description>` - the type is always `meta`.
 
 ## Current State
 
@@ -46,7 +56,9 @@ If nothing is staged:
 
 ### Step 2: Detect or Prompt for Phase and Task Numbers
 
-Try to auto-detect from:
+**Check for `--meta` flag first**: If `$ARGUMENTS` contains `--meta`, use `[00-00] meta:` format and skip Steps 2 and 3 (phase/task detection and type detection).
+
+Otherwise, try to auto-detect from:
 1. **Branch name**: Look for patterns like `01-02`, `phase-01/task-02`, `p01-t02`, `phase01-task02`
 2. **Recent commits**: Check if recent commits follow the `[XX-YY]` format and extract the latest
 
@@ -112,10 +124,12 @@ After committing:
 
 ## Arguments
 
-- `$ARGUMENTS` - Can contain type override and/or description
+- `$ARGUMENTS` - Can contain type override, description, and/or flags
   - `/commit` - Interactive mode
   - `/commit fix` - Force type to "fix"
   - `/commit feat add user authentication` - Type + description
+  - `/commit --meta` - Use [00-00] meta: format for meta/infrastructure changes
+  - `/commit --meta add workflow specs` - Meta commit with description
 
 ## Safety Rules
 
