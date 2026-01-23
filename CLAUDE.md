@@ -28,14 +28,14 @@ Work on a task MUST happen in a feature branch with the following convention:
 
 **Task lifecycle with skills:**
 
-1. **Přehled**: `/task-status` - co je hotové, co blokuje
-2. **Start**: `/start-task XX` - validuje deps, vytvoří branch, updatne status
-3. **Vývoj**: kódování, změny
-4. **Commit**: `/commit` - formátovaný commit s `[XX-YY] type:` prefixem
-5. **Dokončení**: `/finish-task` - testy, merge, cleanup
+1. **Overview**: `/task-status` - what's done, what's blocking
+2. **Start**: `/start-task XX` - validates deps, creates branch, updates status
+3. **Development**: coding, changes
+4. **Commit**: `/commit` - formatted commit with `[XX-YY] type:` prefix
+5. **Completion**: `/finish-task` - tests, merge, cleanup
 
-**Alternativa pro paralelní práci:**
-- `/worktree add task-XX` - nový worktree pro jiný task
+**Alternative for parallel work:**
+- `/worktree add task-XX` - new worktree for another task
 
 ### Available Skills
 
@@ -57,27 +57,27 @@ Use `/worktree add` when:
 
 ### Implementation Notes
 
-Soubor `.claude/project/implementation-notes.md` slouží pro stručné poznámky k taskům.
+File `.claude/project/implementation-notes.md` is used for brief task notes.
 
-**Formát**: `[XX-YY] název tasku - poznámka`
-- `XX` = číslo fáze
-- `YY` = číslo tasku
-- název tasku = krátký identifikátor tasku
-- poznámka = max 1 věta, česky nebo anglicky
+**Format**: `[XX-YY] task name - note`
+- `XX` = phase number
+- `YY` = task number
+- task name = short task identifier
+- note = max 1 sentence
 
-**Kdy použít**:
-- TODO pro budoucnost (chybí testy, refactor později)
-- Důležité rozhodnutí (proč X místo Y)
-- Known issues (workaround, dočasné řešení)
+**When to use**:
+- TODO for future (missing tests, refactor later)
+- Important decision (why X instead of Y)
+- Known issues (workaround, temporary solution)
 
-**Příklady**:
+**Examples**:
 ```
-[01-05] EShop.Common - Chybí testy, dodělat později
-[02-03] Order Service - Použit Polly místo vlastní retry logic
-[03-01] Product API - Temporary workaround pro EF bug #1234
+[01-05] EShop.Common - Missing tests, add later
+[02-03] Order Service - Used Polly instead of custom retry logic
+[03-01] Product API - Temporary workaround for EF bug #1234
 ```
 
-Když uživatel řekne "přidej poznámku k tasku" nebo "zapiš note", přidej řádku do tohoto souboru.
+When user says "add note to task" or "write note", add a line to this file.
 
 # Architecture
 
