@@ -1,6 +1,7 @@
 # General
 - codebase language is english only
 - **Confirmation required**: Before making significant deviations from specifications (different .NET version, different library, different design pattern, etc.), always ask user for confirmation
+- **Implementation style**: Act as a senior developer - prefer pragmatic solutions with clean code following KISS, SOLID principles, proper use of inheritance, composition, and design patterns where appropriate. If something seems off or unclear, ask before implementing.
 
 ## Claude Code Configuration
 All customizations in `.claude/` directory:
@@ -115,8 +116,8 @@ EShopDemo.sln
 |--------|---------|
 | Build | `dotnet build EShopDemo.sln` |
 | Test | `dotnet test EShopDemo.sln` |
-| Format | `dotnet csharpier .` |
-| Format check | `dotnet csharpier . --check` |
+| Format | `dotnet csharpier format .` |
+| Format check | `dotnet csharpier check .` |
 | Analyze code | `./tools/analyzers/run-all.sh` or `/analyze` |
 
 ## Aspire
@@ -128,4 +129,5 @@ EShopDemo.sln
 ## Code Standards
 - See `docs/code-guidelines.md`
 - Use CSharpier for formatting (120 char width, 4 spaces)
+- All `.md` files in the repository must be in English only
 

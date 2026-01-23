@@ -22,7 +22,6 @@ message OrderItem {
 message ReserveStockResponse {
   bool success = 1;
   optional string failure_reason = 2;
-  repeated string failed_product_ids = 3;
 }
 
 message ReleaseStockRequest {

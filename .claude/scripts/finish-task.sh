@@ -149,8 +149,8 @@ if ! $JSON_OUTPUT; then
 fi
 
 if command -v dotnet &> /dev/null; then
-    if ! dotnet csharpier . --check 2>/dev/null; then
-        output_result "error" "CSharpier check failed. Run 'dotnet csharpier .' to fix"
+    if ! dotnet csharpier check . 2>/dev/null; then
+        output_result "error" "CSharpier check failed. Run 'dotnet csharpier format .' to fix"
         exit 1
     fi
     if ! $JSON_OUTPUT; then

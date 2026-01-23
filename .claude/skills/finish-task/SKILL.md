@@ -55,10 +55,10 @@ If tests fail, the script stops and reports the error.
 ### Step 4: Check Code Formatting
 
 ```bash
-dotnet csharpier . --check
+dotnet csharpier check .
 ```
 
-If formatting check fails, suggest running `dotnet csharpier .` to fix.
+If formatting check fails, suggest running `dotnet csharpier format .` to fix.
 
 ### Step 5: Update Task Status
 

@@ -11,4 +11,11 @@
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
     <NoWarn>NU1901;NU1902;NU1903;NU1904</NoWarn>
   </PropertyGroup>
+
+  <!-- Include EShop analyzers for all projects except the analyzer itself -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' != 'EShop.RoslynAnalyzers'">
+    <ProjectReference Include="$(MSBuildThisFileDirectory)src/Common/EShop.RoslynAnalyzers/EShop.RoslynAnalyzers.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
 </Project>

@@ -74,9 +74,23 @@ Based on the diff analysis, generate a concise description that:
 - Stays under 50 characters
 - Is specific and meaningful
 
-Present the generated message for user approval or editing.
+### Step 5: Summarize Changes and Wait for Approval
 
-### Step 5: Execute the Commit
+**IMPORTANT**: Before committing, ALWAYS present a summary and wait for explicit user approval.
+
+Display to the user:
+1. **Staged files** - list of files that will be committed
+2. **Change summary** - brief description of what changed (new files, modified logic, etc.)
+3. **Proposed commit message** - the full commit message including `[XX-YY] type: description`
+
+Then use `AskUserQuestion` to ask for approval:
+- Option 1: "Commit" - proceed with the commit
+- Option 2: "Edit message" - let user modify the commit message
+- Option 3: "Cancel" - abort the commit
+
+**DO NOT proceed with the commit until user explicitly approves.**
+
+### Step 6: Execute the Commit
 
 Use HEREDOC format with Co-Authored-By footer:
 
@@ -89,7 +103,7 @@ EOF
 )"
 ```
 
-### Step 6: Confirm Success
+### Step 7: Confirm Success
 
 After committing:
 - Run `git status` to verify

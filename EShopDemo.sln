@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -14,6 +14,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.Common", "src\Common\EShop.Common\EShop.Common.csproj", "{33774A62-0281-4F49-9C6A-678D7C76467B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.ServiceClients", "src\Common\EShop.ServiceClients\EShop.ServiceClients.csproj", "{ECD8BABE-09E9-437C-8618-D0CAA672F0F7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{BFF2DF6E-AA54-47C7-211F-79ACCBB4577C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.RoslynAnalyzers", "src\Common\EShop.RoslynAnalyzers\EShop.RoslynAnalyzers.csproj", "{59A4E699-A5C7-4FC0-997D-45A963922E2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +91,18 @@ Global
 		{ECD8BABE-09E9-437C-8618-D0CAA672F0F7}.Release|x64.Build.0 = Release|Any CPU
 		{ECD8BABE-09E9-437C-8618-D0CAA672F0F7}.Release|x86.ActiveCfg = Release|Any CPU
 		{ECD8BABE-09E9-437C-8618-D0CAA672F0F7}.Release|x86.Build.0 = Release|Any CPU
+		{59A4E699-A5C7-4FC0-997D-45A963922E2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59A4E699-A5C7-4FC0-997D-45A963922E2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59A4E699-A5C7-4FC0-997D-45A963922E2B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{59A4E699-A5C7-4FC0-997D-45A963922E2B}.Debug|x64.Build.0 = Debug|Any CPU
+		{59A4E699-A5C7-4FC0-997D-45A963922E2B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{59A4E699-A5C7-4FC0-997D-45A963922E2B}.Debug|x86.Build.0 = Debug|Any CPU
+		{59A4E699-A5C7-4FC0-997D-45A963922E2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59A4E699-A5C7-4FC0-997D-45A963922E2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59A4E699-A5C7-4FC0-997D-45A963922E2B}.Release|x64.ActiveCfg = Release|Any CPU
+		{59A4E699-A5C7-4FC0-997D-45A963922E2B}.Release|x64.Build.0 = Release|Any CPU
+		{59A4E699-A5C7-4FC0-997D-45A963922E2B}.Release|x86.ActiveCfg = Release|Any CPU
+		{59A4E699-A5C7-4FC0-997D-45A963922E2B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,5 +113,7 @@ Global
 		{8F9ADDAB-A1A3-46CF-83D9-D360D7304F75} = {881589EE-639B-0A35-DBCE-5D94E4FC90C0}
 		{33774A62-0281-4F49-9C6A-678D7C76467B} = {881589EE-639B-0A35-DBCE-5D94E4FC90C0}
 		{ECD8BABE-09E9-437C-8618-D0CAA672F0F7} = {881589EE-639B-0A35-DBCE-5D94E4FC90C0}
+		{BFF2DF6E-AA54-47C7-211F-79ACCBB4577C} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{59A4E699-A5C7-4FC0-997D-45A963922E2B} = {BFF2DF6E-AA54-47C7-211F-79ACCBB4577C}
 	EndGlobalSection
 EndGlobal

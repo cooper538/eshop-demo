@@ -17,6 +17,8 @@ Project-specific C# standards for AI agent.
 
 ## File Organization
 
+- **1 file = 1 type** (exception: nested private classes)
+- **Enums always in separate file**
 - Generic file naming: `Something.cs` (non-generic), `Something(T).cs` (generic)
 - Group interfaces in `Interfaces/` folder if needed
 - Group enums in `Enumerations/` folder if needed

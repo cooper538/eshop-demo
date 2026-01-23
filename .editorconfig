@@ -399,6 +399,8 @@ dotnet_diagnostic.IDE0060.severity = warning
 dotnet_diagnostic.IDE0059.severity = suggestion
 # Unused expression value (silent - sometimes intentional)
 dotnet_diagnostic.IDE0058.severity = silent
+# Namespace must match folder structure
+dotnet_diagnostic.IDE0130.severity = warning
 
 ###################################
 # Code Analysis (CA) Rules        #
