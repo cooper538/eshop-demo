@@ -66,17 +66,21 @@ The script updates the task file:
 - Changes `| Status | 🔵 in_progress |` to `| Status | ✅ completed |`
 - Commits this change with message: `[XX-YY] docs: mark task as completed`
 
-### Step 6: Rebase to Main
+### Step 6: Rebase and Merge to Main
 
 Unless `--no-merge` is specified:
 
 ```bash
+# First, rebase task branch onto latest main
+git rebase main
+
+# Then switch to main and fast-forward merge
 git checkout main
-git rebase <task-branch>
+git merge <task-branch>
 git branch -d <task-branch>
 ```
 
-This keeps a linear history without merge commits.
+This keeps a linear history without merge commits. The rebase ensures task commits are on top of main.
 
 ## Arguments
 
