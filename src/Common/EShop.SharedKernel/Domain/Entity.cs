@@ -2,10 +2,9 @@ using EShop.SharedKernel.Events;
 
 namespace EShop.SharedKernel.Domain;
 
-public abstract class Entity<TId>
-    where TId : notnull
+public abstract class Entity
 {
-    public TId Id { get; protected set; } = default!;
+    public Guid Id { get; protected set; }
 
     private readonly List<IDomainEvent> _domainEvents = [];
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
@@ -22,11 +21,11 @@ public abstract class Entity<TId>
 
     public override bool Equals(object? obj)
     {
-        if (obj is not Entity<TId> other)
+        if (obj is not Entity other)
             return false;
         if (ReferenceEquals(this, other))
             return true;
-        return Id.Equals(other.Id);
+        return Id == other.Id;
     }
 
     public override int GetHashCode() => Id.GetHashCode();
