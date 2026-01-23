@@ -1,0 +1,7 @@
+# Ignore non-C# files
+**/*.csproj
+**/*.props
+**/*.targets
+**/*.sln
+**/obj/
+**/bin/

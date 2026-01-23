@@ -1,0 +1,19 @@
+<Project>
+  <!-- Automatically configure git hooks path on build -->
+  <Target Name="ConfigureGitHooks" BeforeTargets="BeforeBuild" Condition="Exists('$(MSBuildThisFileDirectory).git')">
+    <Exec Command="git config core.hooksPath .githooks 2>/dev/null || true"
+          WorkingDirectory="$(MSBuildThisFileDirectory)"
+          StandardOutputImportance="Low"
+          StandardErrorImportance="Low"
+          ContinueOnError="true" />
+    <Message Text="Git hooks configured to use .githooks directory" Importance="Low" />
+  </Target>
+
+  <!-- Restore dotnet tools on first build -->
+  <Target Name="RestoreDotNetTools" BeforeTargets="BeforeBuild" Condition="Exists('$(MSBuildThisFileDirectory).config/dotnet-tools.json')">
+    <Exec Command="dotnet tool restore"
+          WorkingDirectory="$(MSBuildThisFileDirectory)"
+          IgnoreExitCode="true"
+          StandardOutputImportance="Low" />
+  </Target>
+</Project>

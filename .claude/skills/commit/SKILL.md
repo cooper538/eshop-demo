@@ -1,0 +1,127 @@
+---
+name: commit
+description: Create a git commit following the project's versioning guidelines with phase/task format. Use when user wants to commit changes or runs /commit.
+allowed-tools: Bash, Read, Glob, Grep, AskUserQuestion
+---
+
+# Smart Commit Helper
+
+Create properly formatted git commits following the project's commit convention.
+
+## Usage
+
+```
+/commit                          # Interactive mode
+/commit fix                      # Force type to "fix"
+/commit feat add user auth       # Type + description
+```
+
+## Commit Convention
+```
+[XX-YY] <type>: <description>
+```
+Where XX = phase number, YY = task number (e.g., `[01-02]` = Phase 1, Task 2)
+
+## Current State
+
+Staged changes:
+!git diff --cached --stat
+
+Current branch:
+!git branch --show-current
+
+Recent commits (for style reference):
+!git log --oneline -5
+
+## Process
+
+### Step 1: Verify Staged Changes
+
+First, check if there are staged changes using `git diff --cached --stat`.
+
+If nothing is staged:
+- Show unstaged changes with `git status`
+- Ask the user if they want to stage all changes or specific files
+- Stage the requested files before proceeding
+
+### Step 2: Detect or Prompt for Phase and Task Numbers
+
+Try to auto-detect from:
+1. **Branch name**: Look for patterns like `01-02`, `phase-01/task-02`, `p01-t02`, `phase01-task02`
+2. **Recent commits**: Check if recent commits follow the `[XX-YY]` format and extract the latest
+
+If detection fails, use AskUserQuestion:
+- Ask for phase number (e.g., "01", "02")
+- Ask for task number (e.g., "01", "02", "03")
+
+### Step 3: Auto-Detect Commit Type
+
+Analyze the staged diff to determine the type:
+
+| Type | Detection Rules |
+|------|----------------|
+| `docs` | ALL changed files are `.md`, `.txt`, or XML doc comments only |
+| `fix` | Changes contain bug fix patterns, corrections to existing logic |
+| `feat` | New files created, new functions/classes/endpoints added (default) |
+
+Present the detected type and allow user to override if they disagree.
+
+### Step 4: Generate Commit Description
+
+Based on the diff analysis, generate a concise description that:
+- Describes WHAT changed (not HOW)
+- Uses imperative mood ("add", "fix", "update", "implement")
+- Stays under 50 characters
+- Is specific and meaningful
+
+Present the generated message for user approval or editing.
+
+### Step 5: Execute the Commit
+
+Use HEREDOC format with Co-Authored-By footer:
+
+```bash
+git commit -m "$(cat <<'EOF'
+[XX-YY] type: description
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+EOF
+)"
+```
+
+### Step 6: Confirm Success
+
+After committing:
+- Run `git status` to verify
+- Show the commit hash and message
+- Remind user to push if needed
+
+## Arguments
+
+- `$ARGUMENTS` - Can contain type override and/or description
+  - `/commit` - Interactive mode
+  - `/commit fix` - Force type to "fix"
+  - `/commit feat add user authentication` - Type + description
+
+## Safety Rules
+
+1. NEVER use `git commit --amend` unless user explicitly requests
+2. NEVER skip pre-commit hooks (no `--no-verify`)
+3. NEVER stage files without user awareness
+4. ALWAYS show the final commit message before executing
+5. If pre-commit hook fails, inform user and do NOT retry with amend
+
+## Output Format
+
+On success:
+```
+✅ Committed: [XX-YY] type: description
+   Hash: abc1234
+   Branch: phase-01/task-02-feature
+```
+
+On failure:
+```
+❌ Commit failed: [reason]
+   Action: [what to do next]
+```

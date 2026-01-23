@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>EShop.ServiceClients</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.Net.ClientFactory" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EShop.Common\EShop.Common.csproj" />
+    <ProjectReference Include="..\EShop.Contracts\EShop.Contracts.csproj" />
+    <ProjectReference Include="..\EShop.Grpc\EShop.Grpc.csproj" />
+  </ItemGroup>
+
+</Project>
