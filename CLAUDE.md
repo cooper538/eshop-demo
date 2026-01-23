@@ -54,6 +54,30 @@ Use `/worktree add` when:
 2. **Potential conflict** - another session is working on a task that may modify similar files
 3. **Quick fix** - need to quickly fix something on main while working on a feature
 
+### Implementation Notes
+
+Soubor `.claude/project/implementation-notes.md` slouží pro stručné poznámky k taskům.
+
+**Formát**: `[XX-YY] název tasku - poznámka`
+- `XX` = číslo fáze
+- `YY` = číslo tasku
+- název tasku = krátký identifikátor tasku
+- poznámka = max 1 věta, česky nebo anglicky
+
+**Kdy použít**:
+- TODO pro budoucnost (chybí testy, refactor později)
+- Důležité rozhodnutí (proč X místo Y)
+- Known issues (workaround, dočasné řešení)
+
+**Příklady**:
+```
+[01-05] EShop.Common - Chybí testy, dodělat později
+[02-03] Order Service - Použit Polly místo vlastní retry logic
+[03-01] Product API - Temporary workaround pro EF bug #1234
+```
+
+Když uživatel řekne "přidej poznámku k tasku" nebo "zapiš note", přidej řádku do tohoto souboru.
+
 # Architecture
 
 ## Patterns
