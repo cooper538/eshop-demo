@@ -1,0 +1,873 @@
+# Product Service Interface
+
+## Metadata
+
+| Attribute | Value |
+|-----------|-------|
+| Service Type | ASP.NET Core Web API + gRPC |
+| Ports | 5001 (HTTP), 5051 (gRPC) |
+| Database | PostgreSQL |
+| Role | Product catalog, stock management |
+| API Layers | **External API** (REST) + **Internal API** (gRPC/HTTP) |
+
+---
+
+## 1. Overview
+
+Product Service manages the product catalog and stock operations. It exposes two API layers:
+
+| Layer | Protocol | Purpose | Consumers |
+|-------|----------|---------|-----------|
+| **External API** | REST `/api/*` | Product CRUD operations | Clients via API Gateway |
+| **Internal API** | gRPC + REST `/internal/*` | Stock operations, batch queries | Other microservices |
+
+```
+                        ┌─────────────────────────────────┐
+                        │        Product Service          │
+                        │                                 │
+  EXTERNAL API          │  ┌───────────────────────────┐  │
+  (via API Gateway)     │  │ /api/products             │  │
+  ─────────────────────▶│  │ (REST - CRUD operations)  │  │
+                        │  └───────────────────────────┘  │
+                        │                                 │
+  INTERNAL API          │  ┌───────────────────────────┐  │
+  (direct, no Gateway)  │  │ gRPC: GetProducts,        │  │
+  ─────────────────────▶│  │       ReserveStock,       │  │
+                        │  │       ReleaseStock        │  │
+                        │  │ REST: /internal/*         │  │
+                        │  │       (HTTP fallback)     │  │
+                        │  └───────────────────────────┘  │
+                        │                                 │
+                        └──────────────┬──────────────────┘
+                                       │
+                                       │ Integration Events
+                                       ▼
+                                  ┌──────────┐
+                                  │ RabbitMQ │
+                                  └──────────┘
+```
+
+---
+
+## 2. External API (REST - `/api/*`)
+
+Client-facing endpoints routed via API Gateway.
+
+| Method | Endpoint | Description | Response |
+|--------|----------|-------------|----------|
+| GET | `/api/products` | List products (with filtering & pagination) | 200 OK |
+| GET | `/api/products/{id}` | Get product details | 200 OK / 404 Not Found |
+| POST | `/api/products` | Create product | 201 Created |
+| PUT | `/api/products/{id}` | Update product | 200 OK / 404 Not Found |
+
+### 2.1 List Products
+
+**Request:**
+```
+GET /api/products?category=electronics&page=1&pageSize=20
+```
+
+**Response:**
+```json
+HTTP/1.1 200 OK
+
+{
+  "items": [
+    {
+      "id": "770e8400-e29b-41d4-a716-446655440002",
+      "name": "Wireless Mouse",
+      "description": "Ergonomic wireless mouse",
+      "price": 49.99,
+      "stockQuantity": 150,
+      "category": "electronics"
+    }
+  ],
+  "page": 1,
+  "pageSize": 20,
+  "totalCount": 42,
+  "totalPages": 3
+}
+```
+
+### 2.2 Create Product
+
+**Request:**
+```json
+POST /api/products
+Content-Type: application/json
+
+{
+  "name": "Wireless Mouse",
+  "description": "Ergonomic wireless mouse",
+  "price": 49.99,
+  "stockQuantity": 150,
+  "lowStockThreshold": 20,
+  "category": "electronics"
+}
+```
+
+**Response:**
+```json
+HTTP/1.1 201 Created
+Location: /api/products/770e8400-e29b-41d4-a716-446655440002
+
+{
+  "id": "770e8400-e29b-41d4-a716-446655440002",
+  "name": "Wireless Mouse",
+  "description": "Ergonomic wireless mouse",
+  "price": 49.99,
+  "stockQuantity": 150,
+  "lowStockThreshold": 20,
+  "category": "electronics",
+  "createdAt": "2024-01-15T10:30:00Z"
+}
+```
+
+---
+
+## 3. Internal API Contracts
+
+Internal API for service-to-service communication. Supports dual-protocol (gRPC primary, HTTP fallback). For technical implementation patterns, see [gRPC Communication](./grpc-communication.md) and [Dual-Protocol Communication](./dual-protocol-communication.md).
+
+### 3.1 gRPC Service Definition (`product.proto`)
+
+```protobuf
+syntax = "proto3";
+
+option csharp_namespace = "EShop.Grpc.Product";
+
+package product;
+
+// Internal API - service-to-service communication
+// Named after the owning service (Product), not the capability (Stock)
+service ProductService {
+  // Batch get product information (prices, availability)
+  rpc GetProducts (GetProductsRequest) returns (GetProductsResponse);
+
+  // Reserve stock for an order (SRP: only reserves, doesn't return prices)
+  rpc ReserveStock (ReserveStockRequest) returns (ReserveStockResponse);
+
+  // Release reserved stock (e.g., order cancellation)
+  rpc ReleaseStock (ReleaseStockRequest) returns (ReleaseStockResponse);
+}
+
+// === GetProducts ===
+
+message GetProductsRequest {
+  repeated string product_ids = 1;
+}
+
+message GetProductsResponse {
+  repeated ProductInfo products = 1;
+}
+
+message ProductInfo {
+  string product_id = 1;
+  string name = 2;
+  string description = 3;
+  string price = 4;           // decimal as string for precision
+  int32 stock_quantity = 5;
+  bool exists = 6;            // false if product ID not found
+  bool is_available = 7;      // false if stock_quantity = 0
+}
+
+// === ReserveStock ===
+
+message ReserveStockRequest {
+  string order_id = 1;
+  repeated OrderItem items = 2;
+}
+
+message OrderItem {
+  string product_id = 1;
+  int32 quantity = 2;
+}
+
+message ReserveStockResponse {
+  bool success = 1;
+  optional string failure_reason = 2;
+  // Note: No failed_product_ids - keeps response simple (SRP)
+  // If reservation fails, the entire operation fails
+}
+
+// === ReleaseStock ===
+
+message ReleaseStockRequest {
+  string order_id = 1;  // Product Service finds reservation by OrderId
+}
+
+message ReleaseStockResponse {
+  bool success = 1;
+  optional string failure_reason = 2;
+}
+```
+
+### 3.2 Proto Design Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| `GetProducts` separate from `ReserveStock` | **SRP**: Each method has single responsibility |
+| `price` as string | Protocol Buffers lacks native decimal; string preserves precision |
+| No `failed_product_ids` in response | Simplicity - if any item fails, entire reservation fails |
+| No `correlation_id` in messages | Propagated via gRPC metadata (interceptors), not payload |
+
+### 3.3 gRPC Endpoints Summary
+
+| Method | Description | Called By |
+|--------|-------------|-----------|
+| `GetProducts` | Batch get product info (prices, availability) | Order Service, Notification Service |
+| `ReserveStock` | Reserve stock for an order | Order Service |
+| `ReleaseStock` | Release stock (order cancellation) | Order Service |
+
+### 3.4 Internal REST Endpoints (HTTP fallback)
+
+Hidden from Swagger, not routed via API Gateway. Used when gRPC is not suitable.
+
+| Method | Endpoint | Description | Response |
+|--------|----------|-------------|----------|
+| POST | `/internal/products/batch` | Batch get product info | 200 OK |
+| POST | `/internal/stock/reserve` | Reserve stock for an order | 200 OK |
+| POST | `/internal/stock/release` | Release reserved stock | 200 OK |
+
+#### POST `/internal/products/batch`
+
+```json
+// Request
+{
+  "productIds": ["uuid1", "uuid2", "uuid3"]
+}
+
+// Response
+{
+  "products": [
+    {
+      "productId": "uuid1",
+      "name": "Wireless Mouse",
+      "description": "Ergonomic wireless mouse",
+      "price": 49.99,
+      "stockQuantity": 150,
+      "exists": true,
+      "isAvailable": true
+    }
+  ]
+}
+```
+
+#### POST `/internal/stock/reserve`
+
+```json
+// Request
+{
+  "orderId": "order-uuid",
+  "items": [
+    { "productId": "uuid1", "quantity": 2 }
+  ]
+}
+
+// Response
+{
+  "success": true,
+  "failureReason": null
+}
+```
+
+#### POST `/internal/stock/release`
+
+```json
+// Request
+{
+  "orderId": "order-uuid"
+}
+
+// Response
+{
+  "success": true,
+  "failureReason": null
+}
+```
+
+### 3.5 ServiceClients Models
+
+These models are used by consuming services via `IProductServiceClient`:
+
+```csharp
+namespace EShop.ServiceClients.Abstractions;
+
+// === GetProducts ===
+
+public sealed record GetProductsRequest(
+    IReadOnlyList<Guid> ProductIds);
+
+public sealed record GetProductsResult(
+    IReadOnlyList<ProductInfo> Products);
+
+public sealed record ProductInfo(
+    Guid ProductId,
+    string Name,
+    string Description,
+    decimal Price,
+    int StockQuantity,
+    bool Exists,
+    bool IsAvailable);
+
+// === ReserveStock ===
+
+public sealed record ReserveStockRequest(
+    Guid OrderId,
+    IReadOnlyList<OrderItemDto> Items);
+
+public sealed record StockReservationResult(
+    bool Success,
+    string? FailureReason = null);
+
+// === ReleaseStock ===
+
+public sealed record ReleaseStockRequest(
+    Guid OrderId);
+
+public sealed record StockReleaseResult(
+    bool Success,
+    string? FailureReason = null);
+
+// === Shared ===
+
+public sealed record OrderItemDto(
+    Guid ProductId,
+    int Quantity);
+```
+
+### 3.6 Server Implementation
+
+#### gRPC Service
+
+```csharp
+public class ProductGrpcService : ProductService.ProductServiceBase
+{
+    private readonly IMediator _mediator;
+    private readonly ILogger<ProductGrpcService> _logger;
+
+    public ProductGrpcService(IMediator mediator, ILogger<ProductGrpcService> logger)
+    {
+        _mediator = mediator;
+        _logger = logger;
+    }
+
+    public override async Task<GetProductsResponse> GetProducts(
+        GetProductsRequest request, ServerCallContext context)
+    {
+        _logger.LogDebug("GetProducts called for {Count} product IDs", request.ProductIds.Count);
+
+        var query = new GetProductsBatchQuery(
+            request.ProductIds.Select(Guid.Parse).ToList());
+
+        var result = await _mediator.Send(query, context.CancellationToken);
+
+        var response = new GetProductsResponse();
+        response.Products.AddRange(result.Products.Select(p => new ProductInfo
+        {
+            ProductId = p.ProductId.ToString(),
+            Name = p.Name,
+            Description = p.Description,
+            Price = p.Price.ToString(CultureInfo.InvariantCulture),
+            StockQuantity = p.StockQuantity,
+            Exists = p.Exists,
+            IsAvailable = p.IsAvailable
+        }));
+
+        return response;
+    }
+
+    public override async Task<ReserveStockResponse> ReserveStock(
+        ReserveStockRequest request, ServerCallContext context)
+    {
+        _logger.LogDebug("ReserveStock called for OrderId: {OrderId}", request.OrderId);
+
+        var command = new ReserveStockCommand(
+            Guid.Parse(request.OrderId),
+            request.Items.Select(i => new OrderItemDto(
+                Guid.Parse(i.ProductId),
+                i.Quantity)).ToList());
+
+        var result = await _mediator.Send(command, context.CancellationToken);
+
+        return new ReserveStockResponse
+        {
+            Success = result.Success,
+            FailureReason = result.FailureReason ?? string.Empty
+        };
+    }
+
+    public override async Task<ReleaseStockResponse> ReleaseStock(
+        ReleaseStockRequest request, ServerCallContext context)
+    {
+        _logger.LogDebug("ReleaseStock called for OrderId: {OrderId}", request.OrderId);
+
+        var command = new ReleaseStockCommand(Guid.Parse(request.OrderId));
+        var result = await _mediator.Send(command, context.CancellationToken);
+
+        return new ReleaseStockResponse
+        {
+            Success = result.Success,
+            FailureReason = result.FailureReason ?? string.Empty
+        };
+    }
+}
+```
+
+#### Internal REST Controllers (HTTP fallback)
+
+```csharp
+// Product.API/Controllers/Internal/InternalProductsController.cs
+[ApiController]
+[Route("internal/products")]
+[ApiExplorerSettings(IgnoreApi = true)]  // Hide from Swagger
+public class InternalProductsController : ControllerBase
+{
+    private readonly IMediator _mediator;
+
+    [HttpPost("batch")]
+    public async Task<IActionResult> GetProductsBatch(
+        [FromBody] GetProductsBatchRequest request,
+        CancellationToken ct)
+    {
+        var query = new GetProductsBatchQuery(request.ProductIds);
+        var result = await _mediator.Send(query, ct);
+        return Ok(new GetProductsBatchResponse(result.Products));
+    }
+}
+
+// Product.API/Controllers/Internal/InternalStockController.cs
+[ApiController]
+[Route("internal/stock")]
+[ApiExplorerSettings(IgnoreApi = true)]  // Hide from Swagger
+public class InternalStockController : ControllerBase
+{
+    private readonly IMediator _mediator;
+
+    [HttpPost("reserve")]
+    public async Task<IActionResult> ReserveStock(
+        [FromBody] ReserveStockRequest request,
+        CancellationToken ct)
+    {
+        var command = new ReserveStockCommand(request.OrderId, request.Items);
+        var result = await _mediator.Send(command, ct);
+        return Ok(new StockOperationResponse(result.Success, result.FailureReason));
+    }
+
+    [HttpPost("release")]
+    public async Task<IActionResult> ReleaseStock(
+        [FromBody] ReleaseStockRequest request,
+        CancellationToken ct)
+    {
+        var command = new ReleaseStockCommand(request.OrderId);
+        var result = await _mediator.Send(command, ct);
+        return Ok(new StockOperationResponse(result.Success, result.FailureReason));
+    }
+}
+```
+
+> **Note**: Both gRPC and REST endpoints call the same MediatR handlers, ensuring consistent behavior.
+
+---
+
+## 4. Stock Reservation Flow
+
+### 4.1 Reserve Stock
+
+```
+1. Order Service calls ReserveStock(orderId, items[])
+2. Product Service validates request
+3. For each item:
+   a. Find product by ID
+   b. Check if stockQuantity >= requested quantity
+   c. If insufficient: return failure with failed product IDs
+4. If all items available:
+   a. Decrease stockQuantity for each product
+   b. Create StockReservation record (linked to orderId)
+   c. Check if any product fell below lowStockThreshold
+   d. If below threshold: queue StockLow event (via Outbox)
+5. Return success response
+```
+
+### 4.2 Release Stock
+
+```
+1. Order Service calls ReleaseStock(orderId)
+2. Product Service finds StockReservation by orderId
+3. For each reserved item:
+   a. Increase stockQuantity back
+   b. Mark reservation as released
+4. Return success response
+```
+
+---
+
+## 5. Domain Model
+
+### 5.1 Product Aggregate
+
+```csharp
+public class Product
+{
+    public Guid Id { get; private set; }
+    public string Name { get; private set; }
+    public string Description { get; private set; }
+    public decimal Price { get; private set; }
+    public int StockQuantity { get; private set; }
+    public int LowStockThreshold { get; private set; }
+    public string Category { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
+    public uint Version { get; private set; } // optimistic concurrency
+
+    public bool ReserveStock(int quantity)
+    {
+        if (StockQuantity < quantity)
+            return false;
+
+        StockQuantity -= quantity;
+        UpdatedAt = DateTime.UtcNow;
+        return true;
+    }
+
+    public void ReleaseStock(int quantity)
+    {
+        StockQuantity += quantity;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public bool IsLowStock => StockQuantity <= LowStockThreshold;
+}
+```
+
+### 5.2 Stock Reservation
+
+```csharp
+public class StockReservation
+{
+    public Guid Id { get; private set; }
+    public Guid OrderId { get; private set; }
+    public Guid ProductId { get; private set; }
+    public int Quantity { get; private set; }
+    public DateTime ReservedAt { get; private set; }
+    public DateTime ExpiresAt { get; private set; }
+    public DateTime? ReleasedAt { get; private set; }
+    public ReservationStatus Status { get; private set; }
+
+    public static StockReservation Create(Guid orderId, Guid productId, int quantity)
+    {
+        return new StockReservation
+        {
+            Id = Guid.NewGuid(),
+            OrderId = orderId,
+            ProductId = productId,
+            Quantity = quantity,
+            ReservedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.AddMinutes(15), // TTL
+            Status = ReservationStatus.Active
+        };
+    }
+
+    public void Release()
+    {
+        Status = ReservationStatus.Released;
+        ReleasedAt = DateTime.UtcNow;
+    }
+
+    public void Expire()
+    {
+        Status = ReservationStatus.Expired;
+    }
+}
+
+public enum ReservationStatus
+{
+    Active,
+    Released,
+    Expired
+}
+```
+
+---
+
+## 6. Stock Reservation Expiration
+
+### 6.1 Purpose
+
+Prevents orphan reservations when Order Service fails after stock was reserved but before the order was persisted. Reservations automatically expire after 15 minutes.
+
+### 6.2 Background Job
+
+```csharp
+// Product.Infrastructure/BackgroundJobs/StockReservationExpirationJob.cs
+public class StockReservationExpirationJob : BackgroundService
+{
+    private readonly IServiceProvider _serviceProvider;
+    private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(1);
+
+    protected override async Task ExecuteAsync(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<IProductDbContext>();
+            var outbox = scope.ServiceProvider.GetRequiredService<IOutboxRepository>();
+
+            var expiredReservations = await db.StockReservations
+                .Where(r => r.Status == ReservationStatus.Active)
+                .Where(r => r.ExpiresAt < DateTime.UtcNow)
+                .Include(r => r.Product)
+                .ToListAsync(ct);
+
+            foreach (var reservation in expiredReservations)
+            {
+                // Release stock back to inventory
+                reservation.Product.ReleaseStock(reservation.Quantity);
+                reservation.Expire();
+
+                // Notify interested parties (optional)
+                await outbox.AddAsync(new StockReservationExpiredEvent(
+                    reservation.OrderId,
+                    reservation.ProductId,
+                    reservation.Quantity));
+            }
+
+            if (expiredReservations.Any())
+                await db.SaveChangesAsync(ct);
+
+            await Task.Delay(_checkInterval, ct);
+        }
+    }
+}
+```
+
+### 6.3 Registration
+
+```csharp
+// Product.API/Program.cs
+builder.Services.AddHostedService<StockReservationExpirationJob>();
+```
+
+---
+
+## 7. Idempotency Guarantees
+
+### 7.1 ReserveStock Idempotency
+
+`ReserveStock` operation is idempotent - calling it multiple times with the same `OrderId` returns success without reserving stock twice.
+
+```csharp
+public class ReserveStockCommandHandler : IRequestHandler<ReserveStockCommand, ReserveStockResult>
+{
+    public async Task<ReserveStockResult> Handle(ReserveStockCommand cmd, CancellationToken ct)
+    {
+        // Idempotency check - return existing reservation if found
+        var existingReservation = await _db.StockReservations
+            .FirstOrDefaultAsync(r => r.OrderId == cmd.OrderId, ct);
+
+        if (existingReservation != null)
+        {
+            return existingReservation.Status == ReservationStatus.Active
+                ? ReserveStockResult.Success()
+                : ReserveStockResult.AlreadyProcessed(existingReservation.Status.ToString());
+        }
+
+        // ... proceed with new reservation ...
+    }
+}
+```
+
+### 7.2 Why This Matters
+
+In distributed systems, network failures can cause uncertainty:
+
+```
+Order Service ──ReserveStock──► Product Service
+                    │
+                    ├─ Request succeeds, response lost (timeout)
+                    │  Order Service retries
+                    │  Without idempotency: stock reserved twice!
+                    │
+                    └─ With idempotency: second call returns existing reservation
+```
+
+---
+
+## 8. Published Events
+
+| Event | Trigger | Data |
+|-------|---------|------|
+| `StockLow` | Stock falls below threshold | ProductId, ProductName, CurrentQuantity, Threshold |
+| `StockReservationExpired` | Reservation TTL exceeded | OrderId, ProductId, Quantity |
+| `ProductCreated` | New product added | ProductId, Name, Price |
+| `ProductUpdated` | Product details changed | ProductId, Name, Price |
+
+See [Messaging Communication](./messaging-communication.md) for event definitions.
+
+---
+
+## 9. Project Structure
+
+```
+Product.API/
+├── Controllers/
+│   ├── ProductsController.cs        # External API (/api/products)
+│   └── Internal/                    # Internal API (/internal/*)
+│       ├── InternalProductsController.cs
+│       └── InternalStockController.cs
+├── Grpc/                            # gRPC service implementations
+│   └── ProductGrpcService.cs
+└── Program.cs
+
+Product.Application/
+├── Commands/
+│   ├── CreateProduct/
+│   │   ├── CreateProductCommand.cs
+│   │   ├── CreateProductCommandHandler.cs
+│   │   └── CreateProductCommandValidator.cs
+│   ├── UpdateProduct/
+│   ├── ReserveStock/
+│   │   ├── ReserveStockCommand.cs
+│   │   └── ReserveStockCommandHandler.cs
+│   └── ReleaseStock/
+├── Queries/
+│   ├── GetProducts/
+│   ├── GetProductById/
+│   └── GetProductsBatch/            # Internal API - batch query
+│       ├── GetProductsBatchQuery.cs
+│       └── GetProductsBatchQueryHandler.cs
+├── Data/
+│   └── IProductDbContext.cs         # DbContext interface (NO Repository)
+└── Behaviors/                       # (from EShop.Common)
+
+Product.Domain/
+├── Entities/
+│   ├── Product.cs                   # Inherits from Entity (EShop.SharedKernel)
+│   └── StockReservation.cs
+├── Enums/
+│   └── EReservationStatusType.cs    # Following naming convention
+├── Events/
+│   └── StockReservedDomainEvent.cs
+└── Exceptions/
+    └── InsufficientStockException.cs
+
+Product.Infrastructure/
+├── Data/
+│   ├── ProductDbContext.cs          # Implements IProductDbContext
+│   └── Configurations/
+│       ├── ProductConfiguration.cs
+│       └── StockReservationConfiguration.cs
+└── Outbox/                          # Uses base from EShop.Common
+    └── OutboxProcessor.cs
+```
+
+### 9.1 DbContext Interface Pattern
+
+Instead of Repository pattern, we use direct DbContext access via interface:
+
+```csharp
+// Product.Application/Data/IProductDbContext.cs
+public interface IProductDbContext
+{
+    DbSet<Product> Products { get; }
+    DbSet<StockReservation> StockReservations { get; }
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+}
+
+// Product.Infrastructure/Data/ProductDbContext.cs
+public class ProductDbContext : DbContext, IProductDbContext
+{
+    public DbSet<Product> Products => Set<Product>();
+    public DbSet<StockReservation> StockReservations => Set<StockReservation>();
+
+    // EF Core configuration...
+}
+```
+
+### 9.2 Handler Example (using DbContext)
+
+```csharp
+public class ReserveStockCommandHandler : IRequestHandler<ReserveStockCommand, ReserveStockResult>
+{
+    private readonly IProductDbContext _db;
+    private readonly IOutboxRepository _outbox;
+
+    public ReserveStockCommandHandler(IProductDbContext db, IOutboxRepository outbox)
+    {
+        _db = db;
+        _outbox = outbox;
+    }
+
+    public async Task<ReserveStockResult> Handle(ReserveStockCommand request, CancellationToken ct)
+    {
+        var productIds = request.Items.Select(i => i.ProductId).ToList();
+        var products = await _db.Products
+            .Where(p => productIds.Contains(p.Id))
+            .ToListAsync(ct);
+
+        // Business logic...
+        foreach (var item in request.Items)
+        {
+            var product = products.First(p => p.Id == item.ProductId);
+            if (!product.ReserveStock(item.Quantity))
+                return ReserveStockResult.Failure("Insufficient stock");
+
+            _db.StockReservations.Add(StockReservation.Create(request.OrderId, product.Id, item.Quantity));
+        }
+
+        await _db.SaveChangesAsync(ct);
+        return ReserveStockResult.Success();
+    }
+}
+```
+
+---
+
+## 10. Database Schema
+
+### Products Table
+
+```sql
+CREATE TABLE Products (
+    Id UUID PRIMARY KEY,
+    Name VARCHAR(200) NOT NULL,
+    Description VARCHAR(2000),
+    Price DECIMAL(18,2) NOT NULL,
+    StockQuantity INT NOT NULL DEFAULT 0,
+    LowStockThreshold INT NOT NULL DEFAULT 10,
+    Category VARCHAR(100),
+    CreatedAt TIMESTAMP NOT NULL,
+    UpdatedAt TIMESTAMP,
+    Version INT NOT NULL DEFAULT 1
+);
+```
+
+### Stock Reservations Table
+
+```sql
+CREATE TABLE StockReservations (
+    Id UUID PRIMARY KEY,
+    OrderId UUID NOT NULL,
+    ProductId UUID NOT NULL REFERENCES Products(Id),
+    Quantity INT NOT NULL,
+    ReservedAt TIMESTAMP NOT NULL,
+    ExpiresAt TIMESTAMP NOT NULL,
+    ReleasedAt TIMESTAMP,
+    Status VARCHAR(20) NOT NULL,
+
+    INDEX IX_StockReservations_OrderId (OrderId),
+    INDEX IX_StockReservations_ProductId (ProductId),
+    INDEX IX_StockReservations_Expiration (Status, ExpiresAt) WHERE Status = 'Active'
+);
+```
+
+---
+
+## Related Documents
+
+- [Internal API Communication](./internal-api-communication.md) - Internal API layer concept
+- [gRPC Communication](./grpc-communication.md) - gRPC technical patterns
+- [Dual-Protocol Communication](./dual-protocol-communication.md) - Protocol abstraction layer
+- [Messaging Communication](./messaging-communication.md) - Event publishing
+- [Order Service Interface](./order-service-interface.md) - gRPC client (consumes this API)
+- [CorrelationId Flow](./correlation-id-flow.md) - Request tracing
