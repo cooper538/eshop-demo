@@ -66,15 +66,17 @@ The script updates the task file:
 - Changes `| Status | 🔵 in_progress |` to `| Status | ✅ completed |`
 - Commits this change with message: `[XX-YY] docs: mark task as completed`
 
-### Step 6: Merge to Main
+### Step 6: Rebase to Main
 
 Unless `--no-merge` is specified:
 
 ```bash
 git checkout main
-git merge <task-branch> --no-ff -m "Merge branch '<task-branch>'"
+git rebase <task-branch>
 git branch -d <task-branch>
 ```
+
+This keeps a linear history without merge commits.
 
 ## Arguments
 
@@ -94,8 +96,8 @@ Unit tests passed
 Checking code formatting...
 Code formatting OK
 Task status updated to completed
-Merging to main...
-Merged phase-01/task-02-shared-kernel into main
+Rebasing to main...
+Rebased phase-01/task-02-shared-kernel onto main
 Deleted branch: phase-01/task-02-shared-kernel
 
 Task task-02 completed successfully!
@@ -113,11 +115,11 @@ Fix the failing tests before completing the task.
 
 ## Safety Rules
 
-1. NEVER merge with uncommitted changes (unless --force)
+1. NEVER rebase with uncommitted changes (unless --force)
 2. ALWAYS run tests before marking complete (unless --no-test)
-3. ALWAYS check formatting before merge
-4. NEVER delete branch on merge failure
-5. ALWAYS use --no-ff for merge to preserve branch history
+3. ALWAYS check formatting before rebase
+4. NEVER delete branch on rebase failure
+5. Use rebase to maintain linear history (no merge commits)
 
 ## Integration
 
