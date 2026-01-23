@@ -16,7 +16,7 @@ Quick guide for working with tasks using Claude Code skills.
 │       ↓                                                         │
 │  [DEVELOPMENT]      → Write code, make changes                  │
 │       ↓                                                         │
-│  /commit            → Commit with [XX-YY] prefix                │
+│  /commit            → Commit with [XX-YY] type: format           │
 │       ↓                                                         │
 │  /finish-task       → Run tests, merge to main,                 │
 │                       update status to ✅                       │

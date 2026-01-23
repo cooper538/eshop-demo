@@ -3,8 +3,12 @@
 ## Commit Message Format
 
 ```
-[phase-XX/task-YY] <type>: <description>
+[XX-YY] <type>: <description>
 ```
+
+Where:
+- `XX` = phase number (01, 02, ...)
+- `YY` = task number (01, 02, ...)
 
 ### Types
 - `feat` - new feature
@@ -13,9 +17,10 @@
 
 ### Examples
 ```
-[phase-01/task-02] feat: implement Product entity
-[phase-01/task-02] fix: correct stock validation
-[phase-02/task-01] feat: add Order aggregate root
+[01-02] feat: implement Product entity
+[01-02] fix: correct stock validation
+[02-01] feat: add Order aggregate root
+[01-05] docs: add implementation notes
 ```
 
 ---

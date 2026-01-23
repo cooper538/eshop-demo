@@ -96,6 +96,6 @@ Complete the blocking tasks first or use /task-status to see the full picture.
 ## Integration
 
 After starting a task:
-- Use `/commit` to commit changes with proper [XX-YY] prefix
+- Use `/commit` to commit changes with proper `[XX-YY] type:` format
 - Use `/finish-task` when done to complete and merge
 - Use `/task-status` to check progress

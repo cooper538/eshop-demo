@@ -31,7 +31,7 @@ Work on a task MUST happen in a feature branch with the following convention:
 1. **Přehled**: `/task-status` - co je hotové, co blokuje
 2. **Start**: `/start-task XX` - validuje deps, vytvoří branch, updatne status
 3. **Vývoj**: kódování, změny
-4. **Commit**: `/commit` - formátovaný commit s [XX-YY] prefixem
+4. **Commit**: `/commit` - formátovaný commit s `[XX-YY] type:` prefixem
 5. **Dokončení**: `/finish-task` - testy, merge, cleanup
 
 **Alternativa pro paralelní práci:**
@@ -44,7 +44,7 @@ Work on a task MUST happen in a feature branch with the following convention:
 | `/start-task XX` | Start working on a task |
 | `/finish-task` | Complete task (tests, merge) |
 | `/task-status` | Task status overview |
-| `/commit` | Smart commit with [XX-YY] prefix |
+| `/commit` | Smart commit with `[XX-YY] type:` format |
 | `/worktree` | Manage worktrees for parallel work |
 | `/sort-tasks` | Topological task sorting |
 | `/analyze` | Run code analyzers (packages, quality, security) |
