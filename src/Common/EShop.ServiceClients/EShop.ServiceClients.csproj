@@ -5,13 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Grpc.Net.Client" />
     <PackageReference Include="Grpc.Net.ClientFactory" />
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" />
+    <PackageReference Include="Riok.Mapperly" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EShop.Common\EShop.Common.csproj" />
-    <ProjectReference Include="..\EShop.Contracts\EShop.Contracts.csproj" />
     <ProjectReference Include="..\EShop.Grpc\EShop.Grpc.csproj" />
   </ItemGroup>
 
