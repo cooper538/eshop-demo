@@ -4,28 +4,28 @@
 | Key | Value |
 |-----|-------|
 | ID | task-04 |
-| Status | ⚪ pending |
+| Status | ✅ completed |
 | Dependencies | task-02, task-03 |
 
 ## Objective
 Document the standard pattern for integrating services with Aspire and ServiceDefaults.
 
 ## Scope
-- [ ] Create `docs/service-aspire-integration.md` with integration guide
-- [ ] Document Program.cs pattern for services
-- [ ] Document service registration in AppHost pattern
-- [ ] Include code snippets for:
-  - [ ] `AddServiceDefaults()` usage
-  - [ ] `AddNpgsqlDbContext<T>()` usage
-  - [ ] `AddRabbitMQClient()` usage
-  - [ ] `MapDefaultEndpoints()` usage
-  - [ ] Service discovery URL format
+- [x] Create `docs/service-aspire-integration.md` with integration guide
+- [x] Document Program.cs pattern for services
+- [x] Document service registration in AppHost pattern
+- [x] Include code snippets for:
+  - [x] `AddServiceDefaults()` usage
+  - [x] `AddNpgsqlDbContext<T>()` usage
+  - [x] `AddRabbitMQClient()` usage
+  - [x] `MapDefaultEndpoints()` usage
+  - [x] Service discovery URL format
 
 ## Acceptance Criteria
-- [ ] Document is clear and actionable
-- [ ] Includes copy-paste ready code snippets
-- [ ] References the specs for deeper details
-- [ ] Future service phases can follow this pattern
+- [x] Document is clear and actionable
+- [x] Includes copy-paste ready code snippets
+- [x] References the specs for deeper details
+- [x] Future service phases can follow this pattern
 
 ## Notes
 - See spec: aspire-orchestration.md, Section 5 (Service Integration)

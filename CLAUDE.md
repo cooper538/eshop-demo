@@ -1,4 +1,12 @@
+# CRITICAL RULES (Never Break)
+
+- **NEVER** run `git commit` directly - ALWAYS use `/commit` skill
+- **NEVER** run `git merge` or `git rebase` directly - ALWAYS use `/finish-task` skill
+- **NEVER** commit without explicit user approval (handled by `/commit`)
+- **ALWAYS** stop and ask before completing a task
+
 # General
+
 - codebase language is english only
 - **Confirmation required**: Before making significant deviations from specifications (different .NET version, different library, different design pattern, etc.), always ask user for confirmation
 - **Implementation style**: Act as a senior developer - prefer pragmatic solutions with clean code following KISS, SOLID principles, proper use of inheritance, composition, and design patterns where appropriate. If something seems off or unclear, ask before implementing.
@@ -26,16 +34,32 @@ Work on a task MUST happen in a feature branch with the following convention:
 
 ### Workflow
 
-**Task lifecycle with skills:**
+**Task lifecycle (MANDATORY skills):**
 
-1. **Overview**: `/task-status` - what's done, what's blocking
-2. **Start**: `/start-task XX` - validates deps, creates branch, updates status
-3. **Development**: coding, changes
-4. **Commit**: `/commit` - formatted commit with `[XX-YY] type:` prefix
-5. **Completion**: `/finish-task` - tests, merge, cleanup
+1. `/task-status` - check what's available
+2. `/start-task XX` - creates branch, updates status
+3. Development - write code, make changes
+4. **`/commit`** - REQUIRED for all commits (asks for approval)
+5. **`/finish-task`** - REQUIRED to complete (runs tests, rebase, merge)
+
+**FORBIDDEN**: Direct `git commit`, `git merge`, `git rebase` commands
 
 **Alternative for parallel work:**
 - `/worktree add task-XX` - new worktree for another task
+
+### Checkpoints (Stop and Confirm)
+
+Before these actions, ALWAYS ask user for confirmation:
+- Committing changes (handled by `/commit` skill)
+- Completing a task (handled by `/finish-task` skill)
+- When user says "pokračuj" / "continue" on multiple tasks
+
+### Batch Work Rule
+
+When user says "pokračuj" or "continue":
+- Complete **ONE task at a time**
+- After each task, show summary and ask: "Continue to next task?"
+- NEVER auto-chain multiple tasks without confirmation
 
 ### Available Skills
 

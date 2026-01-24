@@ -4,26 +4,26 @@
 | Key | Value |
 |-----|-------|
 | ID | task-02 |
-| Status | ⚪ pending |
+| Status | ✅ completed |
 | Dependencies | task-01 |
 
 ## Objective
 Create EShop.ServiceDefaults project providing shared Aspire configuration for all services.
 
 ## Scope
-- [ ] Create `src/ServiceDefaults/EShop.ServiceDefaults.csproj` with `IsAspireSharedProject` property
-- [ ] Implement `Extensions.cs` with `AddServiceDefaults()` extension method
-- [ ] Configure OpenTelemetry (logging, metrics, tracing)
-- [ ] Add default health checks (`/health`, `/alive` endpoints)
-- [ ] Configure service discovery and HTTP client defaults with resilience
-- [ ] Add project to solution
+- [x] Create `src/ServiceDefaults/EShop.ServiceDefaults.csproj` with `IsAspireSharedProject` property
+- [x] Implement `Extensions.cs` with `AddServiceDefaults()` extension method
+- [x] Configure OpenTelemetry (logging, metrics, tracing)
+- [x] Add default health checks (`/health`, `/alive` endpoints)
+- [x] Configure service discovery and HTTP client defaults with resilience
+- [x] Add project to solution
 
 ## Acceptance Criteria
-- [ ] Project builds successfully
-- [ ] `AddServiceDefaults()` method is available as extension on `IHostApplicationBuilder`
-- [ ] `MapDefaultEndpoints()` method is available as extension on `WebApplication`
-- [ ] OpenTelemetry instrumentation configured for ASP.NET Core, HTTP, gRPC
-- [ ] Health check endpoints configured with proper tags
+- [x] Project builds successfully
+- [x] `AddServiceDefaults()` method is available as extension on `IHostApplicationBuilder`
+- [x] `MapDefaultEndpoints()` method is available as extension on `WebApplication`
+- [x] OpenTelemetry instrumentation configured for ASP.NET Core, HTTP, gRPC
+- [x] Health check endpoints configured with proper tags
 
 ## Notes
 - See spec: aspire-orchestration.md, Section 4 (ServiceDefaults Project)

@@ -104,16 +104,13 @@ Then use `AskUserQuestion` to ask for approval:
 
 ### Step 6: Execute the Commit
 
-Use HEREDOC format with Co-Authored-By footer:
+Simple commit command:
 
 ```bash
-git commit -m "$(cat <<'EOF'
-[XX-YY] type: description
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-EOF
-)"
+git commit -m "[XX-YY] type: description"
 ```
+
+**IMPORTANT**: Do NOT add Co-Authored-By or any other footers to commit messages.
 
 ### Step 7: Confirm Success
 
