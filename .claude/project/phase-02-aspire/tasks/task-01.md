@@ -3,9 +3,9 @@
 ## Metadata
 | Key | Value |
 |-----|-------|
-| Status | :white_circle: pending |
+| ID | task-01 |
+| Status | ⚪ pending |
 | Dependencies | - |
-| Estimated Effort | S |
 
 ## Objective
 Verify and complete Aspire package references in Directory.Packages.props for centralized package management.

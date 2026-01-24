@@ -114,8 +114,13 @@ get_task_file_path() {
         return 1
     fi
 
-    # Find task file matching task-XX-*
+    # Find task file matching task-XX-* or task-XX.md
     local task_file=$(find "$project_dir/$phase_dir/tasks" -maxdepth 1 -type f -name "task-${task_num}-*.md" 2>/dev/null | head -1)
+
+    # Fallback to task-XX.md (without description suffix)
+    if [[ -z "$task_file" ]]; then
+        task_file=$(find "$project_dir/$phase_dir/tasks" -maxdepth 1 -type f -name "task-${task_num}.md" 2>/dev/null | head -1)
+    fi
 
     if [[ -n "$task_file" ]]; then
         echo "$task_file"
@@ -144,8 +149,13 @@ parse_task_metadata() {
     # Extract name from first heading
     local name=$(echo "$content" | grep -m1 "^# " | sed 's/^# //' | sed 's/Task [0-9]*: //')
 
-    # Extract ID from metadata table
+    # Extract ID from metadata table, fallback to filename
     local id=$(echo "$content" | grep -i "| ID |" | sed 's/.*| ID |[[:space:]]*//' | sed 's/[[:space:]]*|.*//')
+
+    # Fallback: extract ID from filename (task-01.md -> task-01)
+    if [[ -z "$id" ]]; then
+        id=$(basename "$task_file" .md)
+    fi
 
     # Extract Status from metadata table
     local status=$(echo "$content" | grep -i "| Status |" | sed 's/.*| Status |[[:space:]]*//' | sed 's/[[:space:]]*|.*//')
@@ -160,13 +170,14 @@ parse_task_metadata() {
         deps_json=$(echo "$deps_raw" | tr ',' '\n' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//' | grep -v '^$' | jq -R . | jq -s .)
     fi
 
-    # Determine status type
+    # Determine status type (support both emoji and :emoji: formats)
     local status_type="pending"
-    if [[ "$status" == *"$STATUS_COMPLETED"* || "$status" == *"completed"* ]]; then
+    if [[ "$status" == *"$STATUS_COMPLETED"* || "$status" == *"completed"* || "$status" == *":white_check_mark:"* ]]; then
         status_type="completed"
-    elif [[ "$status" == *"$STATUS_IN_PROGRESS"* || "$status" == *"in_progress"* ]]; then
+    elif [[ "$status" == *"$STATUS_IN_PROGRESS"* || "$status" == *"in_progress"* || "$status" == *":large_blue_circle:"* ]]; then
         status_type="in_progress"
     fi
+    # pending covers: ⚪, :white_circle:, or no match
 
     # Output JSON
     jq -n \

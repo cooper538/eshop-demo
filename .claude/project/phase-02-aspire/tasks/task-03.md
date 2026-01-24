@@ -3,9 +3,9 @@
 ## Metadata
 | Key | Value |
 |-----|-------|
-| Status | :white_circle: pending |
+| ID | task-03 |
+| Status | ⚪ pending |
 | Dependencies | task-01 |
-| Estimated Effort | M |
 
 ## Objective
 Create EShop.AppHost project as the Aspire orchestrator with infrastructure resources.

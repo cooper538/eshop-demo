@@ -3,9 +3,9 @@
 ## Metadata
 | Key | Value |
 |-----|-------|
-| Status | :white_circle: pending |
+| ID | task-02 |
+| Status | ⚪ pending |
 | Dependencies | task-01 |
-| Estimated Effort | M |
 
 ## Objective
 Create EShop.ServiceDefaults project providing shared Aspire configuration for all services.

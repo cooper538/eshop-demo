@@ -86,6 +86,14 @@ if [[ "$TASK_INPUT" =~ ^phase-([0-9]+)/task-([0-9]+) ]]; then
     PHASE_NUM="${BASH_REMATCH[1]}"
     TASK_NUM="${BASH_REMATCH[2]}"
     BRANCH_NAME="$TASK_INPUT"
+elif [[ "$TASK_INPUT" =~ ^phase-([0-9]+)/([0-9]+)$ ]]; then
+    # Shorthand: phase-02/01
+    PHASE_NUM="${BASH_REMATCH[1]}"
+    TASK_NUM=$(printf "%02d" "${BASH_REMATCH[2]}")
+elif [[ "$TASK_INPUT" =~ ^([0-9]+)/([0-9]+)$ ]]; then
+    # Even shorter: 02/01
+    PHASE_NUM=$(printf "%02d" "${BASH_REMATCH[1]}")
+    TASK_NUM=$(printf "%02d" "${BASH_REMATCH[2]}")
 elif [[ "$TASK_INPUT" =~ ^task-([0-9]+) ]]; then
     # task-02 format
     TASK_NUM="${BASH_REMATCH[1]}"

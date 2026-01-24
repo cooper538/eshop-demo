@@ -3,9 +3,9 @@
 ## Metadata
 | Key | Value |
 |-----|-------|
-| Status | :white_circle: pending |
+| ID | task-04 |
+| Status | ⚪ pending |
 | Dependencies | task-02, task-03 |
-| Estimated Effort | S |
 
 ## Objective
 Document the standard pattern for integrating services with Aspire and ServiceDefaults.
