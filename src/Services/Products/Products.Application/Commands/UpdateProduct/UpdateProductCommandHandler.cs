@@ -42,6 +42,6 @@ public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductC
             throw new ConflictException($"Product {request.Id} was modified by another user.");
         }
 
-        return product.ToDto();
+        return ProductDto.FromEntity(product);
     }
 }

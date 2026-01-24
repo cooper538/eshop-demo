@@ -31,6 +31,6 @@ public sealed class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQ
             throw NotFoundException.For<ProductEntity>(request.Id);
         }
 
-        return product.ToDto();
+        return ProductDto.FromEntity(product);
     }
 }

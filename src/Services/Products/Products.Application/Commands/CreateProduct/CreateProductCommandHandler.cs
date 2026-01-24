@@ -23,6 +23,6 @@ public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductC
         _dbContext.Products.Add(product);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return product.ToDto();
+        return ProductDto.FromEntity(product);
     }
 }
