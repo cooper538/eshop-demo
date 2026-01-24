@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "product.settings.schema.json",
+  "title": "Product Service Configuration",
+  "description": "Configuration schema for Product Service YAML settings",
+  "type": "object",
+  "properties": {
+    "AllowedHosts": {
+      "type": "string",
+      "description": "Allowed hosts for the application"
+    },
+    "Logging": {
+      "type": "object",
+      "properties": {
+        "LogLevel": {
+          "type": "object",
+          "properties": {
+            "Default": {
+              "type": "string",
+              "enum": ["Trace", "Debug", "Information", "Warning", "Error", "Critical", "None"],
+              "description": "Default log level"
+            },
+            "Microsoft.AspNetCore": {
+              "type": "string",
+              "enum": ["Trace", "Debug", "Information", "Warning", "Error", "Critical", "None"],
+              "description": "Log level for ASP.NET Core"
+            }
+          }
+        }
+      }
+    },
+    "Product": {
+      "type": "object",
+      "description": "Product service specific settings",
+      "required": ["Service", "Database"],
+      "properties": {
+        "Service": {
+          "type": "object",
+          "required": ["Name", "Version"],
+          "properties": {
+            "Name": {
+              "type": "string",
+              "maxLength": 50,
+              "description": "Service name"
+            },
+            "Version": {
+              "type": "string",
+              "description": "Service version"
+            }
+          }
+        },
+        "Database": {
+          "type": "object",
+          "properties": {
+            "CommandTimeoutSec": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300,
+              "default": 30,
+              "description": "Database command timeout in seconds"
+            },
+            "EnableRetry": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable automatic retry on transient failures"
+            },
+            "MaxRetryCount": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10,
+              "default": 3,
+              "description": "Maximum number of retry attempts"
+            }
+          }
+        },
+        "Cache": {
+          "type": "object",
+          "properties": {
+            "Enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable caching"
+            },
+            "ExpirationMin": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1440,
+              "default": 60,
+              "description": "Cache expiration in minutes"
+            }
+          }
+        }
+      }
+    }
+  }
+}

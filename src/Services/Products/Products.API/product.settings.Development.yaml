@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=./Configuration/product.settings.schema.json
 # Product Service - Development Configuration
 # Overrides base product.settings.yaml for local development
 
