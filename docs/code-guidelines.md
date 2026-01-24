@@ -1,10 +1,42 @@
 # Code Guidelines
 
-Project-specific C# standards for AI agent.
+Project-specific C# standards.
+
+## Contents
+
+1. [DDD](#ddd)
+2. [Mapping](#mapping)
+3. [Naming](#naming)
+4. [File Organization](#file-organization)
+5. [Class Structure](#class-structure)
+6. [Documentation](#documentation)
+7. [Forbidden](#forbidden)
 
 ---
 
-## Naming (project-specific)
+## DDD
+
+| Element | Suffix | Example |
+|---------|--------|---------|
+| Entity | `Entity` | `ProductEntity`, `OrderItemEntity` |
+| Value Object | `VO` | `AddressVO`, `MoneyVO`, `EmailVO` |
+| Domain Event | `Event` | `OrderCreatedEvent`, `StockReservedEvent` |
+| Domain Service | `Service` | `PricingService`, `InventoryService` |
+
+All domain types live only in `Domain/` layer.
+
+---
+
+## Mapping
+
+Mapper lives on the type in **higher layer** (the one that knows the target type):
+- `Command.ToEntity()` - Application → Domain
+- `Dto.FromEntity(entity)` - Application ← Domain
+- Entity never has mapping methods (Domain doesn't know Application)
+
+---
+
+## Naming
 
 | Element | Convention | Example |
 |---------|------------|---------|
@@ -25,7 +57,7 @@ Project-specific C# standards for AI agent.
 
 ---
 
-## Class Structure Order
+## Class Structure
 
 ```
 1. Constant Fields
@@ -50,7 +82,7 @@ public async Task<ActionResult<ProductResponseDto>> GetProduct(string id)
 
 **TODO comments** - include ticket number:
 ```csharp
-// TODO: Will be implemented in DEV-123
+// TODO: Will be implemented in TASK XX-XX short description
 ```
 
 ---
