@@ -1,17 +1,13 @@
-using Microsoft.EntityFrameworkCore;
+using EShop.Common.Data;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Products.Domain.Entities;
 
 namespace Products.Infrastructure.Data.Configurations;
 
-public class ProductConfiguration : IEntityTypeConfiguration<Product>
+public class ProductConfiguration : AggregateRootConfiguration<Product>
 {
-    public void Configure(EntityTypeBuilder<Product> builder)
+    protected override void ConfigureAggregate(EntityTypeBuilder<Product> builder)
     {
-        builder.ToTable("Products");
-
-        builder.HasKey(p => p.Id);
-
         builder.Property(p => p.Name).HasMaxLength(200).IsRequired();
 
         builder.Property(p => p.Description).HasMaxLength(2000);
@@ -27,8 +23,5 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.CreatedAt).IsRequired();
 
         builder.Property(p => p.UpdatedAt);
-
-        // Optimistic concurrency
-        builder.Property(p => p.Version).IsConcurrencyToken();
     }
 }
