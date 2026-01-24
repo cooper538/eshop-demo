@@ -97,6 +97,61 @@ get_current_phase() {
 }
 
 #######################################
+# Get the first active (not 100% completed) phase number
+# This is useful when starting a new task without specifying phase
+# Outputs:
+#   Phase number (e.g., "03") or "01" if all completed
+#######################################
+get_active_phase_num() {
+    local project_dir="$(get_repo_root)/.claude/project"
+    local phases=$(find "$project_dir" -maxdepth 1 -type d -name "phase-*" 2>/dev/null | sort)
+
+    while IFS= read -r phase_path; do
+        if [[ -z "$phase_path" ]]; then
+            continue
+        fi
+
+        local phase_dir=$(basename "$phase_path")
+        local tasks_dir="$phase_path/tasks"
+
+        if [[ ! -d "$tasks_dir" ]]; then
+            continue
+        fi
+
+        local task_files=$(find "$tasks_dir" -maxdepth 1 -type f -name "task-*.md" 2>/dev/null)
+        if [[ -z "$task_files" ]]; then
+            continue
+        fi
+
+        local total=0
+        local completed=0
+
+        while IFS= read -r task_file; do
+            if [[ -z "$task_file" ]]; then
+                continue
+            fi
+            ((total++))
+
+            local metadata=$(parse_task_metadata "$task_file")
+            local status_type=$(echo "$metadata" | jq -r '.status_type')
+
+            if [[ "$status_type" == "completed" ]]; then
+                ((completed++))
+            fi
+        done <<< "$task_files"
+
+        # If this phase is not 100% completed, return its number
+        if [[ $total -gt 0 && $completed -lt $total ]]; then
+            echo "$phase_dir" | grep -o '[0-9]\+' | head -1
+            return 0
+        fi
+    done <<< "$phases"
+
+    # All phases completed, return first phase
+    echo "01"
+}
+
+#######################################
 # Get task file path for given phase and task numbers
 # Arguments:
 #   $1 - Phase number (e.g., "01")

@@ -116,8 +116,8 @@ if [[ -z "$PHASE_NUM" ]]; then
     if [[ -n "$CURRENT_PHASE_TASK" ]]; then
         PHASE_NUM=$(echo "$CURRENT_PHASE_TASK" | cut -d' ' -f1)
     else
-        # Default to phase 01
-        PHASE_NUM="01"
+        # Find first active (not 100% completed) phase
+        PHASE_NUM=$(get_active_phase_num)
     fi
 fi
 
