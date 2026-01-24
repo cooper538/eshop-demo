@@ -5,7 +5,7 @@ Overview of all implementation phases for the EShop microservices demo.
 ## Progress
 
 ```
-[##--------] 2/10 phases completed (20%)
+[###-------] 3/10 phases completed (30%)
 ```
 
 ---
@@ -39,7 +39,7 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ---
 
-## Phase 03: Product Core ⚪
+## Phase 03: Product Core ✅
 
 **Product Service domain model and external REST API**
 
