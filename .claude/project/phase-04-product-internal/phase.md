@@ -14,7 +14,6 @@ Add internal API layer for gRPC and stock management
 - [ ] Implement ReserveStock and ReleaseStock operations
 - [ ] Add internal REST endpoints (`/internal/*`)
 - [ ] Implement stock reservation expiration (TTL cleanup)
-- [ ] Write unit tests for stock operations
 
 ## Related Specs
 - → [product-service-interface.md](../high-level-specs/product-service-interface.md) (stock operations)

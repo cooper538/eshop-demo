@@ -13,7 +13,6 @@ Implement worker service for notification processing
 - [ ] Implement event consumers (OrderConfirmedConsumer, StockLowConsumer, etc.)
 - [ ] Implement Inbox pattern for idempotent processing
 - [ ] Simulate email sending (logging instead of actual SendGrid)
-- [ ] Write unit tests for consumers
 
 ## Related Specs
 - → [messaging-communication.md](../high-level-specs/messaging-communication.md)

@@ -14,7 +14,6 @@ Set up event-driven communication with guaranteed delivery
 - [ ] Implement Inbox pattern in EShop.Common
 - [ ] Create OutboxProcessor background service
 - [ ] Add integration event publishing (OrderConfirmed, OrderRejected, OrderCancelled)
-- [ ] Write tests with MassTransit Test Harness
 
 ## Related Specs
 - → [messaging-communication.md](../high-level-specs/messaging-communication.md)

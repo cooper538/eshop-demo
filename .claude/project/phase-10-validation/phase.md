@@ -1,4 +1,4 @@
-# Phase 10: End-to-End Validation
+# Phase 10: Testing & Validation
 
 ## Metadata
 | Key | Value |
@@ -6,14 +6,32 @@
 | Status | :white_circle: pending |
 
 ## Objective
-Verify complete flow and add functional tests
+Comprehensive testing across all layers and end-to-end validation
 
 ## Scope
-- [ ] Write functional tests with WebApplicationFactory + Testcontainers
-- [ ] Implement Respawn for database cleanup
+
+### Unit Tests
+- [ ] SharedKernel tests (Entity, ValueObject, Guard)
+- [ ] EShop.Common tests (behaviors, middleware)
+- [ ] Product Service domain tests
+- [ ] Product Service stock operations tests
+- [ ] Order Service domain tests
+- [ ] Order Service state machine tests
+- [ ] Notification consumers tests
+
+### Integration Tests
+- [ ] Product Service with mocked dependencies
+- [ ] Order-Product integration with mocked Product Service
+- [ ] MassTransit Test Harness tests
+
+### Functional/E2E Tests
+- [ ] WebApplicationFactory + Testcontainers setup
+- [ ] Respawn for database cleanup
 - [ ] Add WireMock for external API mocking (if needed)
-- [ ] Verify complete order flow (Gateway → Order → Product → Notification)
-- [ ] Verify CorrelationId propagation end-to-end
+- [ ] Complete order flow (Gateway → Order → Product → Notification)
+- [ ] CorrelationId propagation end-to-end
+
+### Documentation
 - [ ] Document project startup
 
 ## Related Specs

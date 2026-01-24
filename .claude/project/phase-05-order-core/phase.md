@@ -15,12 +15,10 @@ Implement Order Service with domain and state machine
 - [ ] Create CQRS handlers (CreateOrder, GetOrder, CancelOrder)
 - [ ] Configure EF Core with PostgreSQL
 - [ ] Create external REST API endpoints
-- [ ] Write unit tests for domain and state machine
 
 ## Related Specs
 - → [order-service-interface.md](../high-level-specs/order-service-interface.md)
 - → [error-handling.md](../high-level-specs/error-handling.md)
-- → [unit-testing.md](../high-level-specs/unit-testing.md)
 
 ---
 ## Notes
