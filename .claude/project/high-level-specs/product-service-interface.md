@@ -132,26 +132,24 @@ Internal API for service-to-service communication. Supports dual-protocol (gRPC 
 ### 3.1 gRPC Service Definition (`product.proto`)
 
 ```protobuf
+// Product Service - Internal gRPC API for inter-service communication.
+
 syntax = "proto3";
 
 option csharp_namespace = "EShop.Grpc.Product";
 
 package product;
 
-// Internal API - service-to-service communication
-// Named after the owning service (Product), not the capability (Stock)
 service ProductService {
-  // Batch get product information (prices, availability)
-  rpc GetProducts (GetProductsRequest) returns (GetProductsResponse);
+  // Batch get product info. ATOMIC: fails with NOT_FOUND if any product missing.
+  rpc GetProducts(GetProductsRequest) returns (GetProductsResponse);
 
-  // Reserve stock for an order (SRP: only reserves, doesn't return prices)
-  rpc ReserveStock (ReserveStockRequest) returns (ReserveStockResponse);
+  // Reserve stock for order. All-or-nothing: fails if any item has insufficient stock.
+  rpc ReserveStock(ReserveStockRequest) returns (ReserveStockResponse);
 
-  // Release reserved stock (e.g., order cancellation)
-  rpc ReleaseStock (ReleaseStockRequest) returns (ReleaseStockResponse);
+  // Release stock reservation. Idempotent: succeeds even if already released.
+  rpc ReleaseStock(ReleaseStockRequest) returns (ReleaseStockResponse);
 }
-
-// === GetProducts ===
 
 message GetProductsRequest {
   repeated string product_ids = 1;
@@ -165,13 +163,9 @@ message ProductInfo {
   string product_id = 1;
   string name = 2;
   string description = 3;
-  string price = 4;           // decimal as string for precision
+  string price = 4;  // decimal as string
   int32 stock_quantity = 5;
-  bool exists = 6;            // false if product ID not found
-  bool is_available = 7;      // false if stock_quantity = 0
 }
-
-// === ReserveStock ===
 
 message ReserveStockRequest {
   string order_id = 1;
@@ -186,14 +180,10 @@ message OrderItem {
 message ReserveStockResponse {
   bool success = 1;
   optional string failure_reason = 2;
-  // Note: No failed_product_ids - keeps response simple (SRP)
-  // If reservation fails, the entire operation fails
 }
 
-// === ReleaseStock ===
-
 message ReleaseStockRequest {
-  string order_id = 1;  // Product Service finds reservation by OrderId
+  string order_id = 1;
 }
 
 message ReleaseStockResponse {
@@ -206,18 +196,19 @@ message ReleaseStockResponse {
 
 | Decision | Rationale |
 |----------|-----------|
-| `GetProducts` separate from `ReserveStock` | **SRP**: Each method has single responsibility |
+| `GetProducts` is **ATOMIC** | Per [Google AIP-231](https://google.aip.dev/231): batch get must succeed for all or fail for all |
+| No `exists`/`is_available` fields | Use gRPC `NOT_FOUND` status instead (cleaner API) |
 | `price` as string | Protocol Buffers lacks native decimal; string preserves precision |
-| No `failed_product_ids` in response | Simplicity - if any item fails, entire reservation fails |
+| All-or-nothing for `ReserveStock` | If any item fails, entire reservation fails |
 | No `correlation_id` in messages | Propagated via gRPC metadata (interceptors), not payload |
 
 ### 3.3 gRPC Endpoints Summary
 
-| Method | Description | Called By |
-|--------|-------------|-----------|
-| `GetProducts` | Batch get product info (prices, availability) | Order Service, Notification Service |
-| `ReserveStock` | Reserve stock for an order | Order Service |
-| `ReleaseStock` | Release stock (order cancellation) | Order Service |
+| Method | Description | Error Behavior |
+|--------|-------------|----------------|
+| `GetProducts` | Batch get product info | `NOT_FOUND` if any product missing |
+| `ReserveStock` | Reserve stock for order | `success=false` if insufficient stock |
+| `ReleaseStock` | Release reservation | Idempotent, always succeeds |
 
 ### 3.4 Internal REST Endpoints (HTTP fallback)
 
@@ -237,7 +228,7 @@ Hidden from Swagger, not routed via API Gateway. Used when gRPC is not suitable.
   "productIds": ["uuid1", "uuid2", "uuid3"]
 }
 
-// Response
+// Response (200 OK - all products found)
 {
   "products": [
     {
@@ -245,11 +236,17 @@ Hidden from Swagger, not routed via API Gateway. Used when gRPC is not suitable.
       "name": "Wireless Mouse",
       "description": "Ergonomic wireless mouse",
       "price": 49.99,
-      "stockQuantity": 150,
-      "exists": true,
-      "isAvailable": true
+      "stockQuantity": 150
     }
   ]
+}
+
+// Response (404 Not Found - any product missing)
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Products not found: uuid2, uuid3"
 }
 ```
 
@@ -294,6 +291,7 @@ These models are used by consuming services via `IProductServiceClient`:
 namespace EShop.ServiceClients.Abstractions;
 
 // === GetProducts ===
+// Note: Throws NotFoundException if any product is missing (atomic operation)
 
 public sealed record GetProductsRequest(
     IReadOnlyList<Guid> ProductIds);
@@ -306,9 +304,7 @@ public sealed record ProductInfo(
     string Name,
     string Description,
     decimal Price,
-    int StockQuantity,
-    bool Exists,
-    bool IsAvailable);
+    int StockQuantity);
 
 // === ReserveStock ===
 
@@ -357,10 +353,20 @@ public class ProductGrpcService : ProductService.ProductServiceBase
     {
         _logger.LogDebug("GetProducts called for {Count} product IDs", request.ProductIds.Count);
 
-        var query = new GetProductsBatchQuery(
-            request.ProductIds.Select(Guid.Parse).ToList());
-
+        var requestedIds = request.ProductIds.Select(Guid.Parse).ToList();
+        var query = new GetProductsBatchQuery(requestedIds);
         var result = await _mediator.Send(query, context.CancellationToken);
+
+        // ATOMIC: fail if any product not found (per Google AIP-231)
+        var foundIds = result.Products.Select(p => p.ProductId).ToHashSet();
+        var missingIds = requestedIds.Where(id => !foundIds.Contains(id)).ToList();
+
+        if (missingIds.Count > 0)
+        {
+            throw new RpcException(new Status(
+                StatusCode.NotFound,
+                $"Products not found: {string.Join(", ", missingIds)}"));
+        }
 
         var response = new GetProductsResponse();
         response.Products.AddRange(result.Products.Select(p => new ProductInfo
@@ -369,9 +375,7 @@ public class ProductGrpcService : ProductService.ProductServiceBase
             Name = p.Name,
             Description = p.Description,
             Price = p.Price.ToString(CultureInfo.InvariantCulture),
-            StockQuantity = p.StockQuantity,
-            Exists = p.Exists,
-            IsAvailable = p.IsAvailable
+            StockQuantity = p.StockQuantity
         }));
 
         return response;

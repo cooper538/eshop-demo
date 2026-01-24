@@ -1,17 +1,41 @@
+// Product Service - Internal gRPC API for inter-service communication.
+
 syntax = "proto3";
 
 option csharp_namespace = "EShop.Grpc.Product";
+
 package product;
 
 service ProductService {
-  rpc ReserveStock (ReserveStockRequest) returns (ReserveStockResponse);
-  rpc ReleaseStock (ReleaseStockRequest) returns (ReleaseStockResponse);
+  // Batch get product info. ATOMIC: fails with NOT_FOUND if any product missing.
+  rpc GetProducts(GetProductsRequest) returns (GetProductsResponse);
+
+  // Reserve stock for order. All-or-nothing: fails if any item has insufficient stock.
+  rpc ReserveStock(ReserveStockRequest) returns (ReserveStockResponse);
+
+  // Release stock reservation. Idempotent: succeeds even if already released.
+  rpc ReleaseStock(ReleaseStockRequest) returns (ReleaseStockResponse);
+}
+
+message GetProductsRequest {
+  repeated string product_ids = 1;
+}
+
+message GetProductsResponse {
+  repeated ProductInfo products = 1;
+}
+
+message ProductInfo {
+  string product_id = 1;
+  string name = 2;
+  string description = 3;
+  string price = 4;  // decimal as string
+  int32 stock_quantity = 5;
 }
 
 message ReserveStockRequest {
   string order_id = 1;
-  reserved 2;
-  repeated OrderItem items = 3;
+  repeated OrderItem items = 2;
 }
 
 message OrderItem {
@@ -26,7 +50,6 @@ message ReserveStockResponse {
 
 message ReleaseStockRequest {
   string order_id = 1;
-  reserved 2;
 }
 
 message ReleaseStockResponse {

@@ -13,6 +13,8 @@
 
 > **Note**: This document describes **technical patterns** for gRPC implementation. For specific service contracts and endpoints, see [Product Service Interface](./product-service-interface.md) and [Order Service Interface](./order-service-interface.md).
 
+> **Reference**: For API design best practices, see [Google API Improvement Proposals (AIP)](https://google.aip.dev/) - especially [AIP-231 (Batch Get)](https://google.aip.dev/231) and [AIP-193 (Errors)](https://google.aip.dev/193).
+
 ## 1. Overview
 
 gRPC is the **primary protocol** for the Internal API layer - synchronous communication between microservices. This provides:
