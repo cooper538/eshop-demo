@@ -47,6 +47,7 @@ Work on a task MUST happen in a feature branch with the following convention:
 | `/commit` | Smart commit with `[XX-YY] type:` format |
 | `/worktree` | Manage worktrees for parallel work |
 | `/sort-tasks` | Topological task sorting |
+| `/phase-breakdown` | Break down phase into tasks |
 | `/analyze` | Run code analyzers (packages, quality, security) |
 
 ### When to Use Worktree
