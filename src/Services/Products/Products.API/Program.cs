@@ -1,10 +1,25 @@
 using EShop.Common.Extensions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using NetEscapades.Configuration.Yaml;
+using Products.API.Configuration;
 using Products.Application.Data;
 using Products.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+var env = builder.Environment.EnvironmentName;
+
+// YAML Configuration
+builder
+    .Configuration.AddYamlFile("product.settings.yaml", optional: false, reloadOnChange: true)
+    .AddYamlFile($"product.settings.{env}.yaml", optional: true, reloadOnChange: true);
+
+// Bind and validate settings (fail-fast on invalid config)
+builder
+    .Services.AddOptions<ProductSettings>()
+    .BindConfiguration(ProductSettings.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 
 // Aspire ServiceDefaults
 builder.AddServiceDefaults();

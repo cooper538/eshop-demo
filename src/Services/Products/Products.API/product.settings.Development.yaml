@@ -1,0 +1,15 @@
+# Product Service - Development Configuration
+# Overrides base product.settings.yaml for local development
+
+Logging:
+  LogLevel:
+    Default: "Debug"
+    Microsoft.AspNetCore: "Information"
+
+Product:
+  Database:
+    CommandTimeoutSec: 60
+    MaxRetryCount: 1
+
+  Cache:
+    ExpirationMin: 5

@@ -1,0 +1,17 @@
+# Product Service - Production Configuration
+# Overrides base product.settings.yaml for production environment
+
+Logging:
+  LogLevel:
+    Default: "Warning"
+    Microsoft.AspNetCore: "Warning"
+
+Product:
+  Database:
+    CommandTimeoutSec: 30
+    EnableRetry: true
+    MaxRetryCount: 5
+
+  Cache:
+    Enabled: true
+    ExpirationMin: 120
