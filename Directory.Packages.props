@@ -59,6 +59,12 @@
     <PackageVersion Include="Riok.Mapperly" Version="4.1.1" />
   </ItemGroup>
 
+  <ItemGroup Label="OpenAPI">
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.2" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.2.0" />
+  </ItemGroup>
+
   <ItemGroup Label="Testing">
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageVersion Include="MSTest.TestAdapter" Version="3.8.2" />

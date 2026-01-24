@@ -13,5 +13,7 @@
     <PackageReference Include="Aspire.Hosting.RabbitMQ" />
   </ItemGroup>
 
-  <!-- Service project references will be added in task-04 -->
+  <ItemGroup>
+    <ProjectReference Include="../Services/Products/Products.API/Products.API.csproj" />
+  </ItemGroup>
 </Project>

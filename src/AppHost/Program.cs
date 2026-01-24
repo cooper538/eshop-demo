@@ -14,12 +14,11 @@ var rabbitmq = builder
     .WithLifetime(ContainerLifetime.Persistent)
     .WithManagementPlugin();
 
-// SERVICES (to be added in task-04)
-
-// var productService = builder
-//     .AddProject<Projects.EShop_ProductService>("product-service")
-//     .WithReference(productDb)
-//     .WithReference(rabbitmq);
+// SERVICES
+var productService = builder
+    .AddProject<Projects.Products_API>("product-service")
+    .WithReference(productDb)
+    .WithReference(rabbitmq);
 
 // var orderService = builder
 //     .AddProject<Projects.EShop_OrderService>("order-service")
