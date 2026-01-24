@@ -13,6 +13,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="NetEscapades.Configuration.Yaml" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
   </ItemGroup>
 
@@ -20,6 +21,10 @@
     <ProjectReference Include="../Products.Infrastructure/Products.Infrastructure.csproj" />
     <ProjectReference Include="../../../ServiceDefaults/EShop.ServiceDefaults.csproj" />
     <ProjectReference Include="../../../Common/EShop.Common/EShop.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="product.settings*.yaml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

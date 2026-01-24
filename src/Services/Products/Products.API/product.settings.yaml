@@ -1,0 +1,23 @@
+# Product Service Configuration
+# Environment-specific overrides: product.settings.{Environment}.yaml
+
+AllowedHosts: "*"
+
+Logging:
+  LogLevel:
+    Default: "Information"
+    Microsoft.AspNetCore: "Warning"
+
+Product:
+  Service:
+    Name: "Product"
+    Version: "1.0.0"
+
+  Database:
+    CommandTimeoutSec: 30
+    EnableRetry: true
+    MaxRetryCount: 3
+
+  Cache:
+    Enabled: true
+    ExpirationMin: 60
