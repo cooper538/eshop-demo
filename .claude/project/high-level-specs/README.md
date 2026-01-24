@@ -72,21 +72,17 @@ A demonstration project showcasing microservices architecture in .NET. The goal 
 
 Architecture details are organized into focused specification documents:
 
-### Shared Infrastructure
+### Architecture & Services
 
 | Document | Description |
 |----------|-------------|
 | [Shared Projects](./shared-projects.md) | SharedKernel, Contracts, gRPC, Common, ServiceClients structure |
-| [Error Handling](./error-handling.md) | HTTP error responses, ProblemDetails (RFC 7807), exception mapping |
-
-### Service Interfaces
-
-| Document | Description |
-|----------|-------------|
 | [Product Service Interface](./product-service-interface.md) | Product Service contracts (External + Internal API, stock operations) |
 | [Order Service Interface](./order-service-interface.md) | Order Service contracts (Public API, Internal API dependencies) |
+| [Error Handling](./error-handling.md) | HTTP error responses, ProblemDetails (RFC 7807), exception mapping |
+| [Configuration Management](./configuration-management.md) | YAML config, JSON Schema validation, Options pattern |
 
-### Communication Patterns
+### Communication & Infrastructure
 
 | Document | Description |
 |----------|-------------|
@@ -95,6 +91,7 @@ Architecture details are organized into focused specification documents:
 | [Dual-Protocol Communication](./dual-protocol-communication.md) | Protocol abstraction (gRPC/HTTP switching, EShop.ServiceClients) |
 | [Messaging Communication](./messaging-communication.md) | Integration events, MassTransit, Outbox/Inbox patterns |
 | [CorrelationId Flow](./correlation-id-flow.md) | Distributed tracing across HTTP, gRPC, and messaging |
+| [Aspire Orchestration](./aspire-orchestration.md) | Local dev orchestration, service discovery, Docker Compose |
 
 ### Testing
 
@@ -102,12 +99,6 @@ Architecture details are organized into focused specification documents:
 |----------|-------------|
 | [Unit Testing](./unit-testing.md) | Testing philosophy, domain/handler testing, TestServerCallContext |
 | [Functional Testing](./functional-testing.md) | WebApplicationFactory, Testcontainers, Respawn, WireMock |
-
-### DevOps & Infrastructure
-
-| Document | Description |
-|----------|-------------|
-| [Aspire Orchestration](./aspire-orchestration.md) | Local dev orchestration, service discovery, Docker Compose |
 
 ---
 
