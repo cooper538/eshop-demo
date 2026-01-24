@@ -8,7 +8,7 @@
 | Ports | 5001 (HTTP), 5051 (gRPC) |
 | Database | PostgreSQL |
 | Role | Product catalog, stock management |
-| API Layers | **External API** (REST) + **Internal API** (gRPC/HTTP) |
+| API Layers | **External API** (REST) + **Internal API** (gRPC) |
 
 ---
 
@@ -19,7 +19,7 @@ Product Service manages the product catalog and stock operations. It exposes two
 | Layer | Protocol | Purpose | Consumers |
 |-------|----------|---------|-----------|
 | **External API** | REST `/api/*` | Product CRUD operations | Clients via API Gateway |
-| **Internal API** | gRPC + REST `/internal/*` | Stock operations, batch queries | Other microservices |
+| **Internal API** | gRPC | Stock operations, batch queries | Other microservices |
 
 ```
                         ┌─────────────────────────────────┐
@@ -34,8 +34,6 @@ Product Service manages the product catalog and stock operations. It exposes two
   (direct, no Gateway)  │  │ gRPC: GetProducts,        │  │
   ─────────────────────▶│  │       ReserveStock,       │  │
                         │  │       ReleaseStock        │  │
-                        │  │ REST: /internal/*         │  │
-                        │  │       (HTTP fallback)     │  │
                         │  └───────────────────────────┘  │
                         │                                 │
                         └──────────────┬──────────────────┘
@@ -127,7 +125,7 @@ Location: /api/products/770e8400-e29b-41d4-a716-446655440002
 
 ## 3. Internal API Contracts
 
-Internal API for service-to-service communication. Supports dual-protocol (gRPC primary, HTTP fallback). For technical implementation patterns, see [gRPC Communication](./grpc-communication.md) and [Dual-Protocol Communication](./dual-protocol-communication.md).
+Internal API for service-to-service communication using gRPC. For technical implementation patterns, see [gRPC Communication](./grpc-communication.md).
 
 ### 3.1 gRPC Service Definition (`product.proto`)
 
@@ -210,80 +208,7 @@ message ReleaseStockResponse {
 | `ReserveStock` | Reserve stock for order | `success=false` if insufficient stock |
 | `ReleaseStock` | Release reservation | Idempotent, always succeeds |
 
-### 3.4 Internal REST Endpoints (HTTP fallback)
-
-Hidden from Swagger, not routed via API Gateway. Used when gRPC is not suitable.
-
-| Method | Endpoint | Description | Response |
-|--------|----------|-------------|----------|
-| POST | `/internal/products/batch` | Batch get product info | 200 OK |
-| POST | `/internal/stock/reserve` | Reserve stock for an order | 200 OK |
-| POST | `/internal/stock/release` | Release reserved stock | 200 OK |
-
-#### POST `/internal/products/batch`
-
-```json
-// Request
-{
-  "productIds": ["uuid1", "uuid2", "uuid3"]
-}
-
-// Response (200 OK - all products found)
-{
-  "products": [
-    {
-      "productId": "uuid1",
-      "name": "Wireless Mouse",
-      "description": "Ergonomic wireless mouse",
-      "price": 49.99,
-      "stockQuantity": 150
-    }
-  ]
-}
-
-// Response (404 Not Found - any product missing)
-{
-  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.4",
-  "title": "Not Found",
-  "status": 404,
-  "detail": "Products not found: uuid2, uuid3"
-}
-```
-
-#### POST `/internal/stock/reserve`
-
-```json
-// Request
-{
-  "orderId": "order-uuid",
-  "items": [
-    { "productId": "uuid1", "quantity": 2 }
-  ]
-}
-
-// Response
-{
-  "success": true,
-  "failureReason": null
-}
-```
-
-#### POST `/internal/stock/release`
-
-```json
-// Request
-{
-  "orderId": "order-uuid"
-}
-
-// Response
-{
-  "success": true,
-  "failureReason": null
-}
-```
-
-### 3.5 ServiceClients Models
+### 3.4 ServiceClients Models
 
 These models are used by consuming services via `IProductServiceClient`:
 
@@ -332,9 +257,7 @@ public sealed record OrderItemDto(
     int Quantity);
 ```
 
-### 3.6 Server Implementation
-
-#### gRPC Service
+### 3.5 Server Implementation
 
 ```csharp
 public class ProductGrpcService : ProductService.ProductServiceBase
@@ -417,60 +340,6 @@ public class ProductGrpcService : ProductService.ProductServiceBase
     }
 }
 ```
-
-#### Internal REST Controllers (HTTP fallback)
-
-```csharp
-// Product.API/Controllers/Internal/InternalProductsController.cs
-[ApiController]
-[Route("internal/products")]
-[ApiExplorerSettings(IgnoreApi = true)]  // Hide from Swagger
-public class InternalProductsController : ControllerBase
-{
-    private readonly IMediator _mediator;
-
-    [HttpPost("batch")]
-    public async Task<IActionResult> GetProductsBatch(
-        [FromBody] GetProductsBatchRequest request,
-        CancellationToken ct)
-    {
-        var query = new GetProductsBatchQuery(request.ProductIds);
-        var result = await _mediator.Send(query, ct);
-        return Ok(new GetProductsBatchResponse(result.Products));
-    }
-}
-
-// Product.API/Controllers/Internal/InternalStockController.cs
-[ApiController]
-[Route("internal/stock")]
-[ApiExplorerSettings(IgnoreApi = true)]  // Hide from Swagger
-public class InternalStockController : ControllerBase
-{
-    private readonly IMediator _mediator;
-
-    [HttpPost("reserve")]
-    public async Task<IActionResult> ReserveStock(
-        [FromBody] ReserveStockRequest request,
-        CancellationToken ct)
-    {
-        var command = new ReserveStockCommand(request.OrderId, request.Items);
-        var result = await _mediator.Send(command, ct);
-        return Ok(new StockOperationResponse(result.Success, result.FailureReason));
-    }
-
-    [HttpPost("release")]
-    public async Task<IActionResult> ReleaseStock(
-        [FromBody] ReleaseStockRequest request,
-        CancellationToken ct)
-    {
-        var command = new ReleaseStockCommand(request.OrderId);
-        var result = await _mediator.Send(command, ct);
-        return Ok(new StockOperationResponse(result.Success, result.FailureReason));
-    }
-}
-```
-
-> **Note**: Both gRPC and REST endpoints call the same MediatR handlers, ensuring consistent behavior.
 
 ---
 
@@ -715,10 +584,7 @@ See [Messaging Communication](./messaging-communication.md) for event definition
 ```
 Product.API/
 ├── Controllers/
-│   ├── ProductsController.cs        # External API (/api/products)
-│   └── Internal/                    # Internal API (/internal/*)
-│       ├── InternalProductsController.cs
-│       └── InternalStockController.cs
+│   └── ProductsController.cs        # External API (/api/products)
 ├── Grpc/                            # gRPC service implementations
 │   └── ProductGrpcService.cs
 └── Program.cs
@@ -871,7 +737,6 @@ CREATE TABLE StockReservations (
 
 - [Internal API Communication](./internal-api-communication.md) - Internal API layer concept
 - [gRPC Communication](./grpc-communication.md) - gRPC technical patterns
-- [Dual-Protocol Communication](./dual-protocol-communication.md) - Protocol abstraction layer
 - [Messaging Communication](./messaging-communication.md) - Event publishing
 - [Order Service Interface](./order-service-interface.md) - gRPC client (consumes this API)
 - [CorrelationId Flow](./correlation-id-flow.md) - Request tracing

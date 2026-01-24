@@ -15,7 +15,7 @@ Set up basic solution structure and all shared projects
 - [x] Implement `EShop.Contracts` (integration events, shared DTOs)
 - [x] Implement `EShop.Grpc` (proto definitions for Product Service)
 - [x] Implement `EShop.Common` (middleware, behaviors, exception handling)
-- [x] Implement `EShop.ServiceClients` (interface abstraction for dual-protocol)
+- [x] Implement `EShop.ServiceClients` (gRPC client abstraction for internal API)
 
 ## Related Specs
 - → [shared-projects.md](../high-level-specs/shared-projects.md)

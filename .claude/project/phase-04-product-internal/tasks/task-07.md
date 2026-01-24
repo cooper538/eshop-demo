@@ -1,29 +1,26 @@
-# Task 07: Internal REST API Endpoints
+# Task 07: Stock Reservation Expiration Job
 
 ## Metadata
 | Key | Value |
 |-----|-------|
 | ID | task-07 |
 | Status | :white_circle: pending |
-| Dependencies | task-04, task-05 |
+| Dependencies | task-03, task-04 |
 
 ## Summary
-Add HTTP fallback endpoints for internal API under /internal/* path, hidden from Swagger.
+Background job that expires stale stock reservations and releases stock back to inventory.
 
 ## Scope
-- [ ] Create Controllers/Internal directory
-- [ ] Create InternalProductsController with route "internal/products"
-- [ ] Add POST /internal/products/batch endpoint
-- [ ] Create InternalStockController with route "internal/stock"
-- [ ] Add POST /internal/stock/reserve endpoint
-- [ ] Add POST /internal/stock/release endpoint
-- [ ] Mark controllers with [ApiExplorerSettings(IgnoreApi = true)]
-- [ ] Create request/response DTOs for HTTP API
-- [ ] Use same MediatR handlers as gRPC endpoints
+- [ ] Create StockReservationExpirationJob extending BackgroundService
+- [ ] Implement ExecuteAsync with 1-minute check interval
+- [ ] Query for Active reservations where ExpiresAt < UtcNow
+- [ ] Release stock back to Product.StockQuantity for each expired reservation
+- [ ] Update reservation status to Expired
+- [ ] Add proper logging for expired reservations
+- [ ] Register as hosted service in Program.cs
 
 ## Related Specs
-- [product-service-interface.md](../../high-level-specs/product-service-interface.md) (Section 3.4: Internal REST Endpoints)
-- [internal-api-communication.md](../../high-level-specs/internal-api-communication.md) (Section 2.2: Endpoint Visibility)
+- [product-service-interface.md](../../high-level-specs/product-service-interface.md) (Section 6: Stock Reservation Expiration)
 
 ---
 ## Notes

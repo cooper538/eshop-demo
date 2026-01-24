@@ -20,7 +20,7 @@ This document describes the shared projects structure and the data access patter
 - **NO Repository pattern** - direct DbContext access via interface
 - **Contracts are minimal** - only events and DTOs, no logic
 - **gRPC contracts are shared** - both client and server stubs generated
-- **ServiceClients abstract protocol** - gRPC/HTTP switching via configuration
+- **ServiceClients abstract gRPC clients** - client abstraction for inter-service communication
 
 ---
 
@@ -46,7 +46,7 @@ This document describes the shared projects structure and the data access patter
                             ▼
                  ┌─────────────────────────┐
                  │  EShop.ServiceClients   │
-                 │  (Dual-protocol)        │
+                 │  (gRPC clients)         │
                  └─────────────────────────┘
                             │
                             ▼
@@ -405,7 +405,7 @@ EShop.Common/
 
 ### 3.5 EShop.ServiceClients
 
-**Purpose:** Dual-protocol abstraction for inter-service communication.
+**Purpose:** gRPC client abstraction for inter-service communication.
 
 **NuGet Dependencies:**
 - `EShop.Grpc`
@@ -417,28 +417,30 @@ EShop.Common/
 
 ```
 EShop.ServiceClients/
-├── Abstractions/
-│   └── IProductServiceClient.cs
-├── Models/
-│   ├── ReserveStockRequest.cs
-│   ├── StockReservationResult.cs
-│   ├── ReleaseStockRequest.cs
-│   └── StockReleaseResult.cs
-├── Grpc/
-│   └── GrpcProductServiceClient.cs
-├── Http/
-│   └── HttpProductServiceClient.cs
+├── Clients/
+│   └── Product/
+│       ├── IProductServiceClient.cs
+│       ├── GrpcProductServiceClient.cs
+│       └── Models/
+│           ├── ReserveStockRequest.cs
+│           ├── StockReservationResult.cs
+│           ├── ReleaseStockRequest.cs
+│           └── StockReleaseResult.cs
 ├── Configuration/
-│   └── ServiceClientOptions.cs
+│   ├── ServiceClientOptions.cs
+│   ├── ServiceEndpoints.cs
+│   └── ResilienceOptions.cs
 ├── Exceptions/
 │   └── ServiceClientException.cs
-├── Resilience/
-│   └── ResiliencePolicies.cs
+├── Infrastructure/
+│   └── Grpc/
+│       ├── LoggingInterceptor.cs
+│       └── ResilienceInterceptor.cs
 └── Extensions/
     └── ServiceCollectionExtensions.cs
 ```
 
-See [Dual-Protocol Communication](./dual-protocol-communication.md) for implementation details.
+See [gRPC Communication](./grpc-communication.md) for implementation details.
 
 ---
 
@@ -577,7 +579,7 @@ public class GetProductByIdQueryHandlerTests
 | **Contracts** | Cross-service contracts | SharedKernel (optional) | IntegrationEvents, Shared DTOs |
 | **Grpc** | gRPC contracts | Grpc.Tools, Protobuf | Proto files, generated client/server |
 | **Common** | Shared infrastructure | SharedKernel, MediatR, Polly | Behaviors, Middleware, Outbox/Inbox |
-| **ServiceClients** | Protocol abstraction | Grpc, Common | IProductServiceClient, gRPC/HTTP impls |
+| **ServiceClients** | gRPC client abstraction | Grpc, Common | IProductServiceClient, GrpcProductServiceClient |
 | **ServiceDefaults** | Aspire config | Aspire | OpenTelemetry, Health checks |
 
 ---
@@ -704,6 +706,5 @@ Phase 3: Full NuGet (Multi-Repo)
 ## Related Documents
 
 - [gRPC Communication](./grpc-communication.md) - Proto definitions and patterns
-- [Dual-Protocol Communication](./dual-protocol-communication.md) - gRPC/HTTP switching
 - [Messaging Communication](./messaging-communication.md) - Outbox/Inbox patterns
 - [Unit Testing](./unit-testing.md) - Testing with InMemory DbContext

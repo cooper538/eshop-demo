@@ -86,9 +86,8 @@ Architecture details are organized into focused specification documents:
 
 | Document | Description |
 |----------|-------------|
-| [Internal API Communication](./internal-api-communication.md) | Internal API layer concept (/internal/*, security, routing) |
+| [Internal API Communication](./internal-api-communication.md) | Internal API layer concept (gRPC-only, security, routing) |
 | [gRPC Communication](./grpc-communication.md) | gRPC technical patterns (server/client, resiliency, observability) |
-| [Dual-Protocol Communication](./dual-protocol-communication.md) | Protocol abstraction (gRPC/HTTP switching, EShop.ServiceClients) |
 | [Messaging Communication](./messaging-communication.md) | Integration events, MassTransit, Outbox/Inbox patterns |
 | [CorrelationId Flow](./correlation-id-flow.md) | Distributed tracing across HTTP, gRPC, and messaging |
 | [Aspire Orchestration](./aspire-orchestration.md) | Local dev orchestration, service discovery, Docker Compose |
@@ -162,7 +161,7 @@ eshop-demo/
 │   │   ├── EShop.Contracts/        # Integration events, shared DTOs
 │   │   ├── EShop.Grpc/             # Proto definitions + generated code
 │   │   ├── EShop.Common/           # Shared infrastructure (behaviors, middleware, exceptions)
-│   │   └── EShop.ServiceClients/   # Dual-protocol client abstraction (gRPC/HTTP)
+│   │   └── EShop.ServiceClients/   # gRPC client abstraction for internal API
 │   └── Services/
 │       ├── Gateway/
 │       ├── Product/

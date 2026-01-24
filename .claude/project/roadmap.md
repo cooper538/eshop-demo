@@ -20,7 +20,7 @@ Overview of all implementation phases for the EShop microservices demo.
 - Implement `EShop.Contracts` (integration events, shared DTOs)
 - Implement `EShop.Grpc` (proto definitions for Product Service)
 - Implement `EShop.Common` (middleware, behaviors, exception handling)
-- Implement `EShop.ServiceClients` (interface abstraction for dual-protocol)
+- Implement `EShop.ServiceClients` (gRPC client abstraction for internal API)
 
 → [Details](./phase-01-foundation/phase.md)
 
@@ -62,7 +62,6 @@ Overview of all implementation phases for the EShop microservices demo.
 - Implement gRPC server (ProductGrpcService)
 - Add StockReservation entity and logic
 - Implement ReserveStock and ReleaseStock operations
-- Add internal REST endpoints (`/internal/*`)
 - Implement stock reservation expiration (TTL cleanup)
 
 → [Details](./phase-04-product-internal/phase.md)
@@ -86,10 +85,9 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ## Phase 06: Order Integration ⚪
 
-**Dual-protocol communication with Product Service**
+**gRPC communication with Product Service**
 
-- Implement `GrpcProductServiceClient` in ServiceClients
-- Implement `HttpProductServiceClient` in ServiceClients
+- Configure gRPC client in ServiceClients for Order Service
 - Configure Polly resilience policies (retry, circuit breaker)
 - Integrate stock reservation into CreateOrder flow
 - Add CorrelationId propagation (middleware + interceptors)

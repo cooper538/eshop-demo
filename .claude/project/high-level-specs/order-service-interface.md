@@ -319,7 +319,7 @@ public enum OrderStatus
 
 ## 7. Internal API Dependencies
 
-Order Service depends on Product Service for stock operations. Communication uses the dual-protocol abstraction (`IProductServiceClient`) that supports both gRPC and HTTP. For technical patterns, see [Dual-Protocol Communication](./dual-protocol-communication.md).
+Order Service depends on Product Service for stock operations. Communication uses gRPC via `IProductServiceClient` abstraction. For technical patterns, see [gRPC Communication](./grpc-communication.md).
 
 ### 7.1 Product Service Client Interface
 
@@ -328,7 +328,7 @@ namespace EShop.ServiceClients.Abstractions;
 
 /// <summary>
 /// Internal API abstraction for Product Service communication.
-/// Implementation selected based on configuration (gRPC or HTTP).
+/// Uses gRPC for inter-service communication.
 /// </summary>
 public interface IProductServiceClient
 {
@@ -392,10 +392,8 @@ public sealed record OrderItemDto(
 // Order.API/appsettings.json
 {
   "ServiceClients": {
-    "Protocol": "Grpc",
     "ProductService": {
-      "GrpcUrl": "https://localhost:5051",
-      "HttpUrl": "https://localhost:5001"
+      "Url": "https://localhost:5051"
     }
   }
 }
@@ -640,7 +638,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Cre
 }
 ```
 
-**Note**: `IProductServiceClient` comes from `EShop.ServiceClients` - it's the dual-protocol abstraction that can use either gRPC or HTTP based on configuration.
+**Note**: `IProductServiceClient` comes from `EShop.ServiceClients` - it's the gRPC client abstraction for internal service communication.
 
 ---
 
@@ -753,7 +751,6 @@ See [Order Internal API](./order-internal-api.md) for complete specification.
 
 - [Internal API Communication](./internal-api-communication.md) - Internal API layer concept
 - [gRPC Communication](./grpc-communication.md) - gRPC technical patterns
-- [Dual-Protocol Communication](./dual-protocol-communication.md) - Protocol abstraction layer
 - [Product Service Interface](./product-service-interface.md) - Product Service contracts (Internal API server)
 - [Messaging Communication](./messaging-communication.md) - Event publishing
 - [CorrelationId Flow](./correlation-id-flow.md) - Request tracing

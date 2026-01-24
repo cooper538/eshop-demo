@@ -48,7 +48,7 @@ src/
 │   ├── EShop.Contracts/         # Integration events, shared DTOs
 │   ├── EShop.Grpc/              # Proto definitions
 │   ├── EShop.Common/            # Shared infrastructure
-│   └── EShop.ServiceClients/    # Dual-protocol client abstraction
+│   └── EShop.ServiceClients/    # gRPC client abstraction
 └── Services/
     ├── Gateway/                 # YARP API Gateway
     ├── Product/                 # Product catalog, inventory
