@@ -438,3 +438,114 @@ print_color() {
         *)      printf "%s\n" "$message" ;;
     esac
 }
+
+#######################################
+# Check if all tasks in a phase are completed
+# Arguments:
+#   $1 - Phase number (e.g., "01")
+# Returns:
+#   0 if all tasks completed, 1 otherwise
+#######################################
+all_phase_tasks_completed() {
+    local phase_num="$1"
+    local project_dir="$(get_repo_root)/.claude/project"
+    local phase_dir=$(get_phase_directory "$phase_num")
+
+    if [[ -z "$phase_dir" ]]; then
+        return 1
+    fi
+
+    local tasks_dir="$project_dir/$phase_dir/tasks"
+
+    if [[ ! -d "$tasks_dir" ]]; then
+        return 1
+    fi
+
+    local has_tasks=false
+    for task_file in "$tasks_dir"/task-*.md; do
+        [[ ! -f "$task_file" ]] && continue
+        has_tasks=true
+
+        local metadata=$(parse_task_metadata "$task_file")
+        local status_type=$(echo "$metadata" | jq -r '.status_type')
+
+        if [[ "$status_type" != "completed" ]]; then
+            return 1
+        fi
+    done
+
+    # Return success only if there were tasks
+    if $has_tasks; then
+        return 0
+    fi
+    return 1
+}
+
+#######################################
+# Update phase metadata status in phase.md
+# Arguments:
+#   $1 - Path to phase.md file
+#   $2 - New status (completed)
+#######################################
+update_phase_status() {
+    local phase_file="$1"
+    local new_status="$2"
+
+    if [[ ! -f "$phase_file" ]]; then
+        return 1
+    fi
+
+    if [[ "$new_status" == "completed" ]]; then
+        if [[ "$(uname)" == "Darwin" ]]; then
+            sed -i '' 's/| Status |[^|]*|/| Status | ✅ completed |/' "$phase_file"
+        else
+            sed -i 's/| Status |[^|]*|/| Status | ✅ completed |/' "$phase_file"
+        fi
+    fi
+}
+
+#######################################
+# Try to check off scope items that match completed task names
+# Arguments:
+#   $1 - Path to phase.md file
+#######################################
+update_phase_scope_checklist() {
+    local phase_file="$1"
+    local phase_dir=$(dirname "$phase_file")
+    local tasks_dir="$phase_dir/tasks"
+
+    if [[ ! -d "$tasks_dir" ]]; then
+        return 0
+    fi
+
+    # Get all completed task names and try to match them in scope
+    for task_file in "$tasks_dir"/task-*.md; do
+        [[ ! -f "$task_file" ]] && continue
+
+        local metadata=$(parse_task_metadata "$task_file")
+        local status_type=$(echo "$metadata" | jq -r '.status_type')
+
+        # Only process completed tasks
+        if [[ "$status_type" != "completed" ]]; then
+            continue
+        fi
+
+        # Extract task name
+        local task_name=$(echo "$metadata" | jq -r '.name')
+
+        # Extract key words from task name (first 2-3 significant words)
+        # Skip common words like "Add", "Create", "Implement"
+        local keywords=$(echo "$task_name" | sed 's/\(Add\|Create\|Implement\|Setup\|Configure\|Define\) //gi' | head -c 30)
+
+        if [[ -n "$keywords" ]]; then
+            # Try to match and check off in scope (case insensitive partial match)
+            # Convert "- [ ]" to "- [x]" for lines containing keywords
+            if [[ "$(uname)" == "Darwin" ]]; then
+                # Use perl for case-insensitive replacement on macOS
+                perl -i -pe "s/^(- \[ \].*)/${1}/i if /\Q${keywords}\E/i; s/^- \[ \]/- [x]/ if /\Q${keywords}\E/i" "$phase_file" 2>/dev/null || true
+            else
+                sed -i "s/- \[ \]\(.*${keywords}.*\)/- [x]\1/i" "$phase_file" 2>/dev/null || true
+            fi
+        fi
+    done
+}

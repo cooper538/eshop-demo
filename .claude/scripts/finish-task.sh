@@ -170,6 +170,40 @@ if has_uncommitted_changes; then
     git commit -m "[$PHASE_NUM-$TASK_NUM] docs: mark task as completed" --no-verify 2>/dev/null || true
 fi
 
+# ============================================
+# PHASE COMPLETION CHECK
+# ============================================
+
+# Check if all tasks in phase are now completed
+if all_phase_tasks_completed "$PHASE_NUM"; then
+    PHASE_DIR=$(get_phase_directory "$PHASE_NUM")
+    PHASE_FILE="$PROJECT_DIR/$PHASE_DIR/phase.md"
+
+    if [[ -f "$PHASE_FILE" ]]; then
+        # Check if phase is not already marked as completed
+        CURRENT_PHASE_STATUS=$(grep -i "| Status |" "$PHASE_FILE" | head -1)
+
+        if [[ "$CURRENT_PHASE_STATUS" != *"completed"* && "$CURRENT_PHASE_STATUS" != *"✅"* ]]; then
+            # Update phase status
+            update_phase_status "$PHASE_FILE" "completed"
+
+            # Try to update scope checklist
+            update_phase_scope_checklist "$PHASE_FILE"
+
+            # Commit phase completion
+            if has_uncommitted_changes; then
+                git add "$PHASE_FILE"
+                git commit -m "[$PHASE_NUM-00] docs: mark phase as completed" --no-verify 2>/dev/null || true
+            fi
+
+            if ! $JSON_OUTPUT; then
+                echo ""
+                print_color green "🎉 Phase $PHASE_NUM marked as completed!"
+            fi
+        fi
+    fi
+fi
+
 # Merge to main (unless --no-merge)
 MAIN_BRANCH=$(get_main_branch)
 
