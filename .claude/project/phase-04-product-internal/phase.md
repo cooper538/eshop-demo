@@ -17,7 +17,7 @@ Add internal API layer for gRPC and stock management
 ## Tasks
 | # | Task | Status | Dependencies |
 |---|------|--------|--------------|
-| 01 | [Update product.proto](./tasks/task-01.md) | 🔵 in_progress | - |
+| 01 | [Update product.proto](./tasks/task-01.md) | ✅ completed | - |
 | 02 | [StockReservation Domain Entity](./tasks/task-02.md) | ⚪ pending | - |
 | 03 | [StockReservation Infrastructure](./tasks/task-03.md) | ⚪ pending | task-02 |
 | 04 | [ReserveStock and ReleaseStock Commands](./tasks/task-04.md) | ⚪ pending | task-02, task-03 |

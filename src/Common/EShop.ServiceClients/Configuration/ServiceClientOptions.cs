@@ -5,11 +5,6 @@ public sealed class ServiceClientOptions
     public const string SectionName = "ServiceClients";
 
     /// <summary>
-    /// Protocol to use for inter-service communication.
-    /// </summary>
-    public EServiceProtocol Protocol { get; set; } = EServiceProtocol.Grpc;
-
-    /// <summary>
     /// Default timeout for service calls in seconds.
     /// </summary>
     public int TimeoutSeconds { get; set; } = 30;
