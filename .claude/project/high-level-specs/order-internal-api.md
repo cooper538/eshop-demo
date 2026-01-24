@@ -9,7 +9,7 @@
 | Protocol | HTTP/2, Protocol Buffers |
 | Package | `EShop.Grpc` |
 | API Layer | **Internal API** (not exposed via API Gateway) |
-| Related | [Order Service Interface](./order-service-interface.md), [Dual-Protocol Communication](./dual-protocol-communication.md) |
+| Related | [Order Service Interface](./order-service-interface.md) |
 
 ---
 
@@ -532,5 +532,5 @@ public class OrderConfirmedConsumerTests : IClassFixture<NotificationWorkerFacto
 - [Order Service Interface](./order-service-interface.md) - Order Service HTTP API and domain model
 - [gRPC Communication](./grpc-communication.md) - gRPC patterns for Product Service
 - [Messaging Communication](./messaging-communication.md) - Integration events and Outbox/Inbox patterns
-- [Dual-Protocol Communication](./dual-protocol-communication.md) - Protocol abstraction layer
+- 
 - [CorrelationId Flow](./correlation-id-flow.md) - Request tracing across gRPC calls

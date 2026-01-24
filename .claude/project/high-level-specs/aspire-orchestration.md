@@ -403,7 +403,7 @@ Services reference each other using Aspire service discovery scheme instead of h
 {
   "ServiceClients": {
     "ProductService": {
-      "GrpcUrl": "https://localhost:5051"
+      "Url": "https://localhost:5051"
     }
   }
 }
@@ -411,7 +411,7 @@ Services reference each other using Aspire service discovery scheme instead of h
 // Registration
 services.AddGrpcClient<ProductService.ProductServiceClient>(options =>
 {
-    options.Address = new Uri(config["ServiceClients:ProductService:GrpcUrl"]);
+    options.Address = new Uri(config["ServiceClients:ProductService:Url"]);
 });
 
 // ═══════════════════════════════════════════════════════════════
@@ -562,7 +562,7 @@ var correlationId = CorrelationContext.Current?.CorrelationId;  // Custom
 var traceId = Activity.Current?.TraceId.ToString();             // OpenTelemetry
 ```
 
-### 8.2 Dual-Protocol Communication
+### 8.2 gRPC Service Clients
 
 **Status**: ✅ Compatible with minor changes
 
@@ -720,4 +720,4 @@ kubectl apply -k ./output
 - [Correlation ID Flow](./correlation-id-flow.md) - Distributed tracing implementation
 - [gRPC Communication](./grpc-communication.md) - Inter-service communication
 - [Messaging Communication](./messaging-communication.md) - Event-driven architecture
-- [Dual-Protocol Communication](./dual-protocol-communication.md) - Protocol abstraction layer
+- 

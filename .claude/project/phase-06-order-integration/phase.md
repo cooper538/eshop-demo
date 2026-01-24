@@ -6,17 +6,15 @@
 | Status | :white_circle: pending |
 
 ## Objective
-Integrate Order Service with Product Service via dual-protocol communication
+Integrate Order Service with Product Service via gRPC communication
 
 ## Scope
-- [ ] Implement `GrpcProductServiceClient` in ServiceClients
-- [ ] Implement `HttpProductServiceClient` in ServiceClients
+- [ ] Configure gRPC client in ServiceClients for Order Service
 - [ ] Configure Polly resilience policies (retry, circuit breaker)
 - [ ] Integrate stock reservation into CreateOrder flow
 - [ ] Add CorrelationId propagation (middleware + interceptors)
 
 ## Related Specs
-- → [dual-protocol-communication.md](../high-level-specs/dual-protocol-communication.md)
 - → [grpc-communication.md](../high-level-specs/grpc-communication.md)
 - → [correlation-id-flow.md](../high-level-specs/correlation-id-flow.md)
 

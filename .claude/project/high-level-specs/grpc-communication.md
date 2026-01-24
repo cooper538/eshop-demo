@@ -7,7 +7,7 @@
 | Scope | gRPC technical implementation patterns |
 | Protocol | HTTP/2, Protocol Buffers |
 | Package | `EShop.Grpc` |
-| Related | [Internal API Communication](./internal-api-communication.md), [Dual-Protocol Communication](./dual-protocol-communication.md) |
+| Related | [Internal API Communication](./internal-api-communication.md) |
 
 ---
 
@@ -496,7 +496,7 @@ See [Unit Testing](./unit-testing.md) for complete testing patterns.
 ## Related Documents
 
 - [Internal API Communication](./internal-api-communication.md) - Internal API layer concept
-- [Dual-Protocol Communication](./dual-protocol-communication.md) - Protocol abstraction layer
+- 
 - [Product Service Interface](./product-service-interface.md) - gRPC server implementation (ProductService proto)
 - [Order Service Interface](./order-service-interface.md) - gRPC server/client (OrderService proto)
 - [CorrelationId Flow](./correlation-id-flow.md) - Request tracing across gRPC calls

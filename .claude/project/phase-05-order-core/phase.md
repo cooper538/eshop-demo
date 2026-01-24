@@ -9,13 +9,13 @@
 Implement Order Service with domain model, state machine, and external REST API.
 
 ## Scope
-- [x] Create Clean Architecture structure (API, Application, Domain, Infrastructure)
-- [x] Implement Order aggregate with state machine (Created → Confirmed/Rejected → Cancelled)
-- [x] Implement OrderItem as owned entity
-- [x] Create CQRS handlers (CreateOrder, GetOrder, CancelOrder)
-- [x] Configure EF Core with PostgreSQL
-- [x] Create external REST API endpoints
-- [x] Configure YAML-based settings
+- [ ] Create Clean Architecture structure (API, Application, Domain, Infrastructure)
+- [ ] Implement Order aggregate with state machine (Created → Confirmed/Rejected → Cancelled)
+- [ ] Implement OrderItem as owned entity
+- [ ] Create CQRS handlers (CreateOrder, GetOrder, CancelOrder)
+- [ ] Configure EF Core with PostgreSQL
+- [ ] Create external REST API endpoints
+- [ ] Configure YAML-based settings
 
 ## Tasks
 

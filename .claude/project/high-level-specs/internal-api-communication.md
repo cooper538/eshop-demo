@@ -6,9 +6,9 @@
 |-----------|-------|
 | Scope | Service-to-service communication layer |
 | Services | All microservices that communicate internally |
-| Protocols | gRPC (primary), HTTP/REST (fallback) |
+| Protocol | gRPC (HTTP/2, Protocol Buffers) |
 | Routing | Direct service-to-service, NOT via API Gateway |
-| Related | [gRPC Communication](./grpc-communication.md), [Dual-Protocol Communication](./dual-protocol-communication.md) |
+| Related | [gRPC Communication](./grpc-communication.md) |
 
 ---
 
@@ -21,7 +21,7 @@ This specification defines the **Internal API** layer - a dedicated communicatio
 | Layer | Purpose | Protocol | Routing | Consumers |
 |-------|---------|----------|---------|-----------|
 | **External API** | Client-facing endpoints | REST/JSON | Via API Gateway (YARP) | Mobile apps, web clients, third parties |
-| **Internal API** | Service-to-service | gRPC or REST | Direct, no Gateway | Other microservices only |
+| **Internal API** | Service-to-service | gRPC | Direct, no Gateway | Other microservices only |
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -42,7 +42,7 @@ This specification defines the **Internal API** layer - a dedicated communicatio
     ┌─────────────┐                     ┌─────────────┐
     │   Product   │◄───────────────────►│    Order    │
     │   Service   │   Internal API      │   Service   │
-    │             │   (gRPC/HTTP)       │             │
+    │             │   (gRPC)            │             │
     └─────────────┘                     └─────────────┘
            │                                   │
            │         Internal API              │
@@ -54,8 +54,8 @@ This specification defines the **Internal API** layer - a dedicated communicatio
 
 | Benefit | Description |
 |---------|-------------|
-| **Performance** | Direct communication avoids Gateway overhead |
-| **Protocol flexibility** | Internal API can use gRPC (HTTP/2, binary) while External uses REST |
+| **Performance** | gRPC uses HTTP/2 with binary serialization, much faster than REST/JSON |
+| **Strong contracts** | Protocol Buffers enforce schema at compile time |
 | **Security isolation** | Internal endpoints not exposed to public internet |
 | **Different SLAs** | Internal calls can have different timeouts, retry policies |
 | **Simpler contracts** | No need for API versioning, backwards compatibility concerns |
@@ -66,11 +66,10 @@ This specification defines the **Internal API** layer - a dedicated communicatio
 
 ### 2.1 URL Conventions
 
-| API Layer | URL Pattern | Example |
-|-----------|-------------|---------|
-| External API | `/api/{resource}` | `GET /api/products` |
-| Internal API (REST) | `/internal/{resource}` | `POST /internal/stock/reserve` |
-| Internal API (gRPC) | gRPC service endpoint | `ProductService.ReserveStock()` |
+| API Layer | Protocol | Example |
+|-----------|----------|---------|
+| External API | REST | `GET /api/products` |
+| Internal API | gRPC | `ProductService.ReserveStock()` |
 
 ### 2.2 Endpoint Visibility
 
@@ -84,14 +83,11 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> GetProducts() { ... }
 }
 
-// Internal API - hidden from Swagger, direct access only
-[ApiController]
-[Route("internal/stock")]
-[ApiExplorerSettings(IgnoreApi = true)]  // Hidden from Swagger
-public class InternalStockController : ControllerBase
+// Internal API - gRPC service, not in Swagger
+public class ProductGrpcService : ProductService.ProductServiceBase
 {
-    [HttpPost("reserve")]
-    public async Task<IActionResult> ReserveStock() { ... }
+    public override Task<ReserveStockResponse> ReserveStock(
+        ReserveStockRequest request, ServerCallContext context) { ... }
 }
 ```
 
@@ -109,7 +105,7 @@ The API Gateway routes only External API endpoints:
           "Path": "/api/products/{**catch-all}"
         }
       }
-      // Note: No routes for /internal/* - these are not exposed
+      // Note: gRPC endpoints are not routed through Gateway
     }
   }
 }
@@ -139,8 +135,7 @@ Services discover each other via configuration:
 {
   "ServiceClients": {
     "ProductService": {
-      "GrpcUrl": "https://product-service:5051",
-      "HttpUrl": "https://product-service:5001"
+      "Url": "https://product-service:5051"
     }
   }
 }
@@ -151,8 +146,8 @@ Services discover each other via configuration:
 | Environment | Discovery Method |
 |-------------|------------------|
 | Development (Aspire) | Automatic via Aspire service references |
-| Docker Compose | Service names as hostnames (`http://product-service:5001`) |
-| Kubernetes | Kubernetes Service DNS (`http://product-service.namespace.svc.cluster.local`) |
+| Docker Compose | Service names as hostnames (`https://product-service:5051`) |
+| Kubernetes | Kubernetes Service DNS (`https://product-service.namespace.svc.cluster.local:5051`) |
 
 ---
 
@@ -217,13 +212,7 @@ Internal API endpoints lack Gateway protections:
 
 All internal API calls must propagate CorrelationId for distributed tracing.
 
-### 5.1 HTTP Headers
-
-```
-X-Correlation-Id: 550e8400-e29b-41d4-a716-446655440000
-```
-
-### 5.2 gRPC Metadata
+### 5.1 gRPC Metadata
 
 ```csharp
 var metadata = new Metadata
@@ -237,37 +226,11 @@ See [CorrelationId Flow](./correlation-id-flow.md) for complete implementation d
 
 ---
 
-## 6. Protocol Selection
+## 6. Error Handling
 
-### 6.1 When to Use gRPC
+### 6.1 Unified Error Model
 
-| Use Case | Reason |
-|----------|--------|
-| High-throughput calls | Binary protocol, HTTP/2 multiplexing |
-| Strongly-typed contracts | Protocol Buffers enforce schema |
-| Streaming data | Native streaming support |
-| Deadline propagation | Built-in timeout handling |
-
-### 6.2 When to Use HTTP/REST
-
-| Use Case | Reason |
-|----------|--------|
-| Debugging | Human-readable JSON, easy to inspect |
-| Testing | Simple curl/Postman requests |
-| Legacy integration | When gRPC not available |
-| Load balancer limitations | Some LBs don't support HTTP/2 |
-
-### 6.3 Dual-Protocol Approach
-
-This project uses a **dual-protocol abstraction** that allows switching between gRPC and HTTP via configuration. See [Dual-Protocol Communication](./dual-protocol-communication.md) for implementation details.
-
----
-
-## 7. Error Handling
-
-### 7.1 Unified Error Model
-
-Internal API uses `ServiceClientException` for all protocol-agnostic errors:
+Internal API uses `ServiceClientException` for protocol-agnostic errors:
 
 ```csharp
 public enum ServiceClientErrorCode
@@ -281,29 +244,28 @@ public enum ServiceClientErrorCode
 }
 ```
 
-### 7.2 Error Propagation
+### 6.2 gRPC to Error Code Mapping
 
-| Source Error | ServiceClientErrorCode | HTTP Response to Client |
-|--------------|------------------------|-------------------------|
-| gRPC `NotFound` | `NotFound` | 404 Not Found |
-| gRPC `InvalidArgument` | `ValidationError` | 400 Bad Request |
-| gRPC `Unavailable` | `ServiceUnavailable` | 503 Service Unavailable |
-| HTTP 404 | `NotFound` | 404 Not Found |
-| HTTP 503 | `ServiceUnavailable` | 503 Service Unavailable |
+| gRPC StatusCode | ServiceClientErrorCode | HTTP Response to Client |
+|-----------------|------------------------|-------------------------|
+| `NotFound` | `NotFound` | 404 Not Found |
+| `InvalidArgument` | `ValidationError` | 400 Bad Request |
+| `Unavailable` | `ServiceUnavailable` | 503 Service Unavailable |
+| `DeadlineExceeded` | `Timeout` | 504 Gateway Timeout |
 
 ---
 
-## 8. Monitoring and Observability
+## 7. Monitoring and Observability
 
-### 8.1 Metrics to Track
+### 7.1 Metrics to Track
 
 | Metric | Description |
 |--------|-------------|
-| `internal_api_requests_total` | Total internal API calls by service, method |
-| `internal_api_request_duration_seconds` | Latency histogram |
-| `internal_api_errors_total` | Error count by error code |
+| `grpc_server_handled_total` | Total gRPC calls by service, method, status |
+| `grpc_server_handling_seconds` | Latency histogram |
+| `grpc_client_handled_total` | Client-side call metrics |
 
-### 8.2 Distributed Tracing
+### 7.2 Distributed Tracing
 
 Internal API calls are automatically traced via OpenTelemetry:
 
@@ -319,7 +281,6 @@ Internal API calls are automatically traced via OpenTelemetry:
 ## Related Documents
 
 - [gRPC Communication](./grpc-communication.md) - gRPC technical patterns
-- [Dual-Protocol Communication](./dual-protocol-communication.md) - Protocol abstraction layer
 - [CorrelationId Flow](./correlation-id-flow.md) - Distributed tracing
 - [Product Service Interface](./product-service-interface.md) - Internal API contracts (server)
 - [Order Service Interface](./order-service-interface.md) - Internal API dependencies (client)
