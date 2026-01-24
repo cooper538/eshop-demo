@@ -11,9 +11,9 @@ public sealed class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQ
 {
     private readonly IProductDbContext _dbContext;
 
-    public GetProductByIdQueryHandler(IProductDbContext db)
+    public GetProductByIdQueryHandler(IProductDbContext dbContext)
     {
-        _dbContext = db;
+        _dbContext = dbContext;
     }
 
     public async Task<ProductDto> Handle(
@@ -21,9 +21,10 @@ public sealed class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQ
         CancellationToken cancellationToken
     )
     {
-        var product = await _dbContext
-            .Products.AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
+        var product = await _dbContext.Products.FirstOrDefaultAsync(
+            p => p.Id == request.Id,
+            cancellationToken
+        );
 
         if (product is null)
         {

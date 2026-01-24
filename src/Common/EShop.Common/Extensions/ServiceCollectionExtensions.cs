@@ -27,6 +27,9 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(QueryTrackingBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandTrackingBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandTrackingBehaviorUnit<,>));
         return services;
     }
 

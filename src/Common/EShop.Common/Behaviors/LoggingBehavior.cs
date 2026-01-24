@@ -21,11 +21,11 @@ public sealed class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRe
     {
         var requestName = typeof(TRequest).Name;
 
-        _logger.LogInformation("Handling {RequestName}", requestName);
+        _logger.LogDebug("Handling {RequestName}", requestName);
 
         var response = await next();
 
-        _logger.LogInformation("Handled {RequestName}", requestName);
+        _logger.LogDebug("Handled {RequestName}", requestName);
 
         return response;
     }

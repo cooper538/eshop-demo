@@ -9,9 +9,9 @@ public sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, 
 {
     private readonly IProductDbContext _dbContext;
 
-    public GetProductsQueryHandler(IProductDbContext db)
+    public GetProductsQueryHandler(IProductDbContext dbContext)
     {
-        _dbContext = db;
+        _dbContext = dbContext;
     }
 
     public async Task<GetProductsResult> Handle(

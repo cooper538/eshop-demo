@@ -4,20 +4,20 @@
 | Key | Value |
 |-----|-------|
 | ID | task-04 |
-| Status | 🔵 in_progress |
+| Status | ✅ completed |
 | Dependencies | task-01, task-02, task-03 |
 
 ## Summary
 Implement query handlers for reading product data.
 
 ## Scope
-- [ ] Create GetProductsQuery with filtering (category) and pagination (page, pageSize)
-- [ ] Create GetProductsQueryHandler using IProductDbContext
-- [ ] Create GetProductsResult DTO with Items, Page, PageSize, TotalCount, TotalPages
-- [ ] Create GetProductByIdQuery(Guid id)
-- [ ] Create GetProductByIdQueryHandler
-- [ ] Throw NotFoundException when product not found
-- [ ] Create ProductDto for response mapping
+- [x] Create GetProductsQuery with filtering (category) and pagination (page, pageSize)
+- [x] Create GetProductsQueryHandler using IProductDbContext
+- [x] Create GetProductsResult DTO with Items, Page, PageSize, TotalCount, TotalPages
+- [x] Create GetProductByIdQuery(Guid id)
+- [x] Create GetProductByIdQueryHandler
+- [x] Throw NotFoundException when product not found
+- [x] Create ProductDto for response mapping
 
 ## Related Specs
 - → [product-service-interface.md](../../high-level-specs/product-service-interface.md) (Section 2.1: List Products)

@@ -1,3 +1,4 @@
+using EShop.Common.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Products.Application.Data;
@@ -12,6 +13,10 @@ public static class DependencyInjection
         builder.AddNpgsqlDbContext<ProductDbContext>("productdb");
 
         builder.Services.AddScoped<IProductDbContext>(sp =>
+            sp.GetRequiredService<ProductDbContext>()
+        );
+
+        builder.Services.AddScoped<IChangeTrackerAccessor>(sp =>
             sp.GetRequiredService<ProductDbContext>()
         );
 
