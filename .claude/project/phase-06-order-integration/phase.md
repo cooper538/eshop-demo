@@ -14,7 +14,6 @@ Integrate Order Service with Product Service via dual-protocol communication
 - [ ] Configure Polly resilience policies (retry, circuit breaker)
 - [ ] Integrate stock reservation into CreateOrder flow
 - [ ] Add CorrelationId propagation (middleware + interceptors)
-- [ ] Write integration tests with mocked Product Service
 
 ## Related Specs
 - → [dual-protocol-communication.md](../high-level-specs/dual-protocol-communication.md)
