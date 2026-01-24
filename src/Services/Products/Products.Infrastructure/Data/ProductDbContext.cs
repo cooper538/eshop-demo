@@ -11,7 +11,7 @@ public class ProductDbContext : DbContext, IProductDbContext, IChangeTrackerAcce
     public ProductDbContext(DbContextOptions<ProductDbContext> options)
         : base(options) { }
 
-    public DbSet<Product> Products => Set<Product>();
+    public DbSet<ProductEntity> Products => Set<ProductEntity>();
 
     ChangeTracker IChangeTrackerAccessor.ChangeTracker => ChangeTracker;
 

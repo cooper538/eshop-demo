@@ -2,7 +2,7 @@ using EShop.SharedKernel.Domain;
 
 namespace Products.Domain.Entities;
 
-public class Product : AggregateRoot
+public class ProductEntity : AggregateRoot
 {
     public string Name { get; private set; } = null!;
     public string Description { get; private set; } = null!;
@@ -16,9 +16,9 @@ public class Product : AggregateRoot
     public bool IsLowStock => StockQuantity <= LowStockThreshold;
 
     // EF Core constructor
-    private Product() { }
+    private ProductEntity() { }
 
-    public static Product Create(
+    public static ProductEntity Create(
         string name,
         string description,
         decimal price,
@@ -27,7 +27,7 @@ public class Product : AggregateRoot
         string category
     )
     {
-        return new Product
+        return new ProductEntity
         {
             Id = Guid.NewGuid(),
             Name = name,
@@ -55,6 +55,24 @@ public class Product : AggregateRoot
     public void ReleaseStock(int quantity)
     {
         StockQuantity += quantity;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Update(
+        string name,
+        string description,
+        decimal price,
+        int stockQuantity,
+        int lowStockThreshold,
+        string category
+    )
+    {
+        Name = name;
+        Description = description;
+        Price = price;
+        StockQuantity = stockQuantity;
+        LowStockThreshold = lowStockThreshold;
+        Category = category;
         UpdatedAt = DateTime.UtcNow;
     }
 }

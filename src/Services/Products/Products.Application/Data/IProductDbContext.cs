@@ -5,7 +5,7 @@ namespace Products.Application.Data;
 
 public interface IProductDbContext
 {
-    DbSet<Product> Products { get; }
+    DbSet<ProductEntity> Products { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

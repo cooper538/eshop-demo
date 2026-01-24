@@ -4,9 +4,9 @@ using Products.Domain.Entities;
 
 namespace Products.Infrastructure.Data.Configurations;
 
-public class ProductConfiguration : AggregateRootConfiguration<Product>
+public class ProductConfiguration : AggregateRootConfiguration<ProductEntity>
 {
-    protected override void ConfigureAggregate(EntityTypeBuilder<Product> builder)
+    protected override void ConfigureAggregate(EntityTypeBuilder<ProductEntity> builder)
     {
         builder.Property(p => p.Name).HasMaxLength(200).IsRequired();
 
