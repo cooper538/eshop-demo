@@ -64,7 +64,7 @@ If formatting check fails, suggest running `dotnet csharpier format .` to fix.
 
 The script updates the task file:
 - Changes `| Status | 🔵 in_progress |` to `| Status | ✅ completed |`
-- Commits this change with message: `[XX-YY] docs: mark task as completed`
+- Amends the previous commit to include this change (using `git commit --amend --no-edit`)
 
 ### Step 6: Rebase and Merge to Main
 
