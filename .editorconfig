@@ -385,6 +385,8 @@ dotnet_naming_symbols.types.applicable_accessibilities = *
 #----------------------------------
 # Remove unused usings
 dotnet_diagnostic.IDE0005.severity = warning
+# Use braces (csharp_prefer_braces)
+dotnet_diagnostic.IDE0011.severity = warning
 # Formatting violations
 dotnet_diagnostic.IDE0055.severity = warning
 # Add readonly modifier
@@ -414,3 +416,10 @@ dotnet_diagnostic.CA1822.severity = suggestion
 dotnet_diagnostic.CA2007.severity = none
 # Use LoggerMessage delegates for performance
 dotnet_diagnostic.CA1848.severity = suggestion
+
+###################################
+# ReSharper/Rider                 #
+###################################
+
+# Braces for single-line if - warning
+resharper_enforce_if_statement_braces_highlighting = warning
