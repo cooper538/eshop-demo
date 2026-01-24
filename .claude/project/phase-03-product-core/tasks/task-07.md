@@ -4,21 +4,21 @@
 | Key | Value |
 |-----|-------|
 | ID | task-07 |
-| Status | ⚪ pending |
+| Status | ✅ completed |
 | Dependencies | task-01, task-04, task-05, task-06 |
 
 ## Summary
 Create ProductsController with all external API endpoints.
 
 ## Scope
-- [ ] Create ProductsController in Product.API/Controllers
-- [ ] GET /api/products - list with filtering and pagination
-- [ ] GET /api/products/{id} - get by ID
-- [ ] POST /api/products - create product (return 201 Created with Location header)
-- [ ] PUT /api/products/{id} - update product
-- [ ] Configure Program.cs with MediatR, FluentValidation, EF Core, error handling
-- [ ] Add Swagger/OpenAPI configuration
-- [ ] Register service in AppHost
+- [x] Create ProductsController in Product.API/Controllers
+- [x] GET /api/products - list with filtering and pagination
+- [x] GET /api/products/{id} - get by ID
+- [x] POST /api/products - create product (return 201 Created with Location header)
+- [x] PUT /api/products/{id} - update product
+- [x] Configure Program.cs with MediatR, FluentValidation, EF Core, error handling
+- [x] Add Swagger/OpenAPI configuration
+- [x] Register service in AppHost
 
 ## Related Specs
 - → [product-service-interface.md](../../high-level-specs/product-service-interface.md) (Section 2: External API)

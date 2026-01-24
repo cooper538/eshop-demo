@@ -7,8 +7,9 @@
 
 # General
 
-- **Target framework**: .NET 10 (net10.0) - use this version everywhere, do not downgrade
 - codebase language is english only
+- **Target framework**: .NET 10 (net10.0) - use this version everywhere, do not downgrade
+- **NuGet packages**: Central Package Management via `Directory.Packages.props` - add versions there, not in .csproj
 - **Confirmation required**: Before making significant deviations from specifications (different .NET version, different library, different design pattern, etc.), always ask user for confirmation
 - **Implementation style**: Act as a senior developer - prefer pragmatic solutions with clean code following KISS, SOLID principles, proper use of inheritance, composition, and design patterns where appropriate. If something seems off or unclear, ask before implementing.
 
