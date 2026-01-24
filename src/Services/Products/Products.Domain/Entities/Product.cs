@@ -1,6 +1,6 @@
 using EShop.SharedKernel.Domain;
 
-namespace Product.Domain.Entities;
+namespace Products.Domain.Entities;
 
 public class Product : AggregateRoot
 {

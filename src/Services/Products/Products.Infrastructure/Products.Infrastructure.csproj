@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>Product.Infrastructure</RootNamespace>
+    <RootNamespace>Products.Infrastructure</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Product.Application/Product.Application.csproj" />
+    <ProjectReference Include="../Products.Application/Products.Application.csproj" />
   </ItemGroup>
 
 </Project>

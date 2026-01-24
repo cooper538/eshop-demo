@@ -1,15 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>Product.Application</RootNamespace>
+    <RootNamespace>Products.Application</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="MediatR" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Product.Domain/Product.Domain.csproj" />
+    <ProjectReference Include="../Products.Domain/Products.Domain.csproj" />
     <ProjectReference Include="../../../Common/EShop.SharedKernel/EShop.SharedKernel.csproj" />
     <ProjectReference Include="../../../Common/EShop.Common/EShop.Common.csproj" />
     <ProjectReference Include="../../../Common/EShop.Contracts/EShop.Contracts.csproj" />
