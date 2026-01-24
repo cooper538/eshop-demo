@@ -18,7 +18,11 @@ public sealed class CorrelationIdClientInterceptor : Interceptor
         metadata.Add(CorrelationIdConstants.GrpcMetadataKey, correlationId);
 
         var newOptions = context.Options.WithHeaders(metadata);
-        var newContext = new ClientInterceptorContext<TRequest, TResponse>(context.Method, context.Host, newOptions);
+        var newContext = new ClientInterceptorContext<TRequest, TResponse>(
+            context.Method,
+            context.Host,
+            newOptions
+        );
 
         return continuation(request, newContext);
     }

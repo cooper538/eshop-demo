@@ -9,5 +9,7 @@ public sealed record StockReservationResult(bool Success, string? FailureReason 
 public static partial class StockReservationResultMapper
 {
     [MapperIgnoreSource(nameof(GrpcProduct.ReserveStockResponse.HasFailureReason))]
-    public static partial StockReservationResult ToResult(this GrpcProduct.ReserveStockResponse response);
+    public static partial StockReservationResult ToResult(
+        this GrpcProduct.ReserveStockResponse response
+    );
 }

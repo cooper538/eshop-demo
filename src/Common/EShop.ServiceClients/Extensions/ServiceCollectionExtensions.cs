@@ -21,7 +21,9 @@ public static class ServiceCollectionExtensions
             configuration.GetSection(ServiceClientOptions.SectionName).Get<ServiceClientOptions>()
             ?? new ServiceClientOptions();
 
-        services.Configure<ServiceClientOptions>(configuration.GetSection(ServiceClientOptions.SectionName));
+        services.Configure<ServiceClientOptions>(
+            configuration.GetSection(ServiceClientOptions.SectionName)
+        );
 
         if (options.Protocol == EServiceProtocol.Grpc)
         {
@@ -66,7 +68,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProductServiceClient, GrpcProductServiceClient>();
     }
 
-    private static void RegisterHttpClients(IServiceCollection services, ServiceClientOptions options)
+    private static void RegisterHttpClients(
+        IServiceCollection services,
+        ServiceClientOptions options
+    )
     {
         services.AddTransient<CorrelationIdDelegatingHandler>();
         services.AddTransient<LoggingDelegatingHandler>();
@@ -76,11 +81,15 @@ public static class ServiceCollectionExtensions
             {
                 client.BaseAddress = new Uri(options.ProductService.HttpUrl);
                 client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json")
+                );
             })
             .AddHttpMessageHandler<CorrelationIdDelegatingHandler>()
             .AddHttpMessageHandler<LoggingDelegatingHandler>()
             .AddPolicyHandler(HttpResiliencePolicies.GetRetryPolicy(options.Resilience.Retry))
-            .AddPolicyHandler(HttpResiliencePolicies.GetCircuitBreakerPolicy(options.Resilience.CircuitBreaker));
+            .AddPolicyHandler(
+                HttpResiliencePolicies.GetCircuitBreakerPolicy(options.Resilience.CircuitBreaker)
+            );
     }
 }

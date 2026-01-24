@@ -12,7 +12,10 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
     private readonly ICorrelationIdAccessor _correlationIdAccessor;
     private readonly ILogger<GlobalExceptionHandler> _logger;
 
-    public GlobalExceptionHandler(ICorrelationIdAccessor correlationIdAccessor, ILogger<GlobalExceptionHandler> logger)
+    public GlobalExceptionHandler(
+        ICorrelationIdAccessor correlationIdAccessor,
+        ILogger<GlobalExceptionHandler> logger
+    )
     {
         _correlationIdAccessor = correlationIdAccessor;
         _logger = logger;

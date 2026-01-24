@@ -9,5 +9,7 @@ public sealed record StockReleaseResult(bool Success, string? FailureReason = nu
 public static partial class StockReleaseResultMapper
 {
     [MapperIgnoreSource(nameof(GrpcProduct.ReleaseStockResponse.HasFailureReason))]
-    public static partial StockReleaseResult ToResult(this GrpcProduct.ReleaseStockResponse response);
+    public static partial StockReleaseResult ToResult(
+        this GrpcProduct.ReleaseStockResponse response
+    );
 }

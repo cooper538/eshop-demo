@@ -16,8 +16,10 @@ public static class GrpcExtensions
         return headers;
     }
 
-    public static ServiceClientException ToServiceClientException(this RpcException ex, string operation) =>
-        new($"Failed to {operation}: {ex.Status.Detail}", ex, ex.StatusCode.ToErrorCode());
+    public static ServiceClientException ToServiceClientException(
+        this RpcException ex,
+        string operation
+    ) => new($"Failed to {operation}: {ex.Status.Detail}", ex, ex.StatusCode.ToErrorCode());
 
     public static EServiceClientErrorCodeType ToErrorCode(this StatusCode statusCode) =>
         statusCode switch

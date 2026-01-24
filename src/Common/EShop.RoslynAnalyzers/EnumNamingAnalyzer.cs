@@ -16,7 +16,8 @@ public sealed class EnumNamingAnalyzer : DiagnosticAnalyzer
 
     private static readonly LocalizableString Title = "Enum naming convention violation";
 
-    private static readonly LocalizableString MessageFormat = "Enum '{0}' should have prefix 'E' (e.g., 'E{0}')";
+    private static readonly LocalizableString MessageFormat =
+        "Enum '{0}' should have prefix 'E' (e.g., 'E{0}')";
 
     private static readonly LocalizableString Description =
         "All enums in the EShop codebase should follow the naming convention: prefix 'E'. Example: EOrderStatus, EServiceProtocol.";
@@ -53,7 +54,9 @@ public sealed class EnumNamingAnalyzer : DiagnosticAnalyzer
 
         // Check if enum starts with 'E' followed by uppercase letter
         var hasValidPrefix =
-            enumName.StartsWith("E", StringComparison.Ordinal) && enumName.Length > 1 && char.IsUpper(enumName[1]);
+            enumName.StartsWith("E", StringComparison.Ordinal)
+            && enumName.Length > 1
+            && char.IsUpper(enumName[1]);
 
         if (hasValidPrefix)
         {

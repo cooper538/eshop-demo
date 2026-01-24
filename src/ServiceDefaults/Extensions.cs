@@ -37,7 +37,9 @@ public static class Extensions
     /// <summary>
     /// Configures OpenTelemetry for logging, metrics, and tracing.
     /// </summary>
-    public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder ConfigureOpenTelemetry(
+        this IHostApplicationBuilder builder
+    )
     {
         builder.Logging.AddOpenTelemetry(logging =>
         {
@@ -49,7 +51,10 @@ public static class Extensions
             .Services.AddOpenTelemetry()
             .WithMetrics(metrics =>
             {
-                metrics.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddRuntimeInstrumentation();
+                metrics
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddRuntimeInstrumentation();
             })
             .WithTracing(tracing =>
             {
@@ -66,9 +71,13 @@ public static class Extensions
         return builder;
     }
 
-    private static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder)
+    private static IHostApplicationBuilder AddOpenTelemetryExporters(
+        this IHostApplicationBuilder builder
+    )
     {
-        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
+        var useOtlpExporter = !string.IsNullOrWhiteSpace(
+            builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
+        );
 
         if (useOtlpExporter)
         {
@@ -81,9 +90,13 @@ public static class Extensions
     /// <summary>
     /// Adds default health checks for liveness and readiness probes.
     /// </summary>
-    public static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder AddDefaultHealthChecks(
+        this IHostApplicationBuilder builder
+    )
     {
-        builder.Services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
+        builder
+            .Services.AddHealthChecks()
+            .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
 
         return builder;
     }
@@ -95,7 +108,10 @@ public static class Extensions
     {
         app.MapHealthChecks("/health");
 
-        app.MapHealthChecks("/alive", new HealthCheckOptions { Predicate = r => r.Tags.Contains("live") });
+        app.MapHealthChecks(
+            "/alive",
+            new HealthCheckOptions { Predicate = r => r.Tags.Contains("live") }
+        );
 
         return app;
     }

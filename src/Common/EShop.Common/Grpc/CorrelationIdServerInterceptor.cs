@@ -21,13 +21,18 @@ public sealed class CorrelationIdServerInterceptor : Interceptor
     )
     {
         var correlationId =
-            context.RequestHeaders.FirstOrDefault(h => h.Key == CorrelationIdConstants.GrpcMetadataKey)?.Value
+            context
+                .RequestHeaders.FirstOrDefault(h => h.Key == CorrelationIdConstants.GrpcMetadataKey)
+                ?.Value
             ?? Guid.NewGuid().ToString();
 
         using (CorrelationContext.CreateScope(correlationId))
         using (
             _logger.BeginScope(
-                new Dictionary<string, object> { [CorrelationIdConstants.LoggingScopeKey] = correlationId }
+                new Dictionary<string, object>
+                {
+                    [CorrelationIdConstants.LoggingScopeKey] = correlationId,
+                }
             )
         )
         {

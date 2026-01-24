@@ -34,7 +34,10 @@ internal sealed class LoggingInterceptor : Interceptor
         );
     }
 
-    private async Task<TResponse> HandleResponse<TResponse>(Task<TResponse> responseTask, string operation)
+    private async Task<TResponse> HandleResponse<TResponse>(
+        Task<TResponse> responseTask,
+        string operation
+    )
     {
         try
         {

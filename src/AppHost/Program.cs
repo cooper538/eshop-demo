@@ -1,12 +1,18 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
 // INFRASTRUCTURE
-var postgres = builder.AddPostgres("postgres").WithLifetime(ContainerLifetime.Persistent).WithPgAdmin();
+var postgres = builder
+    .AddPostgres("postgres")
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithPgAdmin();
 
 var productDb = postgres.AddDatabase("productdb");
 var orderDb = postgres.AddDatabase("orderdb");
 
-var rabbitmq = builder.AddRabbitMQ("messaging").WithLifetime(ContainerLifetime.Persistent).WithManagementPlugin();
+var rabbitmq = builder
+    .AddRabbitMQ("messaging")
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithManagementPlugin();
 
 // SERVICES (to be added in task-04)
 

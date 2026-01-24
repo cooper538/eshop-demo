@@ -30,7 +30,9 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddGrpcCorrelationInterceptors(this IServiceCollection services)
+    public static IServiceCollection AddGrpcCorrelationInterceptors(
+        this IServiceCollection services
+    )
     {
         services.AddSingleton<CorrelationIdClientInterceptor>();
         services.AddSingleton<CorrelationIdServerInterceptor>();

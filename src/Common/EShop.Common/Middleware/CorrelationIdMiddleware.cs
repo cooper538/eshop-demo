@@ -30,7 +30,10 @@ public sealed class CorrelationIdMiddleware
         using (CorrelationContext.CreateScope(correlationId))
         using (
             _logger.BeginScope(
-                new Dictionary<string, object> { [CorrelationIdConstants.LoggingScopeKey] = correlationId }
+                new Dictionary<string, object>
+                {
+                    [CorrelationIdConstants.LoggingScopeKey] = correlationId,
+                }
             )
         )
         {

@@ -39,8 +39,10 @@ public static class HttpClientExtensions
             HttpStatusCode.NotFound => EServiceClientErrorCodeType.NotFound,
             HttpStatusCode.BadRequest => EServiceClientErrorCodeType.ValidationError,
             HttpStatusCode.ServiceUnavailable => EServiceClientErrorCodeType.ServiceUnavailable,
-            HttpStatusCode.RequestTimeout or HttpStatusCode.GatewayTimeout => EServiceClientErrorCodeType.Timeout,
-            HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden => EServiceClientErrorCodeType.Unauthorized,
+            HttpStatusCode.RequestTimeout or HttpStatusCode.GatewayTimeout =>
+                EServiceClientErrorCodeType.Timeout,
+            HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden =>
+                EServiceClientErrorCodeType.Unauthorized,
             _ => EServiceClientErrorCodeType.Unknown,
         };
 }

@@ -7,7 +7,11 @@ public sealed class ServiceClientException : Exception
 {
     public EServiceClientErrorCodeType ErrorCode { get; }
 
-    public ServiceClientException(string message, Exception? innerException, EServiceClientErrorCodeType errorCode)
+    public ServiceClientException(
+        string message,
+        Exception? innerException,
+        EServiceClientErrorCodeType errorCode
+    )
         : base(message, innerException)
     {
         ErrorCode = errorCode;

@@ -22,7 +22,10 @@ public static class Guard
         public static int NegativeOrZero(int value, string parameterName)
         {
             if (value <= 0)
-                throw new ArgumentOutOfRangeException(parameterName, "Value must be greater than zero.");
+                throw new ArgumentOutOfRangeException(
+                    parameterName,
+                    "Value must be greater than zero."
+                );
             return value;
         }
 

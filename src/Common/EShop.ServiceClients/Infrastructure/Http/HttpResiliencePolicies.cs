@@ -17,7 +17,9 @@ public static class HttpResiliencePolicies
                     TimeSpan.FromMilliseconds(Math.Pow(2, retryAttempt) * options.BaseDelayMs)
             );
 
-    public static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy(CircuitBreakerOptions options) =>
+    public static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy(
+        CircuitBreakerOptions options
+    ) =>
         HttpPolicyExtensions
             .HandleTransientHttpError()
             .CircuitBreakerAsync(
