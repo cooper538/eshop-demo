@@ -10,7 +10,8 @@ Project-specific C# standards.
 4. [File Organization](#file-organization)
 5. [Class Structure](#class-structure)
 6. [Documentation](#documentation)
-7. [Forbidden](#forbidden)
+7. [CancellationToken](#cancellationtoken)
+8. [Forbidden](#forbidden)
 
 ---
 
@@ -84,6 +85,15 @@ public async Task<ActionResult<ProductResponseDto>> GetProduct(string id)
 ```csharp
 // TODO: Will be implemented in TASK XX-XX short description
 ```
+
+---
+
+## CancellationToken
+
+**Controllers:**
+- ✅ **GET requests** - use `CancellationToken ct = default` (saves resources on cancelled requests)
+- ❌ **POST/PUT/DELETE** - do NOT use (risk of data inconsistency if cancelled mid-operation)
+- **XML docs:** Do not document `CancellationToken` parameter (internal implementation detail).
 
 ---
 
