@@ -94,6 +94,10 @@ elif [[ "$TASK_INPUT" =~ ^([0-9]+)/([0-9]+)$ ]]; then
     # Even shorter: 02/01
     PHASE_NUM=$(printf "%02d" "${BASH_REMATCH[1]}")
     TASK_NUM=$(printf "%02d" "${BASH_REMATCH[2]}")
+elif [[ "$TASK_INPUT" =~ ^([0-9]+)-([0-9]+)$ ]]; then
+    # Dash format: 02-01
+    PHASE_NUM=$(printf "%02d" "${BASH_REMATCH[1]}")
+    TASK_NUM=$(printf "%02d" "${BASH_REMATCH[2]}")
 elif [[ "$TASK_INPUT" =~ ^task-([0-9]+) ]]; then
     # task-02 format
     TASK_NUM="${BASH_REMATCH[1]}"
@@ -200,6 +204,6 @@ else
     echo "Task file: $TASK_FILE"
     echo ""
     echo "Task scope:"
-    # Show scope section from task file
-    sed -n '/^## Scope/,/^## /p' "$TASK_FILE" | head -n -1 | tail -n +2
+    # Show scope section from task file (macOS compatible)
+    awk '/^## Scope/{found=1; next} /^## /{found=0} found' "$TASK_FILE"
 fi
