@@ -6,7 +6,7 @@
 |-----------|-------|
 | Project Name | E-Shop Demo Microservices |
 | Purpose | Demonstration of .NET microservices architecture |
-| Technologies | .NET 8, ASP.NET Core, gRPC, MassTransit, RabbitMQ, PostgreSQL, Docker |
+| Technologies | .NET 10, ASP.NET Core, gRPC, MassTransit, RabbitMQ, PostgreSQL, Docker |
 | Architectural Style | gRPC sync communication, Event-driven notifications, CQRS |
 
 ---
@@ -115,13 +115,13 @@ Architecture details are organized into focused specification documents:
 
 | Category | Technology | Version |
 |----------|------------|---------|
-| Framework | .NET | 8.0 (LTS) |
-| Web API | ASP.NET Core | 8.0 |
+| Framework | .NET | 10.0 |
+| Web API | ASP.NET Core | 10.0 |
 | RPC | Grpc.AspNetCore | 2.x |
 | Messaging | MassTransit | 8.x |
 | Message Broker | RabbitMQ | 3.x |
 | Database | PostgreSQL | 16 |
-| ORM | Entity Framework Core | 8.0 |
+| ORM | Entity Framework Core | 10.0 |
 | API Gateway | YARP | 2.x |
 | Validation | FluentValidation | 11.x |
 | Mediator | MediatR | 12.x |

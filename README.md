@@ -6,10 +6,10 @@ Demonstration of .NET microservices architecture showcasing gRPC communication, 
 
 | Category | Technology |
 |----------|------------|
-| Framework | .NET 8 |
+| Framework | .NET 10 |
 | RPC | gRPC (Grpc.AspNetCore) |
 | Messaging | MassTransit + RabbitMQ |
-| Database | PostgreSQL + EF Core 8 |
+| Database | PostgreSQL + EF Core 10 |
 | API Gateway | YARP |
 | Orchestration | .NET Aspire 9 |
 | Resilience | Polly 8.x |
@@ -60,7 +60,7 @@ src/
 
 ### Prerequisites
 
-- .NET 8 SDK
+- .NET 10 SDK
 - Docker (for RabbitMQ, PostgreSQL)
 
 ### Run with Aspire
