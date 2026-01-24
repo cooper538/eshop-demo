@@ -3,19 +3,19 @@
 ## Metadata
 | Key | Value |
 |-----|-------|
-| Status | :white_circle: pending |
+| Status | ✅ completed |
 
 ## Objective
 Set up basic solution structure and all shared projects
 
 ## Scope
-- [ ] Create solution file `EShopDemo.sln`
-- [ ] Create `Directory.Build.props` and `Directory.Packages.props` (central package management)
-- [ ] Implement `EShop.SharedKernel` (Entity, AggregateRoot, ValueObject, IDomainEvent, Guard)
-- [ ] Implement `EShop.Contracts` (integration events, shared DTOs)
-- [ ] Implement `EShop.Grpc` (proto definitions for Product Service)
-- [ ] Implement `EShop.Common` (middleware, behaviors, exception handling)
-- [ ] Implement `EShop.ServiceClients` (interface abstraction for dual-protocol)
+- [x] Create solution file `EShopDemo.sln`
+- [x] Create `Directory.Build.props` and `Directory.Packages.props` (central package management)
+- [x] Implement `EShop.SharedKernel` (Entity, AggregateRoot, ValueObject, IDomainEvent, Guard)
+- [x] Implement `EShop.Contracts` (integration events, shared DTOs)
+- [x] Implement `EShop.Grpc` (proto definitions for Product Service)
+- [x] Implement `EShop.Common` (middleware, behaviors, exception handling)
+- [x] Implement `EShop.ServiceClients` (interface abstraction for dual-protocol)
 
 ## Related Specs
 - → [shared-projects.md](../high-level-specs/shared-projects.md)
