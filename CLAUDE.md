@@ -67,7 +67,8 @@ When user says "pokračuj" or "continue":
 | Skill | Purpose |
 |-------|---------|
 | `/start-task XX` | Start working on a task |
-| `/finish-task` | Complete task (tests, merge) |
+| `/finish-task` | Complete task (tests, merge, auto-detect phase completion) |
+| `/finish-phase XX` | Manually complete a phase |
 | `/task-status` | Task status overview |
 | `/commit` | Smart commit with `[XX-YY] type:` format |
 | `/worktree` | Manage worktrees for parallel work |
