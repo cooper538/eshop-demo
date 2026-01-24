@@ -1,31 +1,43 @@
-# Task 08: Unit Tests
+# Task 08: YAML Configuration
 
 ## Metadata
 | Key | Value |
 |-----|-------|
 | ID | task-08 |
 | Status | ⚪ pending |
-| Dependencies | task-02, task-04, task-05 |
+| Dependencies | task-01 |
 
 ## Summary
-Write unit tests for domain entities and MediatR handlers.
+Implement YAML-based configuration with Options pattern and runtime validation via ValidateOnStart().
 
 ## Scope
-- [ ] Create Product.UnitTests project
-- [ ] Add xUnit, Moq, FluentAssertions packages
-- [ ] Create ProductTests (Domain)
-  - ReserveStock_WhenSufficientQuantity_DecreasesStockAndReturnsTrue
-  - ReserveStock_WhenInsufficientQuantity_ReturnsFalseAndDoesNotChange
-  - IsLowStock_WhenBelowThreshold_ReturnsTrue
-- [ ] Create TestDbContextFactory helper (InMemory DbContext)
-- [ ] Create GetProductByIdQueryHandlerTests
-  - Handle_WhenProductExists_ReturnsProductDto
-  - Handle_WhenProductNotFound_ThrowsNotFoundException
-- [ ] Create CreateProductCommandHandlerTests
-  - Handle_WithValidCommand_CreatesProductAndReturnsDto
+- [ ] Add NuGet package to Product.API (NetEscapades.Configuration.Yaml)
+- [ ] Create ProductSettings.cs with Options pattern and DataAnnotations
+- [ ] Create product.settings.yaml (base configuration)
+- [ ] Create product.settings.Development.yaml (development overrides)
+- [ ] Create product.settings.Production.yaml (production overrides)
+- [ ] Configure Program.cs to load YAML config with ValidateOnStart()
+- [ ] Add YAML schema reference comment for IDE intellisense
+- [ ] Verify application fails fast on invalid config
+
+## Configuration Structure
+```yaml
+# product.settings.yaml
+Product:
+  Service:
+    Name: "Product"
+    Version: "1.0.0"
+  Database:
+    CommandTimeout: 30
+    EnableRetry: true
+  Cache:
+    ExpirationMinutes: 60
+  Logging:
+    Level: "Information"
+```
 
 ## Related Specs
-- → [unit-testing.md](../../high-level-specs/unit-testing.md) (Sections 5-6: Domain and Handler Testing)
+- → [configuration-management.md](../../high-level-specs/configuration-management.md)
 
 ---
 ## Notes
