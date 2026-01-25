@@ -29,7 +29,7 @@ public sealed class ReserveStockCommandHandler
 
         if (existingReservation != null)
         {
-            return existingReservation.Status == EReservationStatusType.Active
+            return existingReservation.Status == EReservationStatus.Active
                 ? StockReservationResult.Succeeded()
                 : StockReservationResult.AlreadyProcessed(existingReservation.Status.ToString());
         }

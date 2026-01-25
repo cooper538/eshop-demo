@@ -24,7 +24,7 @@ public sealed class ReleaseStockCommandHandler
         // Find all active reservations for this order
         var reservations = await _dbContext
             .StockReservations.Where(r => r.OrderId == request.OrderId)
-            .Where(r => r.Status == EReservationStatusType.Active)
+            .Where(r => r.Status == EReservationStatus.Active)
             .ToListAsync(cancellationToken);
 
         // Idempotent: if no active reservations, consider it already released

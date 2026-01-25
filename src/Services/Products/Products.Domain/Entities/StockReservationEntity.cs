@@ -14,6 +14,7 @@ public class StockReservationEntity : Entity
     public DateTime ExpiresAt { get; private set; }
     public DateTime? ReleasedAt { get; private set; }
     public EReservationStatus Status { get; private set; }
+    public uint RowVersion { get; private set; }
 
     public bool IsExpired => Status == EReservationStatus.Active && DateTime.UtcNow >= ExpiresAt;
 

@@ -6,6 +6,7 @@ using NetEscapades.Configuration.Yaml;
 using Products.API.Configuration;
 using Products.API.Grpc;
 using Products.Application.Data;
+using Products.Infrastructure.BackgroundJobs;
 using Products.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,6 +59,9 @@ builder.Services.AddScoped<IProductDbContext>(sp => sp.GetRequiredService<Produc
 // Error handling
 builder.Services.AddErrorHandling();
 builder.Services.AddCorrelationId();
+
+// Background jobs
+builder.Services.AddHostedService<StockReservationExpirationJob>();
 
 var app = builder.Build();
 

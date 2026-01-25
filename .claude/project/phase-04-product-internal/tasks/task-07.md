@@ -4,20 +4,20 @@
 | Key | Value |
 |-----|-------|
 | ID | task-07 |
-| Status | :white_circle: pending |
+| Status | ✅ completed |
 | Dependencies | task-03, task-04 |
 
 ## Summary
 Background job that expires stale stock reservations and releases stock back to inventory.
 
 ## Scope
-- [ ] Create StockReservationExpirationJob extending BackgroundService
-- [ ] Implement ExecuteAsync with 1-minute check interval
-- [ ] Query for Active reservations where ExpiresAt < UtcNow
-- [ ] Release stock back to Product.StockQuantity for each expired reservation
-- [ ] Update reservation status to Expired
-- [ ] Add proper logging for expired reservations
-- [ ] Register as hosted service in Program.cs
+- [x] Create StockReservationExpirationJob extending BackgroundService
+- [x] Implement ExecuteAsync with 1-minute check interval
+- [x] Query for Active reservations where ExpiresAt < UtcNow
+- [x] Release stock back to Product.StockQuantity for each expired reservation
+- [x] Update reservation status to Expired
+- [x] Add proper logging for expired reservations
+- [x] Register as hosted service in Program.cs
 
 ## Related Specs
 - [product-service-interface.md](../../high-level-specs/product-service-interface.md) (Section 6: Stock Reservation Expiration)
