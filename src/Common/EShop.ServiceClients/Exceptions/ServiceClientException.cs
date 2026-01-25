@@ -5,12 +5,12 @@ namespace EShop.ServiceClients.Exceptions;
 /// </summary>
 public sealed class ServiceClientException : Exception
 {
-    public EServiceClientErrorCodeType ErrorCode { get; }
+    public EServiceClientErrorCode ErrorCode { get; }
 
     public ServiceClientException(
         string message,
         Exception? innerException,
-        EServiceClientErrorCodeType errorCode
+        EServiceClientErrorCode errorCode
     )
         : base(message, innerException)
     {
