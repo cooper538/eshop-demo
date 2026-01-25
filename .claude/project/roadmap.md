@@ -89,10 +89,10 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ## Phase 05: Order Core ⚪
 
-**Order Service domain with state machine**
+**Order Service domain with lifecycle management**
 
 - Create Clean Architecture structure
-- Implement Order entity with state machine (Pending → Confirmed/Rejected → Cancelled)
+- Implement Order entity with status transitions (Created → Confirmed/Rejected → Cancelled)
 - Implement OrderItem value object
 - Create CQRS handlers (CreateOrder, GetOrder, CancelOrder)
 - Configure EF Core with PostgreSQL
@@ -164,7 +164,7 @@ Overview of all implementation phases for the EShop microservices demo.
 - SharedKernel tests (Entity, ValueObject, Guard)
 - EShop.Common tests (behaviors, middleware)
 - Product Service domain + stock operations tests
-- Order Service domain + state machine tests
+- Order Service domain + lifecycle tests
 - Notification consumers tests
 
 ### Integration Tests
@@ -193,7 +193,7 @@ Phase 03-04: Product Service
     └── Domain → Application → API (REST + gRPC)
 
 Phase 05-06: Order Service
-    └── Domain → State Machine → Integration with Product
+    └── Domain → Lifecycle → Integration with Product
 
 Phase 07-08: Messaging
     └── RabbitMQ → Integration Events → Notification Worker
