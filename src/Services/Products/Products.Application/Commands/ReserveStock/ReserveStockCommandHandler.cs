@@ -72,7 +72,7 @@ public sealed class ReserveStockCommandHandler
             reservations.Add(reservation);
         }
 
-        // All reservations successful - persist
+        // All reservations successful - persist (domain events dispatched automatically)
         _dbContext.StockReservations.AddRange(reservations);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
