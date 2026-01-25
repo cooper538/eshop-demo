@@ -228,7 +228,7 @@ Step  Service       Action                                    Communication
 ### 6.1 Order Aggregate
 
 ```csharp
-public class Order
+public class OrderEntity
 {
     public Guid Id { get; private set; }
     public Guid CustomerId { get; private set; }
@@ -239,13 +239,13 @@ public class Order
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
 
-    private readonly List<OrderItem> _items = new();
-    public IReadOnlyList<OrderItem> Items => _items.AsReadOnly();
+    private readonly List<OrderItemEntity> _items = new();
+    public IReadOnlyList<OrderItemEntity> Items => _items.AsReadOnly();
 
     // Factory method
-    public static Order Create(Guid customerId, string customerEmail, IEnumerable<OrderItem> items)
+    public static OrderEntity Create(Guid customerId, string customerEmail, IEnumerable<OrderItemEntity> items)
     {
-        var order = new Order
+        var order = new OrderEntity
         {
             Id = Guid.NewGuid(),
             CustomerId = customerId,
@@ -292,7 +292,7 @@ public class Order
 ### 6.2 Order Item
 
 ```csharp
-public class OrderItem
+public class OrderItemEntity
 {
     public Guid Id { get; private set; }
     public Guid ProductId { get; private set; }
@@ -433,10 +433,10 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Cre
             ct);
 
         // Create order in Created state
-        var order = Order.Create(
+        var order = OrderEntity.Create(
             request.CustomerId,
             request.CustomerEmail,
-            request.Items.Select(i => new OrderItem(
+            request.Items.Select(i => new OrderItemEntity(
                 i.ProductId,
                 productsResult.Products.First(p => p.ProductId == i.ProductId).Name,
                 i.Quantity,
@@ -554,10 +554,10 @@ Order.Application/
 
 Order.Domain/
 ├── Entities/
-│   ├── Order.cs                     # Inherits from AggregateRoot (EShop.SharedKernel)
-│   └── OrderItem.cs
+│   ├── OrderEntity.cs               # Inherits from AggregateRoot (EShop.SharedKernel)
+│   └── OrderItemEntity.cs
 ├── Enums/
-│   └── EOrderStatusType.cs          # Following naming convention
+│   └── EOrderStatus.cs              # Following naming convention
 ├── StateMachine/
 │   └── OrderStateMachine.cs
 └── Exceptions/
@@ -579,16 +579,16 @@ Order.Infrastructure/
 // Order.Application/Data/IOrderDbContext.cs
 public interface IOrderDbContext
 {
-    DbSet<Order> Orders { get; }
-    DbSet<OrderItem> OrderItems { get; }
+    DbSet<OrderEntity> Orders { get; }
+    DbSet<OrderItemEntity> OrderItems { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 
 // Order.Infrastructure/Data/OrderDbContext.cs
 public class OrderDbContext : DbContext, IOrderDbContext
 {
-    public DbSet<Order> Orders => Set<Order>();
-    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<OrderEntity> Orders => Set<OrderEntity>();
+    public DbSet<OrderItemEntity> OrderItems => Set<OrderItemEntity>();
 
     // EF Core configuration...
 }
@@ -606,7 +606,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Cre
     public async Task<CreateOrderResult> Handle(CreateOrderCommand request, CancellationToken ct)
     {
         // Create order in Created state
-        var order = Order.Create(request.CustomerId, request.CustomerEmail, request.Items);
+        var order = OrderEntity.Create(request.CustomerId, request.CustomerEmail, request.Items);
         _db.Orders.Add(order);
 
         // Reserve stock via gRPC
