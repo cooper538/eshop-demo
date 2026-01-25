@@ -13,10 +13,9 @@ public class StockReservationEntity : Entity
     public DateTime ReservedAt { get; private set; }
     public DateTime ExpiresAt { get; private set; }
     public DateTime? ReleasedAt { get; private set; }
-    public EReservationStatusType Status { get; private set; }
+    public EReservationStatus Status { get; private set; }
 
-    public bool IsExpired =>
-        Status == EReservationStatusType.Active && DateTime.UtcNow >= ExpiresAt;
+    public bool IsExpired => Status == EReservationStatus.Active && DateTime.UtcNow >= ExpiresAt;
 
     // EF Core constructor
     private StockReservationEntity() { }
@@ -34,32 +33,32 @@ public class StockReservationEntity : Entity
             ReservedAt = now,
             ExpiresAt = now.Add(DefaultTtl),
             ReleasedAt = null,
-            Status = EReservationStatusType.Active,
+            Status = EReservationStatus.Active,
         };
     }
 
     public void Release()
     {
-        if (Status != EReservationStatusType.Active)
+        if (Status != EReservationStatus.Active)
         {
             throw new InvalidOperationException(
                 $"Cannot release reservation in status {Status}. Only Active reservations can be released."
             );
         }
 
-        Status = EReservationStatusType.Released;
+        Status = EReservationStatus.Released;
         ReleasedAt = DateTime.UtcNow;
     }
 
     public void Expire()
     {
-        if (Status != EReservationStatusType.Active)
+        if (Status != EReservationStatus.Active)
         {
             throw new InvalidOperationException(
                 $"Cannot expire reservation in status {Status}. Only Active reservations can be expired."
             );
         }
 
-        Status = EReservationStatusType.Expired;
+        Status = EReservationStatus.Expired;
     }
 }

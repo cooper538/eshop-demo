@@ -1,6 +1,6 @@
 namespace Products.Domain.Enums;
 
-public enum EReservationStatusType
+public enum EReservationStatus
 {
     Active,
     Released,
