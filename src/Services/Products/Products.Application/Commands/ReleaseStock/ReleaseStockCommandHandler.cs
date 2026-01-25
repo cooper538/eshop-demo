@@ -47,6 +47,7 @@ public sealed class ReleaseStockCommandHandler
             reservation.Release();
         }
 
+        // Domain events dispatched automatically by DbContext
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return StockReleaseResult.Succeeded();
