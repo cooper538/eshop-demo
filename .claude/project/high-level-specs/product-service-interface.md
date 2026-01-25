@@ -380,7 +380,7 @@ public class ProductGrpcService : ProductService.ProductServiceBase
 ### 5.1 Product Aggregate
 
 ```csharp
-public class Product
+public class ProductEntity
 {
     public Guid Id { get; private set; }
     public string Name { get; private set; }
@@ -416,7 +416,7 @@ public class Product
 ### 5.2 Stock Reservation
 
 ```csharp
-public class StockReservation
+public class StockReservationEntity
 {
     public Guid Id { get; private set; }
     public Guid OrderId { get; private set; }
@@ -427,9 +427,9 @@ public class StockReservation
     public DateTime? ReleasedAt { get; private set; }
     public ReservationStatus Status { get; private set; }
 
-    public static StockReservation Create(Guid orderId, Guid productId, int quantity)
+    public static StockReservationEntity Create(Guid orderId, Guid productId, int quantity)
     {
-        return new StockReservation
+        return new StockReservationEntity
         {
             Id = Guid.NewGuid(),
             OrderId = orderId,
@@ -494,7 +494,7 @@ public class StockReservationExpirationJob : BackgroundService
 
             foreach (var reservation in expiredReservations)
             {
-                // Release stock back to inventory
+                // Release stock back to inventory (reservation.Product is ProductEntity)
                 reservation.Product.ReleaseStock(reservation.Quantity);
                 reservation.Expire();
 
@@ -612,10 +612,10 @@ Product.Application/
 
 Product.Domain/
 ├── Entities/
-│   ├── Product.cs                   # Inherits from Entity (EShop.SharedKernel)
-│   └── StockReservation.cs
+│   ├── ProductEntity.cs             # Inherits from Entity (EShop.SharedKernel)
+│   └── StockReservationEntity.cs
 ├── Enums/
-│   └── EReservationStatusType.cs    # Following naming convention
+│   └── EReservationStatus.cs        # Following naming convention
 ├── Events/
 │   └── StockReservedDomainEvent.cs
 └── Exceptions/
@@ -639,16 +639,16 @@ Instead of Repository pattern, we use direct DbContext access via interface:
 // Product.Application/Data/IProductDbContext.cs
 public interface IProductDbContext
 {
-    DbSet<Product> Products { get; }
-    DbSet<StockReservation> StockReservations { get; }
+    DbSet<ProductEntity> Products { get; }
+    DbSet<StockReservationEntity> StockReservations { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 
 // Product.Infrastructure/Data/ProductDbContext.cs
 public class ProductDbContext : DbContext, IProductDbContext
 {
-    public DbSet<Product> Products => Set<Product>();
-    public DbSet<StockReservation> StockReservations => Set<StockReservation>();
+    public DbSet<ProductEntity> Products => Set<ProductEntity>();
+    public DbSet<StockReservationEntity> StockReservations => Set<StockReservationEntity>();
 
     // EF Core configuration...
 }
@@ -682,7 +682,7 @@ public class ReserveStockCommandHandler : IRequestHandler<ReserveStockCommand, R
             if (!product.ReserveStock(item.Quantity))
                 return ReserveStockResult.Failure("Insufficient stock");
 
-            _db.StockReservations.Add(StockReservation.Create(request.OrderId, product.Id, item.Quantity));
+            _db.StockReservations.Add(StockReservationEntity.Create(request.OrderId, product.Id, item.Quantity));
         }
 
         await _db.SaveChangesAsync(ct);
