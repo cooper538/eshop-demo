@@ -3,29 +3,29 @@
 ## Metadata
 | Key | Value |
 |-----|-------|
-| Status | :white_circle: pending |
+| Status | ✅ completed |
 
 ## Objective
 Add internal API layer for gRPC and stock management
 
 ## Scope
-- [ ] Implement gRPC server (ProductGrpcService)
-- [ ] Add StockReservation entity and logic
-- [ ] Implement ReserveStock and ReleaseStock operations
-- [ ] Implement stock reservation expiration (TTL cleanup)
-- [ ] Add domain events for stock operations
+- [x] Implement gRPC server (ProductGrpcService)
+- [x] Add StockReservation entity and logic
+- [x] Implement ReserveStock and ReleaseStock operations
+- [x] Implement stock reservation expiration (TTL cleanup)
+- [x] Add domain events for stock operations
 
 ## Tasks
 | # | Task | Status | Dependencies |
 |---|------|--------|--------------|
 | 01 | [Update product.proto](./tasks/task-01.md) | ✅ completed | - |
 | 02 | [StockReservation Domain Entity](./tasks/task-02.md) | ✅ completed | - |
-| 03 | [StockReservation Infrastructure](./tasks/task-03.md) | ⚪ pending | task-02 |
-| 04 | [ReserveStock and ReleaseStock Commands](./tasks/task-04.md) | ⚪ pending | task-02, task-03 |
-| 05 | [GetProductsBatch Query](./tasks/task-05.md) | ⚪ pending | - |
-| 06 | [ProductGrpcService Implementation](./tasks/task-06.md) | ⚪ pending | task-01, task-04, task-05 |
-| 07 | [Stock Reservation Expiration Job](./tasks/task-07.md) | ⚪ pending | task-03, task-04 |
-| 08 | [Stock Domain Events](./tasks/task-08.md) | ⚪ pending | task-04 |
+| 03 | [StockReservation Infrastructure](./tasks/task-03.md) | ✅ completed | task-02 |
+| 04 | [ReserveStock and ReleaseStock Commands](./tasks/task-04.md) | ✅ completed | task-02, task-03 |
+| 05 | [GetProductsBatch Query](./tasks/task-05.md) | ✅ completed | - |
+| 06 | [ProductGrpcService Implementation](./tasks/task-06.md) | ✅ completed | task-01, task-04, task-05 |
+| 07 | [Stock Reservation Expiration Job](./tasks/task-07.md) | ✅ completed | task-03, task-04 |
+| 08 | [Stock Domain Events](./tasks/task-08.md) | ✅ completed | task-04 |
 
 ## Related Specs
 - → [product-service-interface.md](../high-level-specs/product-service-interface.md) (stock operations)
