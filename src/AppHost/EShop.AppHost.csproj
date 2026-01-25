@@ -15,5 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="../Services/Products/Products.API/Products.API.csproj" />
+    <ProjectReference Include="../Services/Order/Order.API/Order.API.csproj" />
   </ItemGroup>
 </Project>
