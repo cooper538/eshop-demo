@@ -1,8 +1,10 @@
 using EShop.Common.Extensions;
+using EShop.Common.Grpc;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using NetEscapades.Configuration.Yaml;
 using Products.API.Configuration;
+using Products.API.Grpc;
 using Products.Application.Data;
 using Products.Infrastructure.Data;
 
@@ -27,6 +29,18 @@ builder.AddServiceDefaults();
 // API
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+// gRPC
+builder.Services.AddGrpc(options =>
+{
+    options.Interceptors.Add<CorrelationIdServerInterceptor>();
+    options.Interceptors.Add<GrpcLoggingInterceptor>();
+    options.Interceptors.Add<GrpcValidationInterceptor>();
+    options.Interceptors.Add<GrpcExceptionInterceptor>();
+});
+
+// gRPC request validators
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // MediatR + Behaviors
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IProductDbContext>());
@@ -58,6 +72,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+app.MapGrpcService<ProductGrpcService>();
 app.MapDefaultEndpoints();
 
 app.Run();
