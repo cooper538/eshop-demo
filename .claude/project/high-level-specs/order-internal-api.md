@@ -459,7 +459,7 @@ public class OrderGrpcServiceTests
                 Id = orderId,
                 CustomerId = Guid.NewGuid(),
                 CustomerEmail = "test@example.com",
-                Status = OrderStatus.Confirmed,
+                Status = EOrderStatus.Confirmed,
                 TotalAmount = 100m,
                 Items = new List<OrderItemDto>()
             });

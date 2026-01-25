@@ -97,7 +97,7 @@ public async Task Handle_WithValidCommand_CreatesOrderAndReturnsSuccess()
     var result = await handler.Handle(command, CancellationToken.None);
 
     // Assert
-    result.Status.Should().Be(OrderStatus.Confirmed);
+    result.Status.Should().Be(EOrderStatus.Confirmed);
     dbContext.Orders.Should().HaveCount(1);
 }
 ```
@@ -121,7 +121,7 @@ public class OrderTests
         order.Confirm();
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Confirmed);
+        order.Status.Should().Be(EOrderStatus.Confirmed);
         order.UpdatedAt.Should().NotBeNull();
     }
 
@@ -151,7 +151,7 @@ public class OrderTests
         order.Cancel("Customer request");
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Cancelled);
+        order.Status.Should().Be(EOrderStatus.Cancelled);
         order.RejectionReason.Should().Be("Customer request");
     }
 }
@@ -274,12 +274,12 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Status.Should().Be(OrderStatus.Confirmed);
+        result.Status.Should().Be(EOrderStatus.Confirmed);
 
         // Verify order persisted to DbContext
         var savedOrder = await _dbContext.Orders.FirstOrDefaultAsync(o => o.Id == result.OrderId);
         savedOrder.Should().NotBeNull();
-        savedOrder!.Status.Should().Be(OrderStatus.Confirmed);
+        savedOrder!.Status.Should().Be(EOrderStatus.Confirmed);
 
         // Verify event queued
         _outboxMock.Verify(
@@ -304,12 +304,12 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Status.Should().Be(OrderStatus.Rejected);
+        result.Status.Should().Be(EOrderStatus.Rejected);
         result.Reason.Should().Be("Insufficient stock");
 
         // Verify order persisted with rejected status
         var savedOrder = await _dbContext.Orders.FirstOrDefaultAsync(o => o.Id == result.OrderId);
-        savedOrder!.Status.Should().Be(OrderStatus.Rejected);
+        savedOrder!.Status.Should().Be(EOrderStatus.Rejected);
     }
 
     public void Dispose()
