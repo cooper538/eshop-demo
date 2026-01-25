@@ -38,7 +38,7 @@ Focus unit testing effort on **core functionality**:
 | **Domain Entities** | High | `Order.Confirm()`, `Product.ReserveStock()` |
 | **Value Objects** | High | `Money`, `Email`, `OrderId` validation |
 | **Domain Services** | High | Complex business rules |
-| **State Machines** | High | Order state transitions |
+| **Status Transitions** | High | Order lifecycle methods |
 | **MediatR Handlers** | High | Command/Query handlers |
 | **Validators** | Medium | FluentValidation rules |
 

@@ -8,7 +8,7 @@
 | Dependencies | task-02, task-03 |
 
 ## Summary
-Implement CancelOrder command with state machine validation.
+Implement CancelOrder command with status validation.
 
 ## Scope
 
@@ -44,7 +44,7 @@ Implement CancelOrder command with state machine validation.
       if (order is null)
           throw NotFoundException.For<OrderEntity>(request.OrderId);
 
-      // 2. Try to cancel (state machine validates)
+      // 2. Try to cancel (validates current status)
       try
       {
           order.Cancel(request.Reason);
@@ -75,7 +75,7 @@ Implement CancelOrder command with state machine validation.
   - OrderId: NotEmpty
   - Reason: NotEmpty, MaxLength(500)
 
-## State Machine Rules
+## Status Rules
 - Can only cancel orders in `Confirmed` state
 - Orders in `Created`, `Rejected`, `Cancelled`, `Shipped` cannot be cancelled
 - `InvalidOrderStateException` is caught and returned as unsuccessful result (not thrown as 400)
@@ -88,7 +88,7 @@ Implement CancelOrder command with state machine validation.
 - Stock release will be added in phase 6
 
 ## Reference Implementation
-See state machine in `OrderEntity` (task-02) and `UpdateProductCommandHandler` for error handling patterns.
+See lifecycle methods in `OrderEntity` (task-02) and `UpdateProductCommandHandler` for error handling patterns.
 
 ## Related Specs
 - → [order-service-interface.md](../../high-level-specs/order-service-interface.md) (Section 5.3: Cancel Order flow)

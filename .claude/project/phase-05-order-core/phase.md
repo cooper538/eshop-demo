@@ -6,11 +6,11 @@
 | Status | :white_circle: pending |
 
 ## Objective
-Implement Order Service with domain model, state machine, and external REST API.
+Implement Order Service with domain model, lifecycle management, and external REST API.
 
 ## Scope
 - [ ] Create Clean Architecture structure (API, Application, Domain, Infrastructure)
-- [ ] Implement Order aggregate with state machine (Created → Confirmed/Rejected → Cancelled)
+- [ ] Implement Order aggregate with status transitions (Created → Confirmed/Rejected → Cancelled)
 - [ ] Implement OrderItem as owned entity
 - [ ] Create CQRS handlers (CreateOrder, GetOrder, CancelOrder)
 - [ ] Configure EF Core with PostgreSQL

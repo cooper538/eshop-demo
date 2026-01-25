@@ -132,7 +132,7 @@ Architecture details are organized into focused specification documents:
 | CQRS | Separated Commands and Queries with MediatR |
 | Outbox Pattern | Guaranteed integration event publishing |
 | Inbox Pattern | Idempotent consumers in Notification service |
-| State Machine | Order lifecycle management |
+| Order Lifecycle | Status transitions with validation |
 | Resilience | Polly retry, circuit breaker, gRPC deadlines |
 | Clean Architecture | Domain, Application, Infrastructure layers |
 | Domain-Driven Design | Aggregates, Domain Events, Value Objects |

@@ -117,7 +117,7 @@ HTTP/1.1 400 Bad Request
 
 ---
 
-## 4. Order State Machine
+## 4. Order Lifecycle
 
 ### 4.1 States
 

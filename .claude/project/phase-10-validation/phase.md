@@ -16,7 +16,7 @@ Comprehensive testing across all layers and end-to-end validation
 - [ ] Product Service domain tests
 - [ ] Product Service stock operations tests
 - [ ] Order Service domain tests
-- [ ] Order Service state machine tests
+- [ ] Order Service lifecycle tests
 - [ ] Notification consumers tests
 
 ### Integration Tests
