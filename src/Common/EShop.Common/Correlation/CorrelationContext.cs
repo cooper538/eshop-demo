@@ -34,7 +34,10 @@ public sealed class CorrelationContext
         public void Dispose()
         {
             if (_disposed)
+            {
                 return;
+            }
+
             Current = _previous;
             _disposed = true;
         }
