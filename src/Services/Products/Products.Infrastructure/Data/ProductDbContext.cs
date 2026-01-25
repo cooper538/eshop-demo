@@ -12,6 +12,7 @@ public class ProductDbContext : DbContext, IProductDbContext, IChangeTrackerAcce
         : base(options) { }
 
     public DbSet<ProductEntity> Products => Set<ProductEntity>();
+    public DbSet<StockReservationEntity> StockReservations => Set<StockReservationEntity>();
 
     ChangeTracker IChangeTrackerAccessor.ChangeTracker => ChangeTracker;
 
