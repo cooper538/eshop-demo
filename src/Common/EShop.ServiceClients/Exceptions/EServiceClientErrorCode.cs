@@ -1,6 +1,6 @@
 namespace EShop.ServiceClients.Exceptions;
 
-public enum EServiceClientErrorCodeType
+public enum EServiceClientErrorCode
 {
     Unknown = 0,
     NotFound = 1,
