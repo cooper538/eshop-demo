@@ -4,19 +4,19 @@
 | Key | Value |
 |-----|-------|
 | ID | task-05 |
-| Status | :white_circle: pending |
+| Status | ✅ completed |
 | Dependencies | - |
 
 ## Summary
 Implement batch product query for internal API - returns product info for multiple product IDs.
 
 ## Scope
-- [ ] Create GetProductsBatchQuery record with list of product IDs
-- [ ] Create GetProductsBatchResult record with list of ProductInfoDto
-- [ ] Create ProductInfoDto (ProductId, Name, Description, Price, StockQuantity)
-- [ ] Implement GetProductsBatchQueryHandler
-- [ ] Return ProductInfo only for existing products
-- [ ] Query handler returns only found products (caller validates completeness)
+- [x] Create GetProductsBatchQuery record with list of product IDs
+- [x] Create GetProductsBatchResult record with list of ProductInfoDto
+- [x] Create ProductInfoDto (ProductId, Name, Description, Price, StockQuantity)
+- [x] Implement GetProductsBatchQueryHandler
+- [x] Return ProductInfo only for existing products
+- [x] Query handler returns only found products (caller validates completeness)
 
 ## Note
 **ATOMIC validation happens in gRPC/HTTP layer, not in query handler.**
