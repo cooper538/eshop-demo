@@ -46,6 +46,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 // MediatR + Behaviors
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IProductDbContext>());
 builder.Services.AddCommonBehaviors();
+builder.Services.AddDomainEvents();
 
 // FluentValidation
 builder.Services.AddValidatorsFromAssemblyContaining<IProductDbContext>();

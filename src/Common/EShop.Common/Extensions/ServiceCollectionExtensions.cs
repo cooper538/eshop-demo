@@ -1,5 +1,6 @@
 using EShop.Common.Behaviors;
 using EShop.Common.Correlation;
+using EShop.Common.Events;
 using EShop.Common.Grpc;
 using EShop.Common.Middleware;
 using MediatR;
@@ -10,6 +11,12 @@ namespace EShop.Common.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddDomainEvents(this IServiceCollection services)
+    {
+        services.AddScoped<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
+        return services;
+    }
+
     public static IServiceCollection AddCorrelationId(this IServiceCollection services)
     {
         services.AddSingleton<ICorrelationIdAccessor, CorrelationIdAccessor>();
@@ -30,6 +37,12 @@ public static class ServiceCollectionExtensions
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(QueryTrackingBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandTrackingBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandTrackingBehaviorUnit<,>));
+        // Domain event dispatch must be LAST to run after SaveChangesAsync
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainEventDispatchBehavior<,>));
+        services.AddTransient(
+            typeof(IPipelineBehavior<,>),
+            typeof(DomainEventDispatchBehaviorUnit<,>)
+        );
         return services;
     }
 
