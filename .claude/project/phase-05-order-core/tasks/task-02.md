@@ -4,11 +4,11 @@
 | Key | Value |
 |-----|-------|
 | ID | task-02 |
-| Status | 🔵 in_progress |
+| Status | ✅ completed |
 | Dependencies | task-01 |
 
 ## Summary
-Implement Order aggregate with state machine and OrderItem as owned entity.
+Implement Order aggregate with lifecycle methods and OrderItem as owned entity.
 
 ## Scope
 
@@ -29,7 +29,7 @@ Implement Order aggregate with state machine and OrderItem as owned entity.
   - Sets status to `Created`
   - Calculates TotalAmount from items
 
-### State Machine Methods
+### Lifecycle Methods
 - [ ] `Confirm()` - Created → Confirmed
   - Guard: throw if not in Created state
   - Sets UpdatedAt
@@ -60,7 +60,7 @@ Implement Order aggregate with state machine and OrderItem as owned entity.
   - Contains: CurrentStatus, AttemptedAction
   - Message: "Cannot {action} order in {status} state"
 
-## State Machine Diagram
+## Status Transitions
 ```
 Created ──┬──► Confirmed ──┬──► Cancelled
           │                │
@@ -71,7 +71,7 @@ Created ──┬──► Confirmed ──┬──► Cancelled
 See `ProductEntity` in `src/Services/Products/Products.Domain/Entities/`
 
 ## Related Specs
-- → [order-service-interface.md](../../high-level-specs/order-service-interface.md) (Section 4: Order State Machine, Section 6: Domain Model)
+- → [order-service-interface.md](../../high-level-specs/order-service-interface.md) (Section 4: Order Lifecycle, Section 6: Domain Model)
 
 ---
 ## Notes
