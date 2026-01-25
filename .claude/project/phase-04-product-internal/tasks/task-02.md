@@ -8,10 +8,10 @@
 | Dependencies | - |
 
 ## Summary
-Create StockReservation entity and EReservationStatusType enum to track stock reservations linked to orders with TTL support.
+Create StockReservation entity and EReservationStatus enum to track stock reservations linked to orders with TTL support.
 
 ## Scope
-- [x] Create EReservationStatusType enum (Active, Released, Expired)
+- [x] Create EReservationStatus enum (Active, Released, Expired)
 - [x] Create StockReservation entity inheriting from Entity (SharedKernel)
 - [x] Add properties: OrderId, ProductId, Quantity, ReservedAt, ExpiresAt, ReleasedAt, Status
 - [x] Implement static Create() factory method with 15-minute TTL

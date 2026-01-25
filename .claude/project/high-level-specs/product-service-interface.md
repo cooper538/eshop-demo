@@ -425,7 +425,7 @@ public class StockReservationEntity
     public DateTime ReservedAt { get; private set; }
     public DateTime ExpiresAt { get; private set; }
     public DateTime? ReleasedAt { get; private set; }
-    public ReservationStatus Status { get; private set; }
+    public EReservationStatus Status { get; private set; }
 
     public static StockReservationEntity Create(Guid orderId, Guid productId, int quantity)
     {
@@ -437,23 +437,23 @@ public class StockReservationEntity
             Quantity = quantity,
             ReservedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddMinutes(15), // TTL
-            Status = ReservationStatus.Active
+            Status = EReservationStatus.Active
         };
     }
 
     public void Release()
     {
-        Status = ReservationStatus.Released;
+        Status = EReservationStatus.Released;
         ReleasedAt = DateTime.UtcNow;
     }
 
     public void Expire()
     {
-        Status = ReservationStatus.Expired;
+        Status = EReservationStatus.Expired;
     }
 }
 
-public enum ReservationStatus
+public enum EReservationStatus
 {
     Active,
     Released,
@@ -487,7 +487,7 @@ public class StockReservationExpirationJob : BackgroundService
             var outbox = scope.ServiceProvider.GetRequiredService<IOutboxRepository>();
 
             var expiredReservations = await db.StockReservations
-                .Where(r => r.Status == ReservationStatus.Active)
+                .Where(r => r.Status == EReservationStatus.Active)
                 .Where(r => r.ExpiresAt < DateTime.UtcNow)
                 .Include(r => r.Product)
                 .ToListAsync(ct);
@@ -540,7 +540,7 @@ public class ReserveStockCommandHandler : IRequestHandler<ReserveStockCommand, R
 
         if (existingReservation != null)
         {
-            return existingReservation.Status == ReservationStatus.Active
+            return existingReservation.Status == EReservationStatus.Active
                 ? ReserveStockResult.Success()
                 : ReserveStockResult.AlreadyProcessed(existingReservation.Status.ToString());
         }
@@ -615,7 +615,7 @@ Product.Domain/
 │   ├── ProductEntity.cs             # Inherits from Entity (EShop.SharedKernel)
 │   └── StockReservationEntity.cs
 ├── Enums/
-│   └── EReservationStatus.cs        # Following naming convention
+│   └── EEReservationStatus.cs        # Following naming convention
 ├── Events/
 │   └── StockReservedDomainEvent.cs
 └── Exceptions/

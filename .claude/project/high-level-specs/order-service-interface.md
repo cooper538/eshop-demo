@@ -233,7 +233,7 @@ public class OrderEntity
     public Guid Id { get; private set; }
     public Guid CustomerId { get; private set; }
     public string CustomerEmail { get; private set; } = string.Empty;
-    public OrderStatus Status { get; private set; }
+    public EOrderStatus Status { get; private set; }
     public decimal TotalAmount { get; private set; }
     public string? RejectionReason { get; private set; }
     public DateTime CreatedAt { get; private set; }
@@ -250,7 +250,7 @@ public class OrderEntity
             Id = Guid.NewGuid(),
             CustomerId = customerId,
             CustomerEmail = customerEmail,
-            Status = OrderStatus.Created,
+            Status = EOrderStatus.Created,
             CreatedAt = DateTime.UtcNow
         };
         order._items.AddRange(items);
@@ -260,29 +260,29 @@ public class OrderEntity
 
     public void Confirm()
     {
-        if (Status != OrderStatus.Created)
+        if (Status != EOrderStatus.Created)
             throw new InvalidOperationException($"Cannot confirm order in {Status} state");
 
-        Status = OrderStatus.Confirmed;
+        Status = EOrderStatus.Confirmed;
         UpdatedAt = DateTime.UtcNow;
     }
 
     public void Reject(string reason)
     {
-        if (Status != OrderStatus.Created)
+        if (Status != EOrderStatus.Created)
             throw new InvalidOperationException($"Cannot reject order in {Status} state");
 
-        Status = OrderStatus.Rejected;
+        Status = EOrderStatus.Rejected;
         RejectionReason = reason;
         UpdatedAt = DateTime.UtcNow;
     }
 
     public void Cancel(string reason)
     {
-        if (Status != OrderStatus.Confirmed)
+        if (Status != EOrderStatus.Confirmed)
             throw new InvalidOperationException($"Cannot cancel order in {Status} state");
 
-        Status = OrderStatus.Cancelled;
+        Status = EOrderStatus.Cancelled;
         RejectionReason = reason;
         UpdatedAt = DateTime.UtcNow;
     }
@@ -305,7 +305,7 @@ public class OrderItemEntity
 ### 6.3 Order Status
 
 ```csharp
-public enum OrderStatus
+public enum EOrderStatus
 {
     Created,
     Confirmed,
@@ -557,7 +557,7 @@ Order.Domain/
 │   ├── OrderEntity.cs               # Inherits from AggregateRoot (EShop.SharedKernel)
 │   └── OrderItemEntity.cs
 ├── Enums/
-│   └── EOrderStatus.cs              # Following naming convention
+│   └── EEOrderStatus.cs              # Following naming convention
 ├── StateMachine/
 │   └── OrderStateMachine.cs
 └── Exceptions/

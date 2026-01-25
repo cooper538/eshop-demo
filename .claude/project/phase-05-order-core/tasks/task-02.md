@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-02 |
-| Status | :white_circle: pending |
+| Status | 🔵 in_progress |
 | Dependencies | task-01 |
 
 ## Summary
@@ -17,7 +17,7 @@ Implement Order aggregate with state machine and OrderItem as owned entity.
 - [ ] Properties:
   - `Guid CustomerId` (required)
   - `string CustomerEmail` (required)
-  - `EOrderStatusType Status` (required)
+  - `EOrderStatus Status` (required)
   - `decimal TotalAmount` (calculated from items)
   - `string? RejectionReason`
   - `DateTime CreatedAt`
@@ -52,7 +52,7 @@ Implement Order aggregate with state machine and OrderItem as owned entity.
 - [ ] Factory method or public constructor
 
 ### Enum
-- [ ] Create `EOrderStatusType` enum in Domain/Enums
+- [ ] Create `EOrderStatus` enum in Domain/Enums
   - Created, Confirmed, Rejected, Cancelled, Shipped
 
 ### Exceptions
