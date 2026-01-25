@@ -8,6 +8,25 @@ Overview of all implementation phases for the EShop microservices demo.
 [###-------] 3/10 phases completed (30%)
 ```
 
+## Phases
+
+| # | Phase | Status |
+|---|-------|--------|
+| 01 | [Foundation](#phase-01-foundation-) | ✅ Done |
+| 02 | [Aspire](#phase-02-aspire-) | ✅ Done |
+| 03 | [Product Core](#phase-03-product-core-) | ✅ Done |
+| 04 | [Product Internal](#phase-04-product-internal-) | ⚪ In Progress |
+| 05 | [Order Core](#phase-05-order-core-) | ⚪ Pending |
+| 06 | [Order Integration](#phase-06-order-integration-) | ⚪ Pending |
+| 07 | [Messaging](#phase-07-messaging-) | ⚪ Pending |
+| 08 | [Notification](#phase-08-notification-) | ⚪ Pending |
+| 09 | [Gateway](#phase-09-gateway-) | ⚪ Pending |
+| 10 | [Testing & Validation](#phase-10-testing--validation-) | ⚪ Pending |
+
+---
+
+# Phase Details
+
 ---
 
 ## Phase 01: Foundation ✅
