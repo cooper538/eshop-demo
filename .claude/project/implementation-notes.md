@@ -16,4 +16,5 @@ Brief implementation notes. Format: `[XX-YY] task name - note`
 - [04-04] Product Domain - Consider Stock aggregate root with reservations, refactor domain per DDD
 - [04-06] ProductGrpcService - Add business-level logging (orderId, item count) if needed for debugging/audit
 - [05-03] Aspire DB naming - Consider configuration for DB resource names ("orderdb", "productdb") between AppHost and services
+- [04-08] DomainEventDispatchBehavior - Refactor to call SaveChangesAsync automatically after command handler (Unit of Work pattern)
 - [05-07] API DTOs - Commands used directly as API request bodies (consistent with Microsoft eShopOnContainers pattern, see: https://github.com/dotnet-architecture/eShopOnContainers)

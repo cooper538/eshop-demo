@@ -1,5 +1,6 @@
 using EShop.SharedKernel.Domain;
 using Products.Domain.Enums;
+using Products.Domain.Events;
 
 namespace Products.Domain.Entities;
 
@@ -25,7 +26,7 @@ public class StockReservationEntity : Entity
     {
         var now = DateTime.UtcNow;
 
-        return new StockReservationEntity
+        var reservation = new StockReservationEntity
         {
             Id = Guid.NewGuid(),
             OrderId = orderId,
@@ -36,6 +37,10 @@ public class StockReservationEntity : Entity
             ReleasedAt = null,
             Status = EReservationStatus.Active,
         };
+
+        reservation.AddDomainEvent(new StockReservedDomainEvent(orderId, productId, quantity, now));
+
+        return reservation;
     }
 
     public void Release()
@@ -49,6 +54,10 @@ public class StockReservationEntity : Entity
 
         Status = EReservationStatus.Released;
         ReleasedAt = DateTime.UtcNow;
+
+        AddDomainEvent(
+            new StockReleasedDomainEvent(OrderId, ProductId, Quantity, ReleasedAt.Value)
+        );
     }
 
     public void Expire()
@@ -61,5 +70,7 @@ public class StockReservationEntity : Entity
         }
 
         Status = EReservationStatus.Expired;
+
+        AddDomainEvent(new StockReservationExpiredDomainEvent(OrderId, ProductId, Quantity));
     }
 }
