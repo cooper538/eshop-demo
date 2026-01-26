@@ -4,7 +4,7 @@
 Refactor Product domain to properly separate catalog concerns (Product) from inventory concerns (Stock). StockEntity becomes an independent Aggregate Root that owns StockReservationEntity as child entities. This aligns with DDD principles and prepares the domain for future scalability.
 
 ## Status
-- [x] In progress
+- [x] Completed
 
 ## Motivation
 
