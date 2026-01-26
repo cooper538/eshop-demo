@@ -14,10 +14,6 @@ public class ProductConfiguration : AggregateRootConfiguration<ProductEntity>
 
         builder.Property(p => p.Price).HasPrecision(18, 2).IsRequired();
 
-        builder.Property(p => p.StockQuantity).IsRequired();
-
-        builder.Property(p => p.LowStockThreshold).IsRequired();
-
         builder.Property(p => p.Category).HasMaxLength(100);
 
         builder.Property(p => p.CreatedAt).IsRequired();

@@ -1,6 +1,5 @@
 using EShop.SharedKernel.Domain;
 using Products.Domain.Enums;
-using Products.Domain.Events;
 
 namespace Products.Domain.Entities;
 
@@ -8,6 +7,7 @@ public class StockReservationEntity : Entity
 {
     private static readonly TimeSpan DefaultTtl = TimeSpan.FromMinutes(15);
 
+    public Guid StockId { get; private set; }
     public Guid OrderId { get; private set; }
     public Guid ProductId { get; private set; }
     public int Quantity { get; private set; }
@@ -22,13 +22,19 @@ public class StockReservationEntity : Entity
     // EF Core constructor
     private StockReservationEntity() { }
 
-    public static StockReservationEntity Create(Guid orderId, Guid productId, int quantity)
+    internal static StockReservationEntity Create(
+        Guid orderId,
+        Guid productId,
+        int quantity,
+        StockEntity stock
+    )
     {
         var now = DateTime.UtcNow;
 
-        var reservation = new StockReservationEntity
+        return new StockReservationEntity
         {
             Id = Guid.NewGuid(),
+            StockId = stock.Id,
             OrderId = orderId,
             ProductId = productId,
             Quantity = quantity,
@@ -37,10 +43,6 @@ public class StockReservationEntity : Entity
             ReleasedAt = null,
             Status = EReservationStatus.Active,
         };
-
-        reservation.AddDomainEvent(new StockReservedDomainEvent(orderId, productId, quantity, now));
-
-        return reservation;
     }
 
     public void Release()
@@ -54,10 +56,6 @@ public class StockReservationEntity : Entity
 
         Status = EReservationStatus.Released;
         ReleasedAt = DateTime.UtcNow;
-
-        AddDomainEvent(
-            new StockReleasedDomainEvent(OrderId, ProductId, Quantity, ReleasedAt.Value)
-        );
     }
 
     public void Expire()
@@ -70,7 +68,5 @@ public class StockReservationEntity : Entity
         }
 
         Status = EReservationStatus.Expired;
-
-        AddDomainEvent(new StockReservationExpiredDomainEvent(OrderId, ProductId, Quantity));
     }
 }
