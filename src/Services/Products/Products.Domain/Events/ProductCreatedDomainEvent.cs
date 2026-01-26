@@ -2,9 +2,8 @@ using EShop.SharedKernel.Events;
 
 namespace Products.Domain.Events;
 
-public sealed record StockReleasedDomainEvent(
-    Guid OrderId,
+public sealed record ProductCreatedDomainEvent(
     Guid ProductId,
-    int Quantity,
-    DateTime ReleasedAt
+    int InitialStockQuantity,
+    int LowStockThreshold
 ) : DomainEventBase;

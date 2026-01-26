@@ -9,6 +9,8 @@ public class StockReservationConfiguration : EntityConfiguration<StockReservatio
 {
     protected override void ConfigureEntity(EntityTypeBuilder<StockReservationEntity> builder)
     {
+        builder.Property(e => e.StockId).IsRequired();
+
         builder.Property(e => e.OrderId).IsRequired();
 
         builder.Property(e => e.ProductId).IsRequired();
@@ -25,6 +27,8 @@ public class StockReservationConfiguration : EntityConfiguration<StockReservatio
 
         // Optimistic concurrency - PostgreSQL xmin system column
         builder.Property(e => e.RowVersion).IsRowVersion();
+
+        builder.HasIndex(e => e.StockId);
 
         builder.HasIndex(e => e.OrderId);
 
