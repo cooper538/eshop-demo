@@ -75,8 +75,8 @@ public sealed class ProductGrpcService : ProductService.ProductServiceBase
 
         return new ReserveStockResponse
         {
-            Success = result.Success,
-            FailureReason = result.FailureReason ?? string.Empty,
+            Success = result.IsSuccess,
+            FailureReason = result.FailureMessage ?? string.Empty,
         };
     }
 
