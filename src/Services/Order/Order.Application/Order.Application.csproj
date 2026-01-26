@@ -15,7 +15,6 @@
     <ProjectReference Include="../../../Common/EShop.SharedKernel/EShop.SharedKernel.csproj" />
     <ProjectReference Include="../../../Common/EShop.Common/EShop.Common.csproj" />
     <ProjectReference Include="../../../Common/EShop.Contracts/EShop.Contracts.csproj" />
-    <ProjectReference Include="../../../Common/EShop.ServiceClients/EShop.ServiceClients.csproj" />
   </ItemGroup>
 
 </Project>
