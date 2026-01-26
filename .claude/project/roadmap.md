@@ -5,7 +5,7 @@ Overview of all implementation phases for the EShop microservices demo.
 ## Progress
 
 ```
-[###-------] 3/10 phases completed (30%)
+[###-------] 3/11 phases completed (27%)
 ```
 
 ## Phases
@@ -22,6 +22,7 @@ Overview of all implementation phases for the EShop microservices demo.
 | 08 | [Notification](#phase-08-notification-) | ⚪ Pending |
 | 09 | [Gateway](#phase-09-gateway-) | ⚪ Pending |
 | 10 | [Testing & Validation](#phase-10-testing--validation-) | ⚪ Pending |
+| 11 | [Improvements & Refactoring](#phase-11-improvements--refactoring-) | ⚪ Pending |
 
 ---
 
@@ -180,6 +181,19 @@ Overview of all implementation phases for the EShop microservices demo.
 - Document project startup
 
 → [Details](./phase-10-validation/phase.md)
+
+---
+
+## Phase 11: Improvements & Refactoring ⚪
+
+**Technical debt, refactoring, and domain model improvements**
+
+This phase contains improvements and refactoring that emerged during development. These enhancements improve code quality and DDD alignment..
+
+### Tasks
+- **Task 01: Stock Separation** - Separate Product catalog from Stock (inventory) into distinct aggregates. `ProductEntity` becomes catalog-only, new `StockEntity` aggregate root manages inventory and reservations.
+
+→ [Details](./phase-11-improvements/phase.md)
 
 ---
 
