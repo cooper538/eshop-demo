@@ -1,6 +1,4 @@
-using EShop.ServiceClients.Clients.Product.Models;
-
-namespace EShop.ServiceClients.Clients.Product;
+namespace EShop.Contracts.ServiceClients.Product;
 
 /// <summary>
 /// Internal API abstraction for Product Service communication.

@@ -1,5 +1,6 @@
 using EShop.Common.Correlation;
-using EShop.ServiceClients.Clients.Product.Models;
+using EShop.Contracts.ServiceClients.Product;
+using EShop.ServiceClients.Clients.Product.Mappers;
 using EShop.ServiceClients.Configuration;
 using EShop.ServiceClients.Infrastructure.Grpc;
 using Grpc.Core;

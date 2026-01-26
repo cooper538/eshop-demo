@@ -1,9 +1,8 @@
+using EShop.Contracts.ServiceClients.Product;
 using Riok.Mapperly.Abstractions;
 using GrpcProduct = EShop.Grpc.Product;
 
-namespace EShop.ServiceClients.Clients.Product.Models;
-
-public sealed record ReleaseStockRequest(Guid OrderId);
+namespace EShop.ServiceClients.Clients.Product.Mappers;
 
 [Mapper]
 public static partial class ReleaseStockRequestMapper
