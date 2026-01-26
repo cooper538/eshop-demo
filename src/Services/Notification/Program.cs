@@ -1,4 +1,5 @@
 using EShop.NotificationService.Data;
+using EShop.NotificationService.Services;
 using MassTransit;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -8,6 +9,9 @@ builder.AddServiceDefaults();
 
 // Aspire-managed PostgreSQL (connection string injected automatically)
 builder.AddNpgsqlDbContext<NotificationDbContext>("notificationdb");
+
+// Email service (fake for development)
+builder.Services.AddSingleton<IEmailService, FakeEmailService>();
 
 // MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>
