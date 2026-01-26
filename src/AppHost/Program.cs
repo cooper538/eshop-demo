@@ -23,7 +23,8 @@ var productService = builder
 var orderService = builder
     .AddProject<Projects.Order_API>("order-service")
     .WithReference(orderDb)
-    .WithReference(rabbitmq);
+    .WithReference(rabbitmq)
+    .WithReference(productService);
 
 // var notificationService = builder
 //     .AddProject<Projects.EShop_NotificationService>("notification-service")
