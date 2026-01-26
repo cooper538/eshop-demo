@@ -1,3 +1,4 @@
+using EShop.NotificationService.Consumers;
 using EShop.NotificationService.Data;
 using EShop.NotificationService.Services;
 using MassTransit;
@@ -16,10 +17,12 @@ builder.Services.AddSingleton<IEmailService, FakeEmailService>();
 // MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>
 {
-    // Consumers will be added in task-05 and task-06
-    // x.AddConsumer<OrderConfirmedConsumer>();
-    // x.AddConsumer<OrderRejectedConsumer>();
-    // x.AddConsumer<OrderCancelledConsumer>();
+    // Order event consumers
+    x.AddConsumer<OrderConfirmedConsumer>();
+    x.AddConsumer<OrderRejectedConsumer>();
+    x.AddConsumer<OrderCancelledConsumer>();
+
+    // Stock event consumers (task-06)
     // x.AddConsumer<StockLowConsumer>();
 
     x.UsingRabbitMq(
