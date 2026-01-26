@@ -1,9 +1,13 @@
+using EShop.NotificationService.Data;
 using MassTransit;
 
 var builder = Host.CreateApplicationBuilder(args);
 
 // Aspire ServiceDefaults (OpenTelemetry, Health Checks, Service Discovery)
 builder.AddServiceDefaults();
+
+// Aspire-managed PostgreSQL (connection string injected automatically)
+builder.AddNpgsqlDbContext<NotificationDbContext>("notificationdb");
 
 // MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>
