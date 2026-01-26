@@ -499,7 +499,6 @@
           "name",
           "description",
           "price",
-          "stockQuantity",
           "lowStockThreshold",
           "category"
         ],
@@ -522,14 +521,6 @@
               "string"
             ],
             "format": "double"
-          },
-          "stockQuantity": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
           },
           "lowStockThreshold": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
