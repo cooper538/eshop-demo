@@ -11,8 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Resilience -->
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+    <!-- Service Discovery -->
     <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" />
 
     <!-- OpenTelemetry -->
