@@ -18,3 +18,9 @@ Order:
     CommandTimeoutSec: 30
     EnableRetry: true
     MaxRetryCount: 3
+
+# Service Clients Configuration
+ServiceClients:
+  TimeoutSeconds: 30
+  ProductService:
+    Url: "https+http://product-service"

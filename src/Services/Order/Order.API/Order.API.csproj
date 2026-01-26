@@ -21,6 +21,7 @@
     <ProjectReference Include="../Order.Infrastructure/Order.Infrastructure.csproj" />
     <ProjectReference Include="../../../ServiceDefaults/EShop.ServiceDefaults.csproj" />
     <ProjectReference Include="../../../Common/EShop.Common/EShop.Common.csproj" />
+    <ProjectReference Include="../../../Common/EShop.ServiceClients/EShop.ServiceClients.csproj" />
   </ItemGroup>
 
   <ItemGroup>

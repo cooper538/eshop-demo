@@ -1,4 +1,5 @@
 using EShop.Common.Extensions;
+using EShop.ServiceClients.Extensions;
 using FluentValidation;
 using NetEscapades.Configuration.Yaml;
 using Order.API.Configuration;
@@ -22,6 +23,9 @@ builder
 
 // Aspire ServiceDefaults
 builder.AddServiceDefaults();
+
+// Service Clients (gRPC)
+builder.Services.AddServiceClients(builder.Configuration, builder.Environment);
 
 // API
 builder.Services.AddControllers();
