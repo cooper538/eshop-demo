@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=./Configuration/order.settings.schema.json
+# Order Service - Development Configuration
+# Overrides base order.settings.yaml for local development
+
+Logging:
+  LogLevel:
+    Default: "Debug"
+    Microsoft.AspNetCore: "Information"
+
+Order:
+  Database:
+    CommandTimeoutSec: 60
+    MaxRetryCount: 1

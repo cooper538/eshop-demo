@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=./Configuration/order.settings.schema.json
+# Order Service Configuration
+# Environment-specific overrides: order.settings.{Environment}.yaml
+
+AllowedHosts: "*"
+
+Logging:
+  LogLevel:
+    Default: "Information"
+    Microsoft.AspNetCore: "Warning"
+
+Order:
+  Service:
+    Name: "Order"
+    Version: "1.0.0"
+
+  Database:
+    CommandTimeoutSec: 30
+    EnableRetry: true
+    MaxRetryCount: 3
