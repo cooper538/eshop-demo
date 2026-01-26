@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>EShop.ArchitectureTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="MSTest.TestAdapter" />
+    <PackageReference Include="MSTest.TestFramework" />
+    <PackageReference Include="NetArchTest.Rules" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Services\Order\Order.Domain\Order.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Order\Order.Application\Order.Application.csproj" />
+    <ProjectReference Include="..\..\src\Services\Order\Order.Infrastructure\Order.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Services\Order\Order.API\Order.API.csproj" />
+    <ProjectReference Include="..\..\src\Services\Products\Products.Domain\Products.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Products\Products.Application\Products.Application.csproj" />
+    <ProjectReference Include="..\..\src\Services\Products\Products.Infrastructure\Products.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Services\Products\Products.API\Products.API.csproj" />
+    <ProjectReference Include="..\..\src\Common\EShop.SharedKernel\EShop.SharedKernel.csproj" />
+    <ProjectReference Include="..\..\src\Common\EShop.Common\EShop.Common.csproj" />
+    <ProjectReference Include="..\..\src\Common\EShop.Contracts\EShop.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Common\EShop.ServiceClients\EShop.ServiceClients.csproj" />
+  </ItemGroup>
+</Project>
