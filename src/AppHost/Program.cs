@@ -8,6 +8,7 @@ var postgres = builder
 
 var productDb = postgres.AddDatabase("productdb");
 var orderDb = postgres.AddDatabase("orderdb");
+var notificationDb = postgres.AddDatabase("notificationdb");
 
 var rabbitmq = builder
     .AddRabbitMQ("messaging")
@@ -18,17 +19,24 @@ var rabbitmq = builder
 var productService = builder
     .AddProject<Projects.Products_API>("product-service")
     .WithReference(productDb)
-    .WithReference(rabbitmq);
+    .WaitFor(productDb)
+    .WithReference(rabbitmq)
+    .WaitFor(rabbitmq);
 
 var orderService = builder
     .AddProject<Projects.Order_API>("order-service")
     .WithReference(orderDb)
+    .WaitFor(orderDb)
     .WithReference(rabbitmq)
+    .WaitFor(rabbitmq)
     .WithReference(productService);
 
-// var notificationService = builder
-//     .AddProject<Projects.EShop_NotificationService>("notification-service")
-//     .WithReference(rabbitmq);
+var notificationService = builder
+    .AddProject<Projects.EShop_NotificationService>("notification-service")
+    .WithReference(notificationDb)
+    .WaitFor(notificationDb)
+    .WithReference(rabbitmq)
+    .WaitFor(rabbitmq);
 
 // API GATEWAY (to be added in task-04)
 
