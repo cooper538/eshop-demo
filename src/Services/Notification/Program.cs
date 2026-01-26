@@ -22,8 +22,8 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<OrderRejectedConsumer>();
     x.AddConsumer<OrderCancelledConsumer>();
 
-    // Stock event consumers (task-06)
-    // x.AddConsumer<StockLowConsumer>();
+    // Stock event consumers
+    x.AddConsumer<StockLowConsumer>();
 
     x.UsingRabbitMq(
         (context, cfg) =>
