@@ -25,7 +25,6 @@ public static class Extensions
 
         builder.Services.ConfigureHttpClientDefaults(http =>
         {
-            http.AddStandardResilienceHandler();
             http.AddServiceDiscovery();
         });
 

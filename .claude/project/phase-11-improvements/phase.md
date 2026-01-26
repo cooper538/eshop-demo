@@ -12,7 +12,8 @@ These are enhancements that improve code quality, domain model alignment, or arc
 
 | # | Task | Description | Status |
 |---|------|-------------|--------|
-| 01 | [Product Domain Refactoring](tasks/task-01-product-domain-refactoring.md) | Separate Product catalog from Stock inventory into distinct aggregates | In progress |
+| 01 | [Product Domain Refactoring](tasks/task-01-product-domain-refactoring.md) | Separate Product catalog from Stock inventory into distinct aggregates | Completed |
+| 02 | [Architecture Tests](tasks/task-02-architecture-tests.md) | NetArchTest.Rules tests for Clean Architecture and DDD compliance | Not started |
 
 ## Goals
 
