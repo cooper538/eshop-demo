@@ -1,5 +1,3 @@
-using Products.Domain.Entities;
-
 namespace Products.Application.Dtos;
 
 /// <summary>
@@ -11,8 +9,4 @@ public sealed record ProductInfoDto(
     string Description,
     decimal Price,
     int StockQuantity
-)
-{
-    public static ProductInfoDto FromEntity(ProductEntity entity) =>
-        new(entity.Id, entity.Name, entity.Description, entity.Price, entity.StockQuantity);
-}
+);

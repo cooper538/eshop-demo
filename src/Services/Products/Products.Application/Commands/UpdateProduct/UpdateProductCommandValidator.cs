@@ -14,8 +14,6 @@ public sealed class UpdateProductCommandValidator : AbstractValidator<UpdateProd
 
         RuleFor(x => x.Price).GreaterThan(0);
 
-        RuleFor(x => x.StockQuantity).GreaterThanOrEqualTo(0);
-
         RuleFor(x => x.LowStockThreshold).GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.Category).NotEmpty().MaximumLength(100);

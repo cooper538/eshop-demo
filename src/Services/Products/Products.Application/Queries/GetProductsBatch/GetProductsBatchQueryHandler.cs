@@ -23,7 +23,12 @@ public sealed class GetProductsBatchQueryHandler
         // Return only products that exist - caller validates completeness (ATOMIC check)
         var products = await _dbContext
             .Products.Where(p => request.ProductIds.Contains(p.Id))
-            .Select(p => ProductInfoDto.FromEntity(p))
+            .Join(
+                _dbContext.Stocks,
+                p => p.Id,
+                s => s.ProductId,
+                (p, s) => new ProductInfoDto(p.Id, p.Name, p.Description, p.Price, s.Quantity)
+            )
             .ToListAsync(cancellationToken);
 
         return new GetProductsBatchResult(products);

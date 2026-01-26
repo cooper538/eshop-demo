@@ -25,46 +25,48 @@ public sealed partial class ExpireReservationsCommandHandler
     {
         var now = DateTime.UtcNow;
 
-        var expiredReservations = await _dbContext
-            .StockReservations.Where(r =>
-                r.Status == EReservationStatus.Active && r.ExpiresAt < now
+        // Find stocks with expired reservations
+        var stocks = await _dbContext
+            .Stocks.Include(s =>
+                s.Reservations.Where(r =>
+                    r.Status == EReservationStatus.Active && r.ExpiresAt < now
+                )
+            )
+            .Where(s =>
+                s.Reservations.Any(r => r.Status == EReservationStatus.Active && r.ExpiresAt < now)
             )
             .Take(request.BatchSize)
             .ToListAsync(cancellationToken);
 
-        if (expiredReservations.Count == 0)
+        if (stocks.Count == 0)
         {
             return;
         }
 
-        LogFoundExpiredReservations(expiredReservations.Count);
+        var totalExpired = 0;
 
-        // Get all affected products in one query
-        var productIds = expiredReservations.Select(r => r.ProductId).Distinct().ToList();
-        var products = await _dbContext
-            .Products.Where(p => productIds.Contains(p.Id))
-            .ToDictionaryAsync(p => p.Id, cancellationToken);
-
-        foreach (var reservation in expiredReservations)
+        foreach (var stock in stocks)
         {
-            if (products.TryGetValue(reservation.ProductId, out var product))
-            {
-                product.ReleaseStock(reservation.Quantity);
-            }
-            else
-            {
-                // Product was deleted - still expire the reservation to prevent reprocessing
-                LogProductNotFound(reservation.ProductId, reservation.Id);
-            }
+            var expiredReservations = stock.Reservations.ToList();
 
-            reservation.Expire();
-            LogReservationExpired(reservation.OrderId, reservation.ProductId, reservation.Quantity);
+            foreach (var reservation in expiredReservations)
+            {
+                stock.ExpireReservation(reservation.Id);
+                LogReservationExpired(
+                    reservation.OrderId,
+                    reservation.ProductId,
+                    reservation.Quantity
+                );
+                totalExpired++;
+            }
         }
+
+        LogFoundExpiredReservations(totalExpired);
 
         try
         {
             await _dbContext.SaveChangesAsync(cancellationToken);
-            LogProcessingCompleted(expiredReservations.Count);
+            LogProcessingCompleted(totalExpired);
         }
         catch (DbUpdateConcurrencyException ex)
         {
@@ -78,12 +80,6 @@ public sealed partial class ExpireReservationsCommandHandler
         Message = "Found {Count} expired reservations to process"
     )]
     private partial void LogFoundExpiredReservations(int count);
-
-    [LoggerMessage(
-        Level = LogLevel.Warning,
-        Message = "Product {ProductId} not found for expired reservation {ReservationId}"
-    )]
-    private partial void LogProductNotFound(Guid productId, Guid reservationId);
 
     [LoggerMessage(
         Level = LogLevel.Debug,
