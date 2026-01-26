@@ -12,7 +12,7 @@ using Products.Infrastructure.Data;
 namespace Products.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ProductDbContext))]
-    [Migration("20260126101317_AddStockEntity")]
+    [Migration("20260126124628_AddStockEntity")]
     partial class AddStockEntity
     {
         /// <inheritdoc />
