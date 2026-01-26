@@ -22,60 +22,52 @@ public sealed class ReserveStockCommandHandler
         CancellationToken cancellationToken
     )
     {
-        // Idempotency check - return existing reservation if found
-        var existingReservation = await _dbContext
-            .StockReservations.Where(r => r.OrderId == request.OrderId)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        if (existingReservation != null)
+        var idempotencyResult = await CheckIdempotencyAsync(request.OrderId, cancellationToken);
+        if (idempotencyResult != null)
         {
-            return existingReservation.Status == EReservationStatus.Active
-                ? StockReservationResult.Succeeded()
-                : StockReservationResult.AlreadyProcessed(existingReservation.Status.ToString());
+            return idempotencyResult;
         }
 
-        // Get all products for reservation
-        var productIds = request.Items.Select(i => i.ProductId).ToList();
-        var products = await _dbContext
-            .Products.Where(p => productIds.Contains(p.Id))
-            .ToListAsync(cancellationToken);
+        var stocks = await LoadStocksAsync(request.Items, cancellationToken);
 
-        // Check if all products exist
-        if (products.Count != productIds.Count)
-        {
-            var foundIds = products.Select(p => p.Id).ToHashSet();
-            var missingIds = productIds.Where(id => !foundIds.Contains(id)).ToList();
-            return StockReservationResult.Failed(
-                $"Products not found: {string.Join(", ", missingIds)}"
-            );
-        }
-
-        // Try to reserve stock for each item (all-or-nothing)
-        var reservations = new List<StockReservationEntity>();
         foreach (var item in request.Items)
         {
-            var product = products.First(p => p.Id == item.ProductId);
-
-            if (!product.ReserveStock(item.Quantity))
-            {
-                return StockReservationResult.Failed(
-                    $"Insufficient stock for product {product.Id} ({product.Name}). "
-                        + $"Requested: {item.Quantity}, Available: {product.StockQuantity}"
-                );
-            }
-
-            var reservation = StockReservationEntity.Create(
-                request.OrderId,
-                product.Id,
-                item.Quantity
-            );
-            reservations.Add(reservation);
+            stocks[item.ProductId].ReserveStock(request.OrderId, item.Quantity);
         }
 
-        // All reservations successful - persist (domain events dispatched automatically)
-        _dbContext.StockReservations.AddRange(reservations);
         await _dbContext.SaveChangesAsync(cancellationToken);
-
         return StockReservationResult.Succeeded();
+    }
+
+    private async Task<StockReservationResult?> CheckIdempotencyAsync(
+        Guid orderId,
+        CancellationToken cancellationToken
+    )
+    {
+        var existing = await _dbContext
+            .StockReservations.Where(r => r.OrderId == orderId)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (existing == null)
+        {
+            return null;
+        }
+
+        return existing.Status == EReservationStatus.Active
+            ? StockReservationResult.Succeeded()
+            : StockReservationResult.AlreadyProcessed(existing.Status.ToString());
+    }
+
+    private async Task<Dictionary<Guid, StockEntity>> LoadStocksAsync(
+        IReadOnlyList<OrderItemDto> items,
+        CancellationToken cancellationToken
+    )
+    {
+        var productIds = items.Select(i => i.ProductId).ToList();
+
+        return await _dbContext
+            .Stocks.Include(s => s.Reservations.Where(r => r.Status == EReservationStatus.Active))
+            .Where(s => productIds.Contains(s.ProductId))
+            .ToDictionaryAsync(s => s.ProductId, cancellationToken);
     }
 }

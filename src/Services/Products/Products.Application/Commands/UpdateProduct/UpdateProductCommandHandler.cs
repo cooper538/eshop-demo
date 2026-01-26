@@ -31,7 +31,18 @@ public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductC
             throw NotFoundException.For<ProductEntity>(request.Id);
         }
 
-        request.ApplyTo(product);
+        // Load stock for response only (read-only, not modified here)
+        var stock = await _dbContext
+            .Stocks.AsNoTracking()
+            .FirstOrDefaultAsync(s => s.ProductId == request.Id, cancellationToken);
+
+        if (stock is null)
+        {
+            throw new NotFoundException($"Stock for product '{request.Id}' was not found.");
+        }
+
+        // Only modify the Product aggregate - Stock is updated via domain event
+        request.ApplyToProduct(product);
 
         try
         {
@@ -42,6 +53,6 @@ public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductC
             throw new ConflictException($"Product {request.Id} was modified by another user.");
         }
 
-        return ProductDto.FromEntity(product);
+        return ProductDto.FromEntity(product, stock);
     }
 }

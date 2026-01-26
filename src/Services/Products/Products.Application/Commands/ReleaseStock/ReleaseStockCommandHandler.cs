@@ -21,30 +21,30 @@ public sealed class ReleaseStockCommandHandler
         CancellationToken cancellationToken
     )
     {
-        // Find all active reservations for this order
-        var reservations = await _dbContext
-            .StockReservations.Where(r => r.OrderId == request.OrderId)
-            .Where(r => r.Status == EReservationStatus.Active)
+        // Find all stocks with active reservations for this order
+        var stocks = await _dbContext
+            .Stocks.Include(s =>
+                s.Reservations.Where(r =>
+                    r.OrderId == request.OrderId && r.Status == EReservationStatus.Active
+                )
+            )
+            .Where(s =>
+                s.Reservations.Any(r =>
+                    r.OrderId == request.OrderId && r.Status == EReservationStatus.Active
+                )
+            )
             .ToListAsync(cancellationToken);
 
         // Idempotent: if no active reservations, consider it already released
-        if (reservations.Count == 0)
+        if (stocks.Count == 0)
         {
             return StockReleaseResult.Succeeded();
         }
 
-        // Get products to release stock back
-        var productIds = reservations.Select(r => r.ProductId).ToList();
-        var products = await _dbContext
-            .Products.Where(p => productIds.Contains(p.Id))
-            .ToDictionaryAsync(p => p.Id, cancellationToken);
-
-        // Release stock and mark reservations as released
-        foreach (var reservation in reservations)
+        // Release reservations through the stock aggregate
+        foreach (var stock in stocks)
         {
-            var product = products[reservation.ProductId];
-            product.ReleaseStock(reservation.Quantity);
-            reservation.Release();
+            stock.ReleaseReservation(request.OrderId);
         }
 
         // Domain events dispatched automatically by DbContext

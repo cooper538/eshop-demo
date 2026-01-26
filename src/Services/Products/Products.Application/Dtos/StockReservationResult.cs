@@ -1,6 +1,6 @@
 namespace Products.Application.Dtos;
 
-public sealed record StockReservationResult(bool Success, string? FailureReason = null)
+public sealed record StockReservationResult(bool IsSuccess, string? FailureMessage = null)
 {
     public static StockReservationResult Succeeded() => new(true);
 

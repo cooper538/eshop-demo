@@ -21,16 +21,22 @@ public sealed class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQ
         CancellationToken cancellationToken
     )
     {
-        var product = await _dbContext.Products.FirstOrDefaultAsync(
-            p => p.Id == request.Id,
-            cancellationToken
-        );
+        var result = await _dbContext
+            .Products.Where(p => p.Id == request.Id)
+            .Join(
+                _dbContext.Stocks,
+                p => p.Id,
+                s => s.ProductId,
+                (p, s) =>
+                    new ProductDto(p.Id, p.Name, p.Description, p.Price, s.Quantity, p.Category)
+            )
+            .FirstOrDefaultAsync(cancellationToken);
 
-        if (product is null)
+        if (result is null)
         {
             throw NotFoundException.For<ProductEntity>(request.Id);
         }
 
-        return ProductDto.FromEntity(product);
+        return result;
     }
 }

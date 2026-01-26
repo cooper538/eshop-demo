@@ -14,15 +14,27 @@ public sealed record ProductDto(
     string Category
 )
 {
-    public static ProductDto FromEntity(ProductEntity entity)
+    public static ProductDto FromEntity(ProductEntity product, StockEntity stock)
     {
         return new ProductDto(
-            entity.Id,
-            entity.Name,
-            entity.Description,
-            entity.Price,
-            entity.StockQuantity,
-            entity.Category
+            product.Id,
+            product.Name,
+            product.Description,
+            product.Price,
+            stock.Quantity,
+            product.Category
+        );
+    }
+
+    public static ProductDto FromEntity(ProductEntity product, int stockQuantity)
+    {
+        return new ProductDto(
+            product.Id,
+            product.Name,
+            product.Description,
+            product.Price,
+            stockQuantity,
+            product.Category
         );
     }
 }

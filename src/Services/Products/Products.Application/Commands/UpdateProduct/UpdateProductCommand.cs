@@ -9,22 +9,23 @@ public sealed record UpdateProductCommand(
     string Name,
     string Description,
     decimal Price,
-    int StockQuantity,
     int LowStockThreshold,
     string Category
 ) : ICommand<ProductDto>;
 
 public static class UpdateProductCommandMapper
 {
-    public static void ApplyTo(this UpdateProductCommand command, ProductEntity productEntity)
+    public static void ApplyToProduct(
+        this UpdateProductCommand command,
+        ProductEntity productEntity
+    )
     {
         productEntity.Update(
             command.Name,
             command.Description,
             command.Price,
-            command.StockQuantity,
-            command.LowStockThreshold,
-            command.Category
+            command.Category,
+            command.LowStockThreshold
         );
     }
 }

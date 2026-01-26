@@ -33,14 +33,13 @@ public sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, 
             .OrderBy(p => p.Name)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(p => new ProductDto(
-                p.Id,
-                p.Name,
-                p.Description,
-                p.Price,
-                p.StockQuantity,
-                p.Category
-            ))
+            .Join(
+                _dbContext.Stocks,
+                p => p.Id,
+                s => s.ProductId,
+                (p, s) =>
+                    new ProductDto(p.Id, p.Name, p.Description, p.Price, s.Quantity, p.Category)
+            )
             .ToListAsync(cancellationToken);
 
         return new GetProductsResult(items, request.Page, request.PageSize, totalCount, totalPages);
