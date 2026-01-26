@@ -1,9 +1,24 @@
 using EShop.Common.Extensions;
 using FluentValidation;
+using NetEscapades.Configuration.Yaml;
+using Order.API.Configuration;
 using Order.Application.Data;
 using Order.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+var env = builder.Environment.EnvironmentName;
+
+// YAML Configuration
+builder
+    .Configuration.AddYamlFile("order.settings.yaml", optional: false, reloadOnChange: true)
+    .AddYamlFile($"order.settings.{env}.yaml", optional: true, reloadOnChange: true);
+
+// Bind and validate settings (fail-fast on invalid config)
+builder
+    .Services.AddOptions<OrderSettings>()
+    .BindConfiguration(OrderSettings.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 
 // Aspire ServiceDefaults
 builder.AddServiceDefaults();
