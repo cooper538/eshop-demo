@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-07 |
-| Status | ⚪ pending |
+| Status | 🔵 in_progress |
 | Dependencies | task-05, task-06 |
 
 ## Summary
@@ -25,4 +25,9 @@ Register Notification Service in Aspire orchestration and verify end-to-end even
 
 ---
 ## Notes
-(Updated during implementation)
+- AppHost integration already done in task-02 (notificationdb + rabbitmq + WaitFor)
+- Static verification passed: build OK, all references correct
+- Manual verification required:
+  1. `dotnet run --project src/AppHost` - verify service starts
+  2. Check Aspire dashboard - notification-service visible
+  3. Trigger order event via API - check consumer logs for email
