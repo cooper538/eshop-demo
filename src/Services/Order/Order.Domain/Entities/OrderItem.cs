@@ -1,6 +1,8 @@
+using EShop.SharedKernel.Domain;
+
 namespace Order.Domain.Entities;
 
-public class OrderItemEntity
+public class OrderItem : IOwnedEntity
 {
     public Guid ProductId { get; private set; }
     public string ProductName { get; private set; } = null!;
@@ -10,16 +12,11 @@ public class OrderItemEntity
     public decimal LineTotal => Quantity * UnitPrice;
 
     // EF Core constructor
-    private OrderItemEntity() { }
+    private OrderItem() { }
 
-    public static OrderItemEntity Create(
-        Guid productId,
-        string productName,
-        int quantity,
-        decimal unitPrice
-    )
+    public static OrderItem Create(Guid productId, string productName, int quantity, decimal unitPrice)
     {
-        return new OrderItemEntity
+        return new OrderItem
         {
             ProductId = productId,
             ProductName = productName,
