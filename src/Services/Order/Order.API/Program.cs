@@ -1,10 +1,13 @@
+using EShop.Common.Correlation.MassTransit;
 using EShop.Common.Extensions;
 using EShop.ServiceClients.Extensions;
 using FluentValidation;
+using MassTransit;
 using NetEscapades.Configuration.Yaml;
 using Order.API.Configuration;
 using Order.Application.Data;
 using Order.Infrastructure;
+using Order.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment.EnvironmentName;
@@ -41,6 +44,30 @@ builder.Services.AddValidatorsFromAssemblyContaining<IOrderDbContext>();
 
 // Infrastructure (DbContext)
 builder.AddInfrastructure();
+
+// MassTransit with RabbitMQ and Entity Framework Outbox
+builder.Services.AddMassTransit(x =>
+{
+    x.AddEntityFrameworkOutbox<OrderDbContext>(o =>
+    {
+        o.UsePostgres();
+        o.UseBusOutbox();
+    });
+
+    x.UsingRabbitMq(
+        (context, cfg) =>
+        {
+            var connectionString = builder.Configuration.GetConnectionString("messaging");
+            if (!string.IsNullOrEmpty(connectionString))
+            {
+                cfg.Host(new Uri(connectionString));
+            }
+
+            cfg.UseCorrelationIdFilters(context);
+            cfg.ConfigureEndpoints(context);
+        }
+    );
+});
 
 // Error handling
 builder.Services.AddErrorHandling();
