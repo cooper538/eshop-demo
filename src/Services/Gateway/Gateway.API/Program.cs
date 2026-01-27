@@ -1,5 +1,8 @@
+using System.Globalization;
+using System.Threading.RateLimiting;
 using EShop.Common.Extensions;
 using Gateway.API.Configuration;
+using Microsoft.AspNetCore.RateLimiting;
 using NetEscapades.Configuration.Yaml;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +23,48 @@ builder
 // Aspire ServiceDefaults
 builder.AddServiceDefaults();
 
+// Rate Limiting
+var rateLimitSettings =
+    builder
+        .Configuration.GetSection($"{GatewaySettings.SectionName}:RateLimiting")
+        .Get<RateLimitingSettings>()
+    ?? new RateLimitingSettings();
+
+if (rateLimitSettings.Enabled)
+{
+    builder.Services.AddRateLimiter(options =>
+    {
+        options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+        options.OnRejected = async (context, cancellationToken) =>
+        {
+            if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+            {
+                context.HttpContext.Response.Headers.RetryAfter = (
+                    (int)retryAfter.TotalSeconds
+                ).ToString(CultureInfo.InvariantCulture);
+            }
+
+            context.HttpContext.Response.ContentType = "application/json";
+            await context.HttpContext.Response.WriteAsync(
+                """{"error":"Rate limit exceeded. Please try again later."}""",
+                cancellationToken
+            );
+        };
+
+        options.AddFixedWindowLimiter(
+            "fixed",
+            opt =>
+            {
+                opt.PermitLimit = rateLimitSettings.PermitLimit;
+                opt.Window = TimeSpan.FromSeconds(rateLimitSettings.WindowSeconds);
+                opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                opt.QueueLimit = rateLimitSettings.QueueLimit;
+            }
+        );
+    });
+}
+
 // YARP Reverse Proxy with Service Discovery
 builder
     .Services.AddReverseProxy()
@@ -33,6 +78,11 @@ var app = builder.Build();
 
 // Middleware pipeline
 app.UseCorrelationId();
+
+if (rateLimitSettings.Enabled)
+{
+    app.UseRateLimiter();
+}
 
 app.MapReverseProxy();
 app.MapDefaultEndpoints();
