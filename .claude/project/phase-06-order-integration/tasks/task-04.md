@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-04 |
-| Status | :white_circle: pending |
+| Status | 🔵 in_progress |
 | Dependencies | task-03 |
 
 ## Summary
