@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=./Configuration/gateway.settings.schema.json
+# Gateway Service Configuration - Development Environment
+
+Logging:
+  LogLevel:
+    Default: "Information"
+    Microsoft.AspNetCore: "Warning"
+    Yarp: "Debug"
