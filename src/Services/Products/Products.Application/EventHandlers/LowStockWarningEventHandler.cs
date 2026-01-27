@@ -1,36 +1,61 @@
 using EShop.Common.Events;
+using EShop.Contracts.Events.Product;
+using MassTransit;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Products.Application.Data;
 using Products.Domain.Events;
 
 namespace Products.Application.EventHandlers;
 
-public sealed class LowStockWarningEventHandler
-    : INotificationHandler<DomainEventNotification<LowStockWarningDomainEvent>>
+public sealed class LowStockWarningEventHandler(
+    IProductDbContext dbContext,
+    IPublishEndpoint publishEndpoint,
+    ILogger<LowStockWarningEventHandler> logger
+) : INotificationHandler<DomainEventNotification<LowStockWarningDomainEvent>>
 {
-    private readonly ILogger<LowStockWarningEventHandler> _logger;
-
-    public LowStockWarningEventHandler(ILogger<LowStockWarningEventHandler> logger)
-    {
-        _logger = logger;
-    }
-
-    public Task Handle(
+    public async Task Handle(
         DomainEventNotification<LowStockWarningDomainEvent> notification,
         CancellationToken cancellationToken
     )
     {
-        var @event = notification.DomainEvent;
+        var domainEvent = notification.DomainEvent;
 
-        _logger.LogWarning(
+        logger.LogWarning(
             "Low stock warning for Product {ProductId}: Available {AvailableQuantity}, Threshold {Threshold}",
-            @event.ProductId,
-            @event.AvailableQuantity,
-            @event.Threshold
+            domainEvent.ProductId,
+            domainEvent.AvailableQuantity,
+            domainEvent.Threshold
         );
 
-        // TODO: Publish integration event to Notification service for admin alerts
+        var productName = await dbContext
+            .Products.Where(p => p.Id == domainEvent.ProductId)
+            .Select(p => p.Name)
+            .FirstOrDefaultAsync(cancellationToken);
 
-        return Task.CompletedTask;
+        if (productName is null)
+        {
+            logger.LogError(
+                "Cannot publish StockLowEvent - Product {ProductId} not found",
+                domainEvent.ProductId
+            );
+            return;
+        }
+
+        logger.LogInformation(
+            "Publishing StockLowEvent for Product {ProductId} ({ProductName})",
+            domainEvent.ProductId,
+            productName
+        );
+
+        var integrationEvent = new StockLowEvent(
+            domainEvent.ProductId,
+            productName,
+            domainEvent.AvailableQuantity,
+            domainEvent.Threshold
+        );
+
+        await publishEndpoint.Publish(integrationEvent, cancellationToken);
     }
 }
