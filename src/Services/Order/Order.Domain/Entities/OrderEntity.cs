@@ -1,5 +1,6 @@
 using EShop.SharedKernel.Domain;
 using Order.Domain.Enums;
+using Order.Domain.Events;
 using Order.Domain.Exceptions;
 
 namespace Order.Domain.Entities;
@@ -53,6 +54,23 @@ public class OrderEntity : AggregateRoot
 
         Status = EOrderStatus.Confirmed;
         UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(
+            new OrderConfirmedDomainEvent(
+                Id,
+                CustomerId,
+                CustomerEmail,
+                TotalAmount,
+                Items
+                    .Select(i => new OrderItemInfo(
+                        i.ProductId,
+                        i.ProductName,
+                        i.Quantity,
+                        i.UnitPrice
+                    ))
+                    .ToList()
+            )
+        );
     }
 
     public void Reject(string reason)
@@ -65,6 +83,8 @@ public class OrderEntity : AggregateRoot
         Status = EOrderStatus.Rejected;
         RejectionReason = reason;
         UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new OrderRejectedDomainEvent(Id, CustomerId, reason));
     }
 
     public void Cancel(string reason)
@@ -77,5 +97,7 @@ public class OrderEntity : AggregateRoot
         Status = EOrderStatus.Cancelled;
         RejectionReason = reason;
         UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new OrderCancelledDomainEvent(Id, CustomerId, reason));
     }
 }
