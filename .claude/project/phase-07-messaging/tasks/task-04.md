@@ -4,24 +4,19 @@
 | Key | Value |
 |-----|-------|
 | ID | task-04 |
-| Status | :white_circle: pending |
+| Status | ✅ completed |
 | Dependencies | task-01 |
 
 ## Summary
-Create EF Core SaveChangesInterceptor to dispatch domain events via MediatR before committing.
+Enable domain event dispatching in Order service via existing MediatR pipeline behavior.
 
 ## Scope
-- [ ] Create `DomainEventDispatcherInterceptor` extending `SaveChangesInterceptor`
-- [ ] Override `SavingChangesAsync` to dispatch events before save
-- [ ] Get all `AggregateRoot` entities from ChangeTracker with pending domain events
-- [ ] Clear domain events before dispatching to prevent duplicates
-- [ ] Dispatch each event via `IMediator.Publish()`
-- [ ] Register interceptor in `OrderDbContext` DI configuration
-- [ ] Verify solution builds successfully
+- [x] Register `AddDomainEvents()` in Order.API to enable `IDomainEventDispatcher`
+- [x] Verify solution builds successfully
 
 ## Related Specs
 - → [messaging-communication.md](../../high-level-specs/messaging-communication.md) (Section 5.4: Publishing Flow)
 
 ---
 ## Notes
-(Updated during implementation)
+Domain event dispatching was already implemented in EShop.Common as MediatR pipeline behavior (`DomainEventDispatchBehavior`). Only needed to add `AddDomainEvents()` registration to Order.API/Program.cs.
