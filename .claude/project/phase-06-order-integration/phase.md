@@ -3,16 +3,16 @@
 ## Metadata
 | Key | Value |
 |-----|-------|
-| Status | :white_circle: pending |
+| Status | ✅ completed |
 
 ## Objective
 Integrate Order Service with Product Service via gRPC communication
 
 ## Scope
-- [ ] Configure gRPC client in ServiceClients for Order Service
-- [ ] Configure Polly resilience policies (retry, circuit breaker)
-- [ ] Integrate stock reservation into CreateOrder flow
-- [ ] Add CorrelationId propagation (middleware + interceptors)
+- [x] Configure gRPC client in ServiceClients for Order Service
+- [x] Configure Polly resilience policies (retry, circuit breaker)
+- [x] Integrate stock reservation into CreateOrder flow
+- [x] Add CorrelationId propagation (middleware + interceptors)
 
 ## Tasks
 
