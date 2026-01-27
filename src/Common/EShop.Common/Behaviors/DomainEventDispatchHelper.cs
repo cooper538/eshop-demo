@@ -34,7 +34,7 @@ internal static class DomainEventDispatchHelper
     )
     {
         var entities = changeTrackerAccessor
-            .ChangeTracker.Entries<Entity>()
+            .ChangeTracker.Entries<AggregateRoot>()
             .Where(e => e.Entity.DomainEvents.Count > 0)
             .Select(e => e.Entity)
             .ToList();
