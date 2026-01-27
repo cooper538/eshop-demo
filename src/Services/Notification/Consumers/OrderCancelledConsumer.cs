@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EShop.NotificationService.Consumers;
 
-public class OrderCancelledConsumer(
+public sealed class OrderCancelledConsumer(
     NotificationDbContext dbContext,
     IEmailService emailService,
     ILogger<OrderCancelledConsumer> logger

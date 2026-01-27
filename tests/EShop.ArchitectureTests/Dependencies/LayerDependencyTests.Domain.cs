@@ -61,7 +61,7 @@ public partial class LayerDependencyTests
         var result = Types
             .InAssembly(GetAssembly(assemblyFieldName))
             .ShouldNot()
-            .HaveDependencyOn(ServiceLayerDefinitions.Shared.Common)
+            .HaveDependencyOn(CommonAssembly.Name())
             .GetResult();
 
         AssertNoViolations(result, $"{serviceName}.Domain should not depend on EShop.Common.");
@@ -75,7 +75,7 @@ public partial class LayerDependencyTests
         var result = Types
             .InAssembly(GetAssembly(assemblyFieldName))
             .ShouldNot()
-            .HaveDependencyOn(ServiceLayerDefinitions.Shared.Contracts)
+            .HaveDependencyOn(ContractsAssembly.Name())
             .GetResult();
 
         AssertNoViolations(result, $"{serviceName}.Domain should not depend on EShop.Contracts.");
@@ -92,7 +92,7 @@ public partial class LayerDependencyTests
         var result = Types
             .InAssembly(GetAssembly(assemblyFieldName))
             .ShouldNot()
-            .HaveDependencyOn(ServiceLayerDefinitions.Shared.ServiceClients)
+            .HaveDependencyOn(ServiceClientsAssembly.Name())
             .GetResult();
 
         AssertNoViolations(

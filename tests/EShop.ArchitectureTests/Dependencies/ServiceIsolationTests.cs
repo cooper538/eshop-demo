@@ -15,7 +15,7 @@ public class ServiceIsolationTests : ArchitectureTestBase
         var result = Types
             .InAssembly(OrderDomainAssembly)
             .ShouldNot()
-            .HaveDependencyOn(ServiceLayerDefinitions.Products.Domain)
+            .HaveDependencyOn(ProductsDomainAssembly.Name())
             .GetResult();
 
         AssertNoViolations(
@@ -30,7 +30,7 @@ public class ServiceIsolationTests : ArchitectureTestBase
         var result = Types
             .InAssembly(ProductsDomainAssembly)
             .ShouldNot()
-            .HaveDependencyOn(ServiceLayerDefinitions.Order.Domain)
+            .HaveDependencyOn(OrderDomainAssembly.Name())
             .GetResult();
 
         AssertNoViolations(
@@ -49,7 +49,7 @@ public class ServiceIsolationTests : ArchitectureTestBase
         var result = Types
             .InAssembly(OrderApplicationAssembly)
             .ShouldNot()
-            .HaveDependencyOn(ServiceLayerDefinitions.Products.Application)
+            .HaveDependencyOn(ProductsApplicationAssembly.Name())
             .GetResult();
 
         AssertNoViolations(
@@ -64,7 +64,7 @@ public class ServiceIsolationTests : ArchitectureTestBase
         var result = Types
             .InAssembly(ProductsApplicationAssembly)
             .ShouldNot()
-            .HaveDependencyOn(ServiceLayerDefinitions.Order.Application)
+            .HaveDependencyOn(OrderApplicationAssembly.Name())
             .GetResult();
 
         AssertNoViolations(

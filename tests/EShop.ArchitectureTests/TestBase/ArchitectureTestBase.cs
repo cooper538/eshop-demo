@@ -2,6 +2,11 @@ using System.Reflection;
 
 namespace EShop.ArchitectureTests.TestBase;
 
+public static class AssemblyExtensions
+{
+    public static string Name(this Assembly assembly) => assembly.GetName().Name!;
+}
+
 public abstract class ArchitectureTestBase
 {
     // Order Service assemblies
@@ -42,6 +47,13 @@ public abstract class ArchitectureTestBase
     protected static readonly Assembly ServiceClientsAssembly =
         typeof(EShop.ServiceClients.Clients.Product.GrpcProductServiceClient).Assembly;
 
+    // Infrastructure services (no Clean Architecture layers)
+    protected static readonly Assembly GatewayApiAssembly =
+        typeof(Gateway.API.Configuration.GatewaySettings).Assembly;
+
+    protected static readonly Assembly NotificationAssembly =
+        typeof(EShop.NotificationService.Consumers.OrderConfirmedConsumer).Assembly;
+
     // Assembly lookup dictionary for DataRow tests
     private static readonly Dictionary<string, Assembly> Assemblies = new()
     {
@@ -57,6 +69,8 @@ public abstract class ArchitectureTestBase
         [nameof(CommonAssembly)] = CommonAssembly,
         [nameof(ContractsAssembly)] = ContractsAssembly,
         [nameof(ServiceClientsAssembly)] = ServiceClientsAssembly,
+        [nameof(GatewayApiAssembly)] = GatewayApiAssembly,
+        [nameof(NotificationAssembly)] = NotificationAssembly,
     };
 
     #region Assembly Helpers
