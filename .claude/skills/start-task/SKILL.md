@@ -6,14 +6,14 @@ allowed-tools: Bash, Read, AskUserQuestion
 
 # Start Task
 
-Validate dependencies, create feature branch, and update task status to start working on a task.
+Validate dependencies and update task status. Optionally create a feature branch.
 
 ## Usage
 
 ```
-/start-task 02                              # Task 02 in current phase
-/start-task task-02                         # Explicit task-02
-/start-task phase-01/task-02-shared-kernel  # Full branch name
+/start-task 02                # Task 02 - stays on main (default)
+/start-task 02 --branch       # Task 02 - creates feature branch
+/start-task task-02           # Explicit task-02
 ```
 
 ## Current State
@@ -24,6 +24,9 @@ Current branch:
 Uncommitted changes:
 !git status --porcelain
 
+Is worktree:
+!test -f "$(git rev-parse --show-toplevel)/.git" && echo "YES - WORKTREE" || echo "NO - main repo"
+
 ## Process
 
 ### Step 1: Parse Task Identifier
@@ -31,31 +34,38 @@ Uncommitted changes:
 The script accepts multiple formats:
 - `02` or `2` - just task number (uses current or default phase)
 - `task-02` - explicit task ID
-- `phase-01/task-02-description` - full branch name
+- `--branch` flag - create feature branch instead of staying on main
 
 ### Step 2: Validate Dependencies
 
-Before starting, the script checks:
+Before starting, check:
 1. Task file exists in `.claude/project/phase-XX-*/tasks/`
 2. Task is not already in_progress or completed
 3. All dependencies are completed (status: ✅)
 
 If blocked, show which tasks need to be completed first.
 
-### Step 3: Create/Switch Branch
+### Step 3: Detect Mode & Handle Branch
 
+**Mode detection:**
 ```bash
-.claude/scripts/start-task.sh <task-identifier>
+IS_WORKTREE=false
+if [[ -f "$(git rev-parse --show-toplevel)/.git" ]]; then
+  IS_WORKTREE=true
+fi
 ```
 
-The script will:
-- Generate branch name from task file: `phase-XX/task-YY-description`
-- Create new branch from main if doesn't exist
-- Switch to existing branch if it already exists
+**Branch handling by mode:**
+
+| Mode | Action |
+|------|--------|
+| MAIN (default) | Stay on main, no branch created |
+| `--branch` flag | Create `phase-XX/task-YY-desc` branch from main |
+| WORKTREE | Branch already exists, just update status |
 
 ### Step 4: Update Task Status
 
-The script automatically updates the task file:
+Update the task file:
 - Changes `| Status | ⚪ pending |` to `| Status | 🔵 in_progress |`
 
 ### Step 5: Show Task Scope
@@ -64,19 +74,32 @@ After starting, display the task's scope section for context.
 
 ## Arguments
 
-- `$ARGUMENTS` - Task identifier in any supported format
+- `$ARGUMENTS` - Task identifier + optional flags
+  - `02` - task number
+  - `--branch` - create feature branch (otherwise stays on main)
 
 ## Output
 
-On success:
+On success (MAIN mode):
 ```
 Started task task-02: Shared Kernel
+Mode: MAIN (commits go directly to main)
+Task file: .claude/project/phase-01-foundation/tasks/task-02-shared-kernel.md
+
+Task scope:
+- [ ] Implement Entity base class
+...
+```
+
+On success (BRANCH mode):
+```
+Started task task-02: Shared Kernel
+Mode: FEATURE_BRANCH
 Branch: phase-01/task-02-shared-kernel
 Task file: .claude/project/phase-01-foundation/tasks/task-02-shared-kernel.md
 
 Task scope:
 - [ ] Implement Entity base class
-- [ ] Implement ValueObject base class
 ...
 ```
 
@@ -97,5 +120,5 @@ Complete the blocking tasks first or use /task-status to see the full picture.
 
 After starting a task:
 - Use `/commit` to commit changes with proper `[XX-YY] type:` format
-- Use `/finish-task` when done to complete and merge
+- Use `/finish-task` when done (behavior depends on mode)
 - Use `/task-status` to check progress

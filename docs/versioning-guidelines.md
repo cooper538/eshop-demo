@@ -25,27 +25,36 @@ Where:
 
 ---
 
-## Trunk-Based Development
+## Work Modes
 
-- Primary development on `main` branch
-- Short-lived feature branches (1-2 days max)
-- Frequent integration to main
-- No long-running branches
+### MAIN (Default)
+- Commits go directly to `main` branch
+- Simplest workflow for most tasks
+- Linear history maintained naturally
+
+### Feature Branch (Optional)
+- Use `/start-task XX --branch` to create
+- All commits stay on feature branch
+- Squash merge to main when done via `/finish-task`
+
+### Worktree (Parallel Work)
+- Use `/worktree add task-XX` to create
+- Separate directory with its own branch
+- Squash merge to main when done via `/finish-task`
 
 ---
 
-## Rebase Strategy
+## Squash Merge Strategy
 
-- Always rebase before merging to main
-- Squash related commits into logical units
-- Maintain linear history
-- Never rebase shared/pushed commits
+When using feature branches or worktrees:
+- All branch commits are combined into one commit on main
+- Maintains clean, linear history
+- Each task = one commit on main
 
 ```bash
-# Update feature branch before merge
-git fetch origin
-git rebase origin/main
-
-# Interactive rebase to squash
-git rebase -i origin/main
+# Squash merge (done automatically by /finish-task)
+git checkout main
+git merge --squash <feature-branch>
+git commit -m "[XX-YY] feat: <summary of all changes>"
+git branch -d <feature-branch>
 ```

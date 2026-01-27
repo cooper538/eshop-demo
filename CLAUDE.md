@@ -1,9 +1,9 @@
 # CRITICAL RULES (Never Break)
 
-- **NEVER** run `git commit` directly - ALWAYS use `/commit` skill
-- **NEVER** run `git merge` or `git rebase` directly - ALWAYS use `/finish-task` skill
 - **NEVER** commit without explicit user approval (handled by `/commit`)
 - **ALWAYS** stop and ask before completing a task
+- **ALWAYS** use `/commit` skill for commits (ensures proper format)
+- When on feature branch or worktree, use `/finish-task` for squash merge
 
 # General
 
@@ -21,33 +21,38 @@ All customizations in `.claude/` directory:
 
 ## Task Workflow
 
-### Branch Naming Convention
-Work on a task MUST happen in a feature branch with the following convention:
+### Three Work Modes
+
+| Mode | When to use | How to start |
+|------|-------------|--------------|
+| **MAIN** (default) | Normal work, direct commits to main | `/start-task XX` |
+| **FEATURE_BRANCH** | Isolated changes, code review needed | `/start-task XX --branch` |
+| **WORKTREE** | Parallel work on multiple tasks | `/worktree add task-XX` |
+
+### Detection Logic
+- **WORKTREE**: `.git` is a file (not directory)
+- **FEATURE_BRANCH**: current branch ≠ main, not worktree
+- **MAIN**: current branch = main
+
+### Branch Naming (for feature branches/worktrees)
 
 **Format**: `phase-XX/task-YY-short-description`
 - `XX` = phase number (01, 02, ...)
 - `YY` = task number (01, 02, ...)
 - `short-description` = max 4 words, kebab-case
 
-**Examples**:
-- `phase-01/task-02-shared-kernel`
-- `phase-01/task-03-contracts-events`
-- `phase-02/task-01-aspire-setup`
-
 ### Workflow
 
-**Task lifecycle (MANDATORY skills):**
-
+**MAIN mode (default):**
 1. `/task-status` - check what's available
-2. `/start-task XX` - creates branch, updates status
-3. Development - write code, make changes
-4. **`/commit`** - REQUIRED for all commits (asks for approval)
-5. **`/finish-task`** - REQUIRED to complete (runs tests, rebase, merge)
+2. `/start-task XX` - updates status to 🔵 (stays on main)
+3. Development + `/commit` - commits directly to main
+4. `/finish-task` - updates status to ✅
 
-**FORBIDDEN**: Direct `git commit`, `git merge`, `git rebase` commands
-
-**Alternative for parallel work:**
-- `/worktree add task-XX` - new worktree for another task
+**FEATURE_BRANCH / WORKTREE mode:**
+1. `/start-task XX --branch` or `/worktree add task-XX`
+2. Development + `/commit` - commits on feature branch
+3. `/finish-task` - squash merge to main, delete branch
 
 ### Checkpoints (Stop and Confirm)
 
@@ -77,11 +82,17 @@ When user says "pokračuj" or "continue":
 | `/phase-breakdown` | Break down phase into tasks |
 | `/analyze` | Run code analyzers (packages, quality, security) |
 
-### When to Use Worktree
-Use `/worktree add` when:
-1. **Parallel work** - working on multiple tasks simultaneously in different sessions
-2. **Potential conflict** - another session is working on a task that may modify similar files
-3. **Quick fix** - need to quickly fix something on main while working on a feature
+### When to Use Feature Branch or Worktree
+
+**Use `--branch` when:**
+- Experimental changes you might want to discard
+- Need code review before merging
+- Larger isolated changes
+
+**Use `/worktree add` when:**
+- Working on multiple tasks simultaneously
+- Don't want to stash changes when switching
+- Long-running feature across multiple sessions
 
 ### Implementation Notes
 

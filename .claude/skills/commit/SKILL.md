@@ -58,9 +58,10 @@ If nothing is staged:
 
 **Check for `--meta` flag first**: If `$ARGUMENTS` contains `--meta`, use `[00-00] meta:` format and skip Steps 2 and 3 (phase/task detection and type detection).
 
-Otherwise, try to auto-detect from:
-1. **Branch name**: Look for patterns like `01-02`, `phase-01/task-02`, `p01-t02`, `phase01-task02`
-2. **Recent commits**: Check if recent commits follow the `[XX-YY]` format and extract the latest
+Otherwise, try to auto-detect from (in order):
+1. **Branch name** (if not on main): Look for patterns like `phase-01/task-02`, `01-02`
+2. **Task files**: Find task with `🔵 in_progress` status in `.claude/project/phase-*/tasks/`
+3. **Recent commits**: Check if recent commits follow the `[XX-YY]` format and extract the latest
 
 If detection fails, use AskUserQuestion:
 - Ask for phase number (e.g., "01", "02")
