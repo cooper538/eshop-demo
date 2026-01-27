@@ -1,4 +1,5 @@
 using EShop.Common.Data;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Order.Application.Data;
@@ -25,5 +26,10 @@ public class OrderDbContext : DbContext, IOrderDbContext, IChangeTrackerAccessor
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderDbContext).Assembly);
+
+        // MassTransit Outbox entities
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
+        modelBuilder.AddOutboxStateEntity();
     }
 }
