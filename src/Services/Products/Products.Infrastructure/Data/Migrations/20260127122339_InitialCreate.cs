@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Products.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddStockReservations : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Products",
+                name: "Product",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -32,8 +32,6 @@ namespace Products.Infrastructure.Data.Migrations
                         scale: 2,
                         nullable: false
                     ),
-                    StockQuantity = table.Column<int>(type: "integer", nullable: false),
-                    LowStockThreshold = table.Column<int>(type: "integer", nullable: false),
                     Category = table.Column<string>(
                         type: "character varying(100)",
                         maxLength: 100,
@@ -55,15 +53,36 @@ namespace Products.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Products", x => x.Id);
+                    table.PrimaryKey("PK_Product", x => x.Id);
                 }
             );
 
             migrationBuilder.CreateTable(
-                name: "StockReservations",
+                name: "Stock",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    LowStockThreshold = table.Column<int>(type: "integer", nullable: false),
+                    Version = table.Column<byte[]>(
+                        type: "bytea",
+                        rowVersion: true,
+                        nullable: false
+                    ),
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stock", x => x.Id);
+                }
+            );
+
+            migrationBuilder.CreateTable(
+                name: "StockReservation",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StockId = table.Column<Guid>(type: "uuid", nullable: false),
                     OrderId = table.Column<Guid>(type: "uuid", nullable: false),
                     ProductId = table.Column<Guid>(type: "uuid", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
@@ -80,38 +99,61 @@ namespace Products.Infrastructure.Data.Migrations
                         nullable: true
                     ),
                     Status = table.Column<int>(type: "integer", nullable: false),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false),
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StockReservations", x => x.Id);
+                    table.PrimaryKey("PK_StockReservation", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StockReservation_Stock_StockId",
+                        column: x => x.StockId,
+                        principalTable: "Stock",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade
+                    );
                 }
             );
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockReservations_OrderId",
-                table: "StockReservations",
+                name: "IX_Stock_ProductId",
+                table: "Stock",
+                column: "ProductId",
+                unique: true
+            );
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockReservation_OrderId",
+                table: "StockReservation",
                 column: "OrderId"
             );
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockReservations_ProductId",
-                table: "StockReservations",
+                name: "IX_StockReservation_ProductId",
+                table: "StockReservation",
                 column: "ProductId"
             );
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockReservations_Status_ExpiresAt",
-                table: "StockReservations",
+                name: "IX_StockReservation_Status_ExpiresAt",
+                table: "StockReservation",
                 columns: new[] { "Status", "ExpiresAt" }
+            );
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockReservation_StockId",
+                table: "StockReservation",
+                column: "StockId"
             );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(name: "Products");
+            migrationBuilder.DropTable(name: "Product");
 
-            migrationBuilder.DropTable(name: "StockReservations");
+            migrationBuilder.DropTable(name: "StockReservation");
+
+            migrationBuilder.DropTable(name: "Stock");
         }
     }
 }

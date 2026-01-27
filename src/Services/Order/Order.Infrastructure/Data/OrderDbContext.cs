@@ -15,6 +15,11 @@ public class OrderDbContext : DbContext, IOrderDbContext, IChangeTrackerAccessor
 
     ChangeTracker IChangeTrackerAccessor.ChangeTracker => ChangeTracker;
 
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Conventions.Add(_ => new RemoveEntitySuffixConvention());
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

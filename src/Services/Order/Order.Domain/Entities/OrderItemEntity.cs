@@ -1,6 +1,6 @@
 namespace Order.Domain.Entities;
 
-public class OrderItem
+public class OrderItemEntity
 {
     public Guid ProductId { get; private set; }
     public string ProductName { get; private set; } = null!;
@@ -10,16 +10,16 @@ public class OrderItem
     public decimal LineTotal => Quantity * UnitPrice;
 
     // EF Core constructor
-    private OrderItem() { }
+    private OrderItemEntity() { }
 
-    public static OrderItem Create(
+    public static OrderItemEntity Create(
         Guid productId,
         string productName,
         int quantity,
         decimal unitPrice
     )
     {
-        return new OrderItem
+        return new OrderItemEntity
         {
             ProductId = productId,
             ProductName = productName,

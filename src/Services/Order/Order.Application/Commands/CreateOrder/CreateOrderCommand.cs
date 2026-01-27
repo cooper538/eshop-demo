@@ -21,7 +21,7 @@ public static class CreateOrderCommandMapper
     public static OrderEntity ToEntity(this CreateOrderCommand command)
     {
         var items = command.Items.Select(i =>
-            OrderItem.Create(i.ProductId, i.ProductName, i.Quantity, i.UnitPrice)
+            OrderItemEntity.Create(i.ProductId, i.ProductName, i.Quantity, i.UnitPrice)
         );
 
         return OrderEntity.Create(command.CustomerId, command.CustomerEmail, items);

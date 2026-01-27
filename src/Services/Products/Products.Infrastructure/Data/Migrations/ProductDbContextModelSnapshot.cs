@@ -61,7 +61,7 @@ namespace Products.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Product");
                 });
 
             modelBuilder.Entity("Products.Domain.Entities.StockEntity", b =>
@@ -90,7 +90,7 @@ namespace Products.Infrastructure.Data.Migrations
                     b.HasIndex("ProductId")
                         .IsUnique();
 
-                    b.ToTable("Stocks");
+                    b.ToTable("Stock");
                 });
 
             modelBuilder.Entity("Products.Domain.Entities.StockReservationEntity", b =>
@@ -139,7 +139,7 @@ namespace Products.Infrastructure.Data.Migrations
 
                     b.HasIndex("Status", "ExpiresAt");
 
-                    b.ToTable("StockReservations");
+                    b.ToTable("StockReservation");
                 });
 
             modelBuilder.Entity("Products.Domain.Entities.StockReservationEntity", b =>
