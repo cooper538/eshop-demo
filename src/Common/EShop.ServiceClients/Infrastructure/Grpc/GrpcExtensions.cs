@@ -1,4 +1,3 @@
-using EShop.Common.Correlation;
 using EShop.ServiceClients.Exceptions;
 using Grpc.Core;
 
@@ -6,16 +5,6 @@ namespace EShop.ServiceClients.Infrastructure.Grpc;
 
 public static class GrpcExtensions
 {
-    public static Metadata WithCorrelationId(this Metadata headers, string? correlationId)
-    {
-        if (!string.IsNullOrEmpty(correlationId))
-        {
-            headers.Add(CorrelationIdConstants.GrpcMetadataKey, correlationId);
-        }
-
-        return headers;
-    }
-
     public static ServiceClientException ToServiceClientException(
         this RpcException ex,
         string operation

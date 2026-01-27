@@ -1,3 +1,4 @@
+using EShop.Common.Grpc;
 using EShop.Contracts.ServiceClients.Product;
 using EShop.ServiceClients.Clients.Product;
 using EShop.ServiceClients.Configuration;
@@ -41,6 +42,7 @@ public static class ServiceCollectionExtensions
         var serviceConfig = CreateServiceConfig(retryOptions);
 
         services.AddTransient<LoggingInterceptor>();
+        services.AddTransient<CorrelationIdClientInterceptor>();
 
         services
             .AddGrpcClient<EShop.Grpc.Product.ProductService.ProductServiceClient>(o =>
@@ -62,6 +64,7 @@ public static class ServiceCollectionExtensions
 
                 return handler;
             })
+            .AddInterceptor<CorrelationIdClientInterceptor>()
             .AddInterceptor<LoggingInterceptor>();
 
         services.AddScoped<IProductServiceClient, GrpcProductServiceClient>();
