@@ -1,3 +1,4 @@
+using EShop.Common.Correlation.MassTransit;
 using EShop.NotificationService.Consumers;
 using EShop.NotificationService.Data;
 using EShop.NotificationService.Services;
@@ -43,6 +44,9 @@ builder.Services.AddMassTransit(x =>
                     TimeSpan.FromSeconds(15)
                 )
             );
+
+            // CorrelationId propagation via message headers
+            cfg.UseCorrelationIdFilters(context);
 
             cfg.ConfigureEndpoints(context);
         }
