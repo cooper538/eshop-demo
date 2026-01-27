@@ -65,6 +65,21 @@ if (rateLimitSettings.Enabled)
     });
 }
 
+// Output Caching for Products
+builder.Services.AddOutputCache(options =>
+{
+    options.AddPolicy(
+        "ProductsCache",
+        policy => policy.Expire(TimeSpan.FromMinutes(5)).Tag("products")
+    );
+
+    options.AddPolicy(
+        "ProductDetailCache",
+        policy =>
+            policy.Expire(TimeSpan.FromMinutes(2)).SetVaryByRouteValue("catch-all").Tag("products")
+    );
+});
+
 // YARP Reverse Proxy with Service Discovery
 builder
     .Services.AddReverseProxy()
@@ -84,6 +99,7 @@ if (rateLimitSettings.Enabled)
     app.UseRateLimiter();
 }
 
+app.UseOutputCache();
 app.MapReverseProxy();
 app.MapDefaultEndpoints();
 
