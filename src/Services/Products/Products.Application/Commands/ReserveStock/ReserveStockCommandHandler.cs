@@ -45,7 +45,8 @@ public sealed class ReserveStockCommandHandler
     )
     {
         var existing = await _dbContext
-            .StockReservations.Where(r => r.OrderId == orderId)
+            .Stocks.SelectMany(s => s.Reservations)
+            .Where(r => r.OrderId == orderId)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (existing == null)
