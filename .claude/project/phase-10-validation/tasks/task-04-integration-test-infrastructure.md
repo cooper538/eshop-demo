@@ -1,21 +1,19 @@
-# Task 10: Integration Test Infrastructure
+# Task 04: Integration Test Infrastructure
 
 ## Metadata
 | Key | Value |
 |-----|-------|
-| ID | task-10 |
+| ID | task-04 |
 | Status | ⚪ pending |
 | Dependencies | task-01 |
 
-## Objective
-Setup shared integration testing infrastructure with Testcontainers and Respawn.
+## Summary
+Setup shared integration testing infrastructure with Testcontainers, Respawn, and WebApplicationFactory.
 
 ## Scope
-- [ ] Create `tests/Common.IntegrationTests/` project (or shared infrastructure)
+- [ ] Create `tests/Common.IntegrationTests/` project
 - [ ] Add NuGet packages:
-  - [ ] Testcontainers
-  - [ ] Testcontainers.PostgreSql
-  - [ ] Testcontainers.RabbitMq
+  - [ ] Testcontainers, Testcontainers.PostgreSql, Testcontainers.RabbitMq
   - [ ] Respawn
   - [ ] Microsoft.AspNetCore.Mvc.Testing
 - [ ] Create `PostgresContainerFixture` class
@@ -33,16 +31,10 @@ Setup shared integration testing infrastructure with Testcontainers and Respawn.
   - [ ] Database reset helper
 - [ ] Update `EShopDemo.sln`
 
-## Dependencies
-- Depends on: task-01
-- Blocks: task-11, task-12, task-13
+## Related Specs
+- → [functional-testing.md](../../high-level-specs/functional-testing.md) (Section: Integration Testing)
 
-## Acceptance Criteria
-- [ ] PostgreSQL container starts and provides valid connection
-- [ ] RabbitMQ container starts and provides valid connection
-- [ ] Respawn resets database correctly
-- [ ] Base classes are reusable across service test projects
-
+---
 ## Notes
 - Use postgres:16-alpine image for speed
 - Use rabbitmq:3-management-alpine image

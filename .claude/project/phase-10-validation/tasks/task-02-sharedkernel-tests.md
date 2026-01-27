@@ -7,8 +7,8 @@
 | Status | ⚪ pending |
 | Dependencies | task-01 |
 
-## Objective
-Comprehensive unit tests for EShop.SharedKernel core abstractions.
+## Summary
+Unit tests for EShop.SharedKernel DDD building blocks (Entity, ValueObject, Guard).
 
 ## Scope
 - [ ] Test `Entity<TId>` base class
@@ -28,15 +28,10 @@ Comprehensive unit tests for EShop.SharedKernel core abstractions.
   - [ ] Guard.Against.NegativeOrZero
   - [ ] Guard.Against.OutOfRange
 
-## Dependencies
-- Depends on: task-01
-- Blocks: none
+## Related Specs
+- → [unit-testing.md](../../high-level-specs/unit-testing.md) (Section: Test Organization)
 
-## Acceptance Criteria
-- [ ] All Guard methods have at least one positive and one negative test
-- [ ] Entity equality tests cover edge cases
-- [ ] ValueObject tests verify structural equality
-
+---
 ## Notes
 - These are foundational tests - be thorough
 - Use Theory/InlineData for parameterized tests where applicable

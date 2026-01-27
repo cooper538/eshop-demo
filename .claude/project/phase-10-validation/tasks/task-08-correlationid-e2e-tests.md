@@ -1,14 +1,14 @@
-# Task 15: CorrelationId E2E Tests
+# Task 08: CorrelationId E2E Tests
 
 ## Metadata
 | Key | Value |
 |-----|-------|
-| ID | task-15 |
+| ID | task-08 |
 | Status | ⚪ pending |
-| Dependencies | task-13 |
+| Dependencies | task-06 |
 
-## Objective
-Verify CorrelationId propagates correctly across all services and communication channels.
+## Summary
+Verify CorrelationId propagates correctly across all services via HTTP, gRPC, and messaging.
 
 ## Scope
 - [ ] Test CorrelationId generation at Gateway
@@ -29,16 +29,11 @@ Verify CorrelationId propagates correctly across all services and communication 
   - [ ] All services use same CorrelationId for single request
   - [ ] Logs can be correlated across services
 
-## Dependencies
-- Depends on: task-13
-- Blocks: none
+## Related Specs
+- → [correlation-id-flow.md](../../high-level-specs/correlation-id-flow.md)
+- → [functional-testing.md](../../high-level-specs/functional-testing.md) (Section: E2E Testing)
 
-## Acceptance Criteria
-- [ ] Single CorrelationId traces through all services
-- [ ] CorrelationId present in all log entries
-- [ ] CorrelationId propagates via HTTP, gRPC, and messaging
-- [ ] External request without CorrelationId gets one generated
-
+---
 ## Notes
 - May need to capture/inspect logs programmatically
 - Consider using test ILogger that captures correlation

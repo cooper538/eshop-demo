@@ -1,14 +1,14 @@
-# Task 16: Project Startup Documentation
+# Task 09: Project Startup Documentation
 
 ## Metadata
 | Key | Value |
 |-----|-------|
-| ID | task-16 |
+| ID | task-09 |
 | Status | ⚪ pending |
-| Dependencies | task-14 |
+| Dependencies | task-07, task-08 |
 
-## Objective
-Document how to run and test the EShop Demo project.
+## Summary
+Document how to run and test the EShop Demo project for new developers and reviewers.
 
 ## Scope
 - [ ] Create/update `docs/getting-started.md`
@@ -32,15 +32,10 @@ Document how to run and test the EShop Demo project.
   - [ ] Quick start section
   - [ ] Link to detailed docs
 
-## Dependencies
-- Depends on: task-14
-- Blocks: none
+## Related Specs
+- → [aspire-orchestration.md](../../high-level-specs/aspire-orchestration.md)
 
-## Acceptance Criteria
-- [ ] New developer can run project following docs
-- [ ] All test commands documented
-- [ ] Architecture is understandable from docs
-
+---
 ## Notes
 - Keep docs concise but complete
 - Include troubleshooting section for common issues
