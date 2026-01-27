@@ -23,11 +23,31 @@ Gateway:
 
 ReverseProxy:
   Routes:
-    products-route:
+    # GET /api/products - cached 5 min
+    products-list-route:
+      ClusterId: "product-cluster"
+      RateLimiterPolicy: "fixed"
+      OutputCachePolicy: "ProductsCache"
+      Match:
+        Path: "/api/products"
+        Methods: ["GET"]
+
+    # GET /api/products/{id} - cached 2 min
+    products-detail-route:
+      ClusterId: "product-cluster"
+      RateLimiterPolicy: "fixed"
+      OutputCachePolicy: "ProductDetailCache"
+      Match:
+        Path: "/api/products/{**catch-all}"
+        Methods: ["GET"]
+
+    # POST/PUT/DELETE /api/products - no cache
+    products-write-route:
       ClusterId: "product-cluster"
       RateLimiterPolicy: "fixed"
       Match:
         Path: "/api/products/{**catch-all}"
+        Methods: ["POST", "PUT", "DELETE"]
 
     orders-route:
       ClusterId: "order-cluster"
