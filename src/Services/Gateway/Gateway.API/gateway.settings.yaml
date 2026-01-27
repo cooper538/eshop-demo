@@ -18,22 +18,22 @@ Gateway:
 ReverseProxy:
   Routes:
     products-route:
-      ClusterId: "products-cluster"
+      ClusterId: "product-cluster"
       Match:
         Path: "/api/products/{**catch-all}"
 
     orders-route:
-      ClusterId: "orders-cluster"
+      ClusterId: "order-cluster"
       Match:
         Path: "/api/orders/{**catch-all}"
 
   Clusters:
-    products-cluster:
+    product-cluster:
       Destinations:
-        products-api:
-          Address: "http://products-api"
+        product-service:
+          Address: "http://product-service"
 
-    orders-cluster:
+    order-cluster:
       Destinations:
-        orders-api:
-          Address: "http://orders-api"
+        order-service:
+          Address: "http://order-service"
