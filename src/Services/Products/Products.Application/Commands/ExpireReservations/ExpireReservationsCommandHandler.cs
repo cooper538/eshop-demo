@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -25,34 +26,24 @@ public sealed partial class ExpireReservationsCommandHandler
     public async Task Handle(ExpireReservationsCommand request, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
+        var isExpired = IsExpiredFilter(now);
 
-        // First, get IDs of expired reservations (batch limit applied to reservations, not stocks)
-        var expiredReservationIds = await _dbContext
-            .Stocks.SelectMany(s => s.Reservations)
-            .Where(r => r.Status == EReservationStatus.Active && r.ExpiresAt < now)
-            .OrderBy(r => r.ExpiresAt)
+        var stocks = await _dbContext
+            .Stocks.Include(s => s.Reservations.AsQueryable().Where(isExpired))
+            .Where(s => s.Reservations.AsQueryable().Any(isExpired))
+            .OrderBy(s => s.Id)
             .Take(request.BatchSize)
-            .Select(r => r.Id)
             .ToListAsync(cancellationToken);
 
-        if (expiredReservationIds.Count == 0)
+        if (stocks.Count == 0)
         {
             return;
         }
-
-        LogFoundExpiredReservations(expiredReservationIds.Count);
-
-        // Load stocks with only the selected expired reservations
-        var stocks = await _dbContext
-            .Stocks.Include(s => s.Reservations.Where(r => expiredReservationIds.Contains(r.Id)))
-            .Where(s => s.Reservations.Any(r => expiredReservationIds.Contains(r.Id)))
-            .ToListAsync(cancellationToken);
 
         var totalExpired = 0;
 
         foreach (var stock in stocks)
         {
-            // Reservations are already filtered to only expired ones
             foreach (var reservation in stock.Reservations)
             {
                 stock.ExpireReservation(reservation);
@@ -65,6 +56,8 @@ public sealed partial class ExpireReservationsCommandHandler
             }
         }
 
+        LogFoundExpiredReservations(totalExpired);
+
         try
         {
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -76,6 +69,9 @@ public sealed partial class ExpireReservationsCommandHandler
             LogConcurrencyConflict(ex);
         }
     }
+
+    private static Expression<Func<StockReservationEntity, bool>> IsExpiredFilter(DateTime now) =>
+        r => r.Status == EReservationStatus.Active && r.ExpiresAt < now;
 
     [LoggerMessage(
         Level = LogLevel.Information,
