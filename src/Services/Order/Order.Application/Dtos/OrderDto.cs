@@ -29,7 +29,7 @@ public sealed record OrderDto(
         );
     }
 
-    private static List<OrderItemDto> MapItems(IReadOnlyList<OrderItemEntity> items)
+    private static List<OrderItemDto> MapItems(IReadOnlyList<OrderItem> items)
     {
         return items
             .Select(i => new OrderItemDto(
