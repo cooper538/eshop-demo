@@ -25,6 +25,8 @@
     <ProjectReference Include="..\..\src\Services\Products\Products.Application\Products.Application.csproj" />
     <ProjectReference Include="..\..\src\Services\Products\Products.Infrastructure\Products.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Services\Products\Products.API\Products.API.csproj" />
+    <ProjectReference Include="..\..\src\Services\Gateway\Gateway.API\Gateway.API.csproj" />
+    <ProjectReference Include="..\..\src\Services\Notification\EShop.NotificationService.csproj" />
     <ProjectReference Include="..\..\src\Common\EShop.SharedKernel\EShop.SharedKernel.csproj" />
     <ProjectReference Include="..\..\src\Common\EShop.Common\EShop.Common.csproj" />
     <ProjectReference Include="..\..\src\Common\EShop.Contracts\EShop.Contracts.csproj" />

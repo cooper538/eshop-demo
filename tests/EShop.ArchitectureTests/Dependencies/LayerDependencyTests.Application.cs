@@ -50,7 +50,7 @@ public partial class LayerDependencyTests
         var result = Types
             .InAssembly(GetAssembly(assemblyFieldName))
             .ShouldNot()
-            .HaveDependencyOn(ServiceLayerDefinitions.Shared.ServiceClients)
+            .HaveDependencyOn(ServiceClientsAssembly.Name())
             .GetResult();
 
         AssertNoViolations(

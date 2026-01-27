@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EShop.NotificationService.Consumers;
 
-public class StockLowConsumer(
+public sealed class StockLowConsumer(
     NotificationDbContext dbContext,
     IEmailService emailService,
     ILogger<StockLowConsumer> logger

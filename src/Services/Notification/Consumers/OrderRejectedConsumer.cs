@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EShop.NotificationService.Consumers;
 
-public class OrderRejectedConsumer(
+public sealed class OrderRejectedConsumer(
     NotificationDbContext dbContext,
     IEmailService emailService,
     ILogger<OrderRejectedConsumer> logger
