@@ -38,12 +38,11 @@ var notificationService = builder
     .WithReference(rabbitmq)
     .WaitFor(rabbitmq);
 
-// API GATEWAY (to be added in task-04)
-
-// var gateway = builder
-//     .AddProject<Projects.EShop_Gateway>("gateway")
-//     .WithReference(productService)
-//     .WithReference(orderService)
-//     .WithExternalHttpEndpoints();
+// API GATEWAY
+var gateway = builder
+    .AddProject<Projects.Gateway_API>("gateway")
+    .WithReference(productService)
+    .WithReference(orderService)
+    .WithExternalHttpEndpoints();
 
 builder.Build().Run();
