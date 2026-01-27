@@ -1,12 +1,12 @@
 ---
 name: start-task
 description: Start work on a task. Use when user says "začni práci na task-XX", "chci pracovat na task-XX", "start task XX", or runs /start-task.
-allowed-tools: Bash, Read, AskUserQuestion
+allowed-tools: Bash, Read, Glob, Grep, AskUserQuestion, WebSearch, WebFetch, Task
 ---
 
 # Start Task
 
-Validate dependencies and update task status. Optionally create a feature branch.
+Validate dependencies, perform thorough research & analysis, present implementation proposal with supporting arguments, and get user approval before starting work.
 
 ## Usage
 
@@ -68,9 +68,79 @@ fi
 Update the task file:
 - Changes `| Status | ⚪ pending |` to `| Status | 🔵 in_progress |`
 
-### Step 5: Show Task Scope
+### Step 5: Research & Analysis (CRITICAL)
 
-After starting, display the task's scope section for context.
+**This step is MANDATORY before any implementation begins.**
+
+Perform thorough research based on task scope:
+
+1. **Codebase Analysis**
+   - Use `Glob` and `Grep` to explore existing patterns in the codebase
+   - Check how similar features are implemented
+   - Identify relevant existing code, interfaces, base classes
+
+2. **Web Research**
+   - Use `WebSearch` to find:
+     - Official documentation for libraries/frameworks mentioned in scope
+     - Best practices for the specific technology/pattern
+     - Common pitfalls and how to avoid them
+     - Current recommended approaches (2025/2026)
+   - Use `WebFetch` to read specific documentation pages
+
+3. **Related Specs Review**
+   - Read all files listed in "Related Specs" section of the task
+   - Understand architectural constraints and requirements
+
+### Step 6: Present Implementation Proposal
+
+Create a structured proposal with:
+
+```markdown
+## Implementation Proposal for [Task Name]
+
+### Approach
+[Describe the chosen approach in 2-3 sentences]
+
+### Key Decisions
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| [Decision 1] | [Choice] | [Why - with source reference] |
+| [Decision 2] | [Choice] | [Why - with source reference] |
+
+### Implementation Steps
+1. [Step 1 - specific and actionable]
+2. [Step 2 - specific and actionable]
+...
+
+### Supporting Evidence
+- 📚 [Documentation link or codebase reference]
+- ✅ Best practice: [description with source]
+- ⚠️ Avoided pitfall: [what we're avoiding and why]
+
+### Alternatives Considered
+| Alternative | Why not chosen |
+|-------------|----------------|
+| [Alt 1] | [Reason] |
+
+### Questions/Clarifications (if any)
+- [Question needing user input]
+```
+
+### Step 7: Get User Approval
+
+**STOP and ask for user confirmation before implementing:**
+
+Use `AskUserQuestion` with options:
+- "Proceed with this approach" (recommended)
+- "Modify the approach"
+- "Need more research on specific area"
+- Other (for custom input)
+
+**Do NOT start implementation without explicit user approval.**
+
+### Step 8: Show Task Scope
+
+After approval, display the task's scope section and begin implementation.
 
 ## Arguments
 
