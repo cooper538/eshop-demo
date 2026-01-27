@@ -1,14 +1,14 @@
-# Task 13: E2E Test Infrastructure
+# Task 06: E2E Test Infrastructure
 
 ## Metadata
 | Key | Value |
 |-----|-------|
-| ID | task-13 |
+| ID | task-06 |
 | Status | ⚪ pending |
-| Dependencies | task-10 |
+| Dependencies | task-04 |
 
-## Objective
-Setup end-to-end test infrastructure for multi-service integration testing.
+## Summary
+Setup end-to-end test infrastructure for multi-service integration testing with Aspire.
 
 ## Scope
 - [ ] Create `tests/E2E.Tests/` project
@@ -29,16 +29,11 @@ Setup end-to-end test infrastructure for multi-service integration testing.
   - [ ] Health check verification before tests
 - [ ] Update `EShopDemo.sln`
 
-## Dependencies
-- Depends on: task-10
-- Blocks: task-14, task-15
+## Related Specs
+- → [functional-testing.md](../../high-level-specs/functional-testing.md) (Section: E2E Testing)
+- → [aspire-orchestration.md](../../high-level-specs/aspire-orchestration.md)
 
-## Acceptance Criteria
-- [ ] All services start successfully in test environment
-- [ ] Services can communicate via configured endpoints
-- [ ] WireMock intercepts external API calls
-- [ ] Health checks pass before tests run
-
+---
 ## Notes
 - This is complex - consider using WebApplicationFactory per service
 - May need custom service discovery for test environment

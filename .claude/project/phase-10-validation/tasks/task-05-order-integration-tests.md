@@ -1,14 +1,14 @@
-# Task 12: Order Integration Tests
+# Task 05: Order Integration Tests
 
 ## Metadata
 | Key | Value |
 |-----|-------|
-| ID | task-12 |
+| ID | task-05 |
 | Status | ⚪ pending |
-| Dependencies | task-10, task-07 |
+| Dependencies | task-03, task-04 |
 
-## Objective
-Integration tests for Order Service API with mocked Product Service gRPC.
+## Summary
+Integration tests for Order Service API with real PostgreSQL, mocked gRPC, and MassTransit test harness.
 
 ## Scope
 - [ ] Create `tests/Order.IntegrationTests/` project
@@ -35,16 +35,11 @@ Integration tests for Order Service API with mocked Product Service gRPC.
   - [ ] Product service unavailable
   - [ ] Product service timeout
 
-## Dependencies
-- Depends on: task-10, task-07
-- Blocks: task-14
+## Related Specs
+- → [functional-testing.md](../../high-level-specs/functional-testing.md) (Section: Integration Testing)
+- → [order-service-interface.md](../../high-level-specs/order-service-interface.md)
 
-## Acceptance Criteria
-- [ ] All REST endpoints have integration tests
-- [ ] Order lifecycle fully tested
-- [ ] Outbox events verified via MassTransit test harness
-- [ ] Error scenarios covered
-
+---
 ## Notes
 - Mock IProductServiceClient to control stock responses
 - Use MassTransit ITestHarness to verify published events

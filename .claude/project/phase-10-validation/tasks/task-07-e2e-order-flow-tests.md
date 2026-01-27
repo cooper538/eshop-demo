@@ -1,14 +1,14 @@
-# Task 14: E2E Order Flow Tests
+# Task 07: E2E Order Flow Tests
 
 ## Metadata
 | Key | Value |
 |-----|-------|
-| ID | task-14 |
+| ID | task-07 |
 | Status | ⚪ pending |
-| Dependencies | task-13 |
+| Dependencies | task-05, task-06 |
 
-## Objective
-End-to-end tests for complete order flow across all services.
+## Summary
+End-to-end tests for complete order flow across all services (Gateway → Order → Product → Notification).
 
 ## Scope
 - [ ] Test complete happy path flow
@@ -36,16 +36,12 @@ End-to-end tests for complete order flow across all services.
   - [ ] Database failure during transaction
   - [ ] Message broker unavailable (outbox queues)
 
-## Dependencies
-- Depends on: task-13
-- Blocks: task-16
+## Related Specs
+- → [functional-testing.md](../../high-level-specs/functional-testing.md) (Section: E2E Testing)
+- → [order-service-interface.md](../../high-level-specs/order-service-interface.md) (Section: Order Lifecycle)
+- → [messaging-communication.md](../../high-level-specs/messaging-communication.md)
 
-## Acceptance Criteria
-- [ ] Complete order flow works end-to-end
-- [ ] All services participate correctly
-- [ ] Events propagate through message broker
-- [ ] Notifications reach external service (WireMock)
-
+---
 ## Notes
 - Use async assertions with timeouts for eventual consistency
 - Verify database state in each service
