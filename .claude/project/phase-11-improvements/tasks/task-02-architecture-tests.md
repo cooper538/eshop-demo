@@ -4,7 +4,7 @@
 Implementace architektonických testů pomocí NetArchTest.Rules pro zajištění dodržování Clean Architecture a DDD principů v celém projektu.
 
 ## Status
-- [ ] Not started
+- [x] Completed
 
 ## Motivation
 
