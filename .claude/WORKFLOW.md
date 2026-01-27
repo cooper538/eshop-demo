@@ -2,24 +2,67 @@
 
 Quick guide for working with tasks using Claude Code skills.
 
+## Three Work Modes
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                     THREE WORK MODES                                │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌─────────────┐  ┌──────────────────┐  ┌─────────────────────┐    │
+│  │    MAIN     │  │  FEATURE_BRANCH  │  │      WORKTREE       │    │
+│  │  (default)  │  │   (--branch)     │  │  (/worktree add)    │    │
+│  └──────┬──────┘  └────────┬─────────┘  └──────────┬──────────┘    │
+│         │                  │                       │               │
+│         ▼                  ▼                       ▼               │
+│   commits directly    commits on branch      commits on branch     │
+│     to main           → squash merge         → squash merge        │
+│                         to main                to main             │
+│         │                  │                       │               │
+│         ▼                  ▼                       ▼               │
+│   LINEAR HISTORY     LINEAR HISTORY         LINEAR HISTORY         │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+## Mode Detection
+
+| Check | Result |
+|-------|--------|
+| `.git` is a file | WORKTREE |
+| branch ≠ main | FEATURE_BRANCH |
+| branch = main | MAIN |
+
 ## Lifecycle Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                      TASK LIFECYCLE                             │
+│                 MAIN MODE (default)                             │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  /task-status       → See what's done, what's blocking          │
 │       ↓                                                         │
-│  /start-task XX     → Start task (validates deps, creates       │
-│       │               branch, updates status to 🔵)             │
+│  /start-task XX     → Updates status to 🔵 (stays on main)      │
 │       ↓                                                         │
 │  [DEVELOPMENT]      → Write code, make changes                  │
 │       ↓                                                         │
-│  /commit            → Commit with [XX-YY] type: format           │
+│  /commit            → Commit with [XX-YY] type: format          │
 │       ↓                                                         │
-│  /finish-task       → Run tests, merge to main,                 │
-│                       update status to ✅                       │
+│  /finish-task       → Updates status to ✅                      │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│            FEATURE_BRANCH / WORKTREE MODE                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  /start-task XX --branch   OR   /worktree add task-XX           │
+│       ↓                                                         │
+│  [DEVELOPMENT]      → Write code, make changes                  │
+│       ↓                                                         │
+│  /commit            → Commit with [XX-YY] type: format          │
+│       ↓                                                         │
+│  /finish-task       → Squash merge to main, delete branch       │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -29,8 +72,9 @@ Quick guide for working with tasks using Claude Code skills.
 | Skill | What it does |
 |-------|-------------|
 | `/task-status` | Shows all tasks with status (✅🔵⚪), blocking info, progress |
-| `/start-task XX` | Validates dependencies, creates branch, starts task |
-| `/finish-task` | Runs tests, checks formatting, merges, marks complete |
+| `/start-task XX` | Updates status to 🔵, stays on main (default) |
+| `/start-task XX --branch` | Creates feature branch, updates status to 🔵 |
+| `/finish-task` | MAIN: updates status to ✅; BRANCH: squash merge + status ✅ |
 | `/commit` | Smart commit with [XX-YY] type: description format |
 | `/sort-tasks` | Shows topological order and entry points |
 | `/worktree add task-XX` | Creates parallel worktree for another task |
@@ -60,13 +104,15 @@ Write code, create files, do the work.
 /finish-task
 ```
 
-## Branch Naming
+## Branch Naming (for feature branches/worktrees)
 
 Format: `phase-XX/task-YY-short-description`
 
 Examples:
 - `phase-01/task-02-shared-kernel`
 - `phase-02/task-03-catalog-api`
+
+Only applies when using `--branch` or `/worktree add`.
 
 ## Status Icons
 
@@ -78,15 +124,7 @@ Examples:
 
 ## How to Know Your Current Phase/Task
 
-### 1. From branch name
-```bash
-git branch --show-current
-# Output: phase-01/task-02-shared-kernel
-#         ↑↑       ↑↑
-#         Phase    Task
-```
-
-### 2. From `/task-status` output
+### 1. From `/task-status` output
 ```
 Phase 01: Foundation
 ━━━━━━━━━━━━━━━━━━━━━
@@ -94,12 +132,20 @@ Phase 01: Foundation
 🔵 task-02 Shared Kernel    ← YOU ARE HERE
 ⚪ task-03 Contracts
 ```
-The `← YOU ARE HERE` marker shows your current task based on branch.
+The `← YOU ARE HERE` marker shows your current task (from in_progress status or branch name).
+
+### 2. From branch name (if on feature branch)
+```bash
+git branch --show-current
+# Output: phase-01/task-02-shared-kernel
+#         ↑↑       ↑↑
+#         Phase    Task
+```
 
 ### 3. From project structure
 Tasks live in `.claude/project/phase-XX-name/tasks/`
 
-## Parallel Work
+## Parallel Work (Worktrees)
 
 When you need to work on multiple tasks simultaneously:
 
@@ -107,7 +153,7 @@ When you need to work on multiple tasks simultaneously:
 /worktree add task-03
 ```
 
-This creates a separate directory with its own branch, so you can switch between tasks without stashing.
+This creates a separate directory with its own branch. Use `/finish-task` to squash merge back to main.
 
 ## Tips
 

@@ -108,3 +108,11 @@ When `/worktree` is called without arguments or unclear input:
 2. ALWAYS check for uncommitted changes before removal
 3. ALWAYS confirm destructive operations with user
 4. Use `git worktree prune` after removals
+
+## Finishing Work in Worktree
+
+When done working in a worktree, use `/finish-task` to:
+1. Squash merge all commits to main (in main repo)
+2. Optionally remove the worktree directory
+
+The `/finish-task` skill auto-detects WORKTREE mode and handles the merge correctly.
