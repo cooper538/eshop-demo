@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-04 |
-| Status | ⚪ pending |
+| Status | 🔵 in_progress |
 | Dependencies | task-02 |
 
 ## Summary
@@ -22,4 +22,5 @@ Integrate existing CorrelationIdMiddleware for request tracking on external requ
 
 ---
 ## Notes
-(Updated during implementation)
+- CorrelationIdMiddleware was added in task-01 as part of project setup
+- YARP automatically forwards X-Correlation-ID header to downstream services
