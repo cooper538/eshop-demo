@@ -1,4 +1,5 @@
 using EShop.Common.Data;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -31,5 +32,10 @@ public class ProductDbContext : DbContext, IProductDbContext, IChangeTrackerAcce
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProductDbContext).Assembly);
+
+        // MassTransit Outbox entities
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
+        modelBuilder.AddOutboxStateEntity();
     }
 }

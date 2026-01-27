@@ -1,6 +1,8 @@
+using EShop.Common.Correlation.MassTransit;
 using EShop.Common.Extensions;
 using EShop.Common.Grpc;
 using FluentValidation;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using NetEscapades.Configuration.Yaml;
 using Products.API.Configuration;
@@ -56,6 +58,33 @@ builder.Services.AddDbContext<ProductDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("productdb"))
 );
 builder.Services.AddScoped<IProductDbContext>(sp => sp.GetRequiredService<ProductDbContext>());
+builder.Services.AddScoped<EShop.Common.Data.IChangeTrackerAccessor>(sp =>
+    sp.GetRequiredService<ProductDbContext>()
+);
+
+// MassTransit with RabbitMQ and Entity Framework Outbox
+builder.Services.AddMassTransit(x =>
+{
+    x.AddEntityFrameworkOutbox<ProductDbContext>(o =>
+    {
+        o.UsePostgres();
+        o.UseBusOutbox();
+    });
+
+    x.UsingRabbitMq(
+        (context, cfg) =>
+        {
+            var connectionString = builder.Configuration.GetConnectionString("messaging");
+            if (!string.IsNullOrEmpty(connectionString))
+            {
+                cfg.Host(new Uri(connectionString));
+            }
+
+            cfg.UseCorrelationIdFilters(context);
+            cfg.ConfigureEndpoints(context);
+        }
+    );
+});
 
 // Error handling
 builder.Services.AddErrorHandling();
