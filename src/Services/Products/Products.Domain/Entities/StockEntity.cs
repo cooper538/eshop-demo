@@ -74,15 +74,32 @@ public class StockEntity : AggregateRoot
 
         if (reservation != null)
         {
-            reservation.Expire();
-            AddDomainEvent(
-                new StockReservationExpiredDomainEvent(
-                    reservation.OrderId,
-                    reservation.ProductId,
-                    reservation.Quantity
-                )
+            ExpireReservation(reservation);
+        }
+    }
+
+    public void ExpireReservation(StockReservationEntity reservation)
+    {
+        if (reservation.StockId != Id)
+        {
+            throw new InvalidOperationException(
+                $"Reservation {reservation.Id} does not belong to this stock {Id}."
             );
         }
+
+        if (reservation.Status != EReservationStatus.Active)
+        {
+            return;
+        }
+
+        reservation.Expire();
+        AddDomainEvent(
+            new StockReservationExpiredDomainEvent(
+                reservation.OrderId,
+                reservation.ProductId,
+                reservation.Quantity
+            )
+        );
     }
 
     public void UpdateLowStockThreshold(int threshold) => LowStockThreshold = threshold;

@@ -1,6 +1,7 @@
 using EShop.Common.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage;
 using Products.Application.Data;
 using Products.Domain.Entities;
 
@@ -15,6 +16,10 @@ public class ProductDbContext : DbContext, IProductDbContext, IChangeTrackerAcce
     public DbSet<StockEntity> Stocks => Set<StockEntity>();
 
     ChangeTracker IChangeTrackerAccessor.ChangeTracker => ChangeTracker;
+
+    public Task<IDbContextTransaction> BeginTransactionAsync(
+        CancellationToken cancellationToken = default
+    ) => Database.BeginTransactionAsync(cancellationToken);
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

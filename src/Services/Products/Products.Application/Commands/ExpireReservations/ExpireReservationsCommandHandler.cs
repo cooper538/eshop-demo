@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Products.Application.Data;
+using Products.Domain.Entities;
 using Products.Domain.Enums;
 
 namespace Products.Application.Commands.ExpireReservations;
@@ -25,33 +26,36 @@ public sealed partial class ExpireReservationsCommandHandler
     {
         var now = DateTime.UtcNow;
 
-        // Find stocks with expired reservations
-        var stocks = await _dbContext
-            .Stocks.Include(s =>
-                s.Reservations.Where(r =>
-                    r.Status == EReservationStatus.Active && r.ExpiresAt < now
-                )
-            )
-            .Where(s =>
-                s.Reservations.Any(r => r.Status == EReservationStatus.Active && r.ExpiresAt < now)
-            )
+        // First, get IDs of expired reservations (batch limit applied to reservations, not stocks)
+        var expiredReservationIds = await _dbContext
+            .Stocks.SelectMany(s => s.Reservations)
+            .Where(r => r.Status == EReservationStatus.Active && r.ExpiresAt < now)
+            .OrderBy(r => r.ExpiresAt)
             .Take(request.BatchSize)
+            .Select(r => r.Id)
             .ToListAsync(cancellationToken);
 
-        if (stocks.Count == 0)
+        if (expiredReservationIds.Count == 0)
         {
             return;
         }
+
+        LogFoundExpiredReservations(expiredReservationIds.Count);
+
+        // Load stocks with only the selected expired reservations
+        var stocks = await _dbContext
+            .Stocks.Include(s => s.Reservations.Where(r => expiredReservationIds.Contains(r.Id)))
+            .Where(s => s.Reservations.Any(r => expiredReservationIds.Contains(r.Id)))
+            .ToListAsync(cancellationToken);
 
         var totalExpired = 0;
 
         foreach (var stock in stocks)
         {
-            var expiredReservations = stock.Reservations.ToList();
-
-            foreach (var reservation in expiredReservations)
+            // Reservations are already filtered to only expired ones
+            foreach (var reservation in stock.Reservations)
             {
-                stock.ExpireReservation(reservation.Id);
+                stock.ExpireReservation(reservation);
                 LogReservationExpired(
                     reservation.OrderId,
                     reservation.ProductId,
@@ -60,8 +64,6 @@ public sealed partial class ExpireReservationsCommandHandler
                 totalExpired++;
             }
         }
-
-        LogFoundExpiredReservations(totalExpired);
 
         try
         {

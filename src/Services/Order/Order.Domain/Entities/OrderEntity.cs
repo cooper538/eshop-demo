@@ -84,7 +84,7 @@ public class OrderEntity : AggregateRoot
         RejectionReason = reason;
         UpdatedAt = DateTime.UtcNow;
 
-        AddDomainEvent(new OrderRejectedDomainEvent(Id, CustomerId, reason));
+        AddDomainEvent(new OrderRejectedDomainEvent(Id, CustomerId, CustomerEmail, reason));
     }
 
     public void Cancel(string reason)
@@ -98,6 +98,6 @@ public class OrderEntity : AggregateRoot
         RejectionReason = reason;
         UpdatedAt = DateTime.UtcNow;
 
-        AddDomainEvent(new OrderCancelledDomainEvent(Id, CustomerId, reason));
+        AddDomainEvent(new OrderCancelledDomainEvent(Id, CustomerId, CustomerEmail, reason));
     }
 }

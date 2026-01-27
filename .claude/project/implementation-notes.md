@@ -19,3 +19,4 @@ Brief implementation notes. Format: `[XX-YY] task name - note`
 - [04-08] DomainEventDispatchBehavior - Refactor to call SaveChangesAsync automatically after command handler (Unit of Work pattern)
 - [05-07] API DTOs - Commands used directly as API request bodies (consistent with Microsoft eShopOnContainers pattern, see: https://github.com/dotnet-architecture/eShopOnContainers)
 - [08-06] StockLowConsumer - Move AdminEmail from hardcoded constant to appsettings.json or environment variable
+- [04-08] Stock expiration - Refactor ExpireReservationsCommandHandler (ITimeProvider) and StockReservationExpirationJob (configurable interval, health check)
