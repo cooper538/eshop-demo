@@ -53,6 +53,38 @@
               "description": "Service version"
             }
           }
+        },
+        "RateLimiting": {
+          "type": "object",
+          "description": "Rate limiting configuration",
+          "properties": {
+            "Enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable rate limiting"
+            },
+            "PermitLimit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000,
+              "default": 100,
+              "description": "Maximum requests allowed in the time window"
+            },
+            "WindowSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600,
+              "default": 60,
+              "description": "Time window in seconds"
+            },
+            "QueueLimit": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 0,
+              "description": "Maximum queued requests (0 = no queuing)"
+            }
+          }
         }
       }
     },
@@ -69,6 +101,10 @@
               "ClusterId": {
                 "type": "string",
                 "description": "Target cluster for this route"
+              },
+              "RateLimiterPolicy": {
+                "type": "string",
+                "description": "Rate limiter policy name (e.g., 'fixed', 'disable')"
               },
               "Match": {
                 "type": "object",

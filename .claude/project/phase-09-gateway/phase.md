@@ -19,8 +19,8 @@ Configure YARP as single entry point
 | # | Task | Status | Dependencies |
 |---|------|--------|--------------|
 | 1 | [Project Setup](tasks/task-01-project-setup.md) | ✅ completed | - |
-| 2 | [YARP Configuration](tasks/task-02-yarp-configuration.md) | 🔵 in_progress | task-01 |
-| 3 | [Rate Limiting](tasks/task-03-rate-limiting.md) | ⚪ pending | task-02 |
+| 2 | [YARP Configuration](tasks/task-02-yarp-configuration.md) | ✅ completed | task-01 |
+| 3 | [Rate Limiting](tasks/task-03-rate-limiting.md) | 🔵 in_progress | task-02 |
 | 4 | [CorrelationId Integration](tasks/task-04-correlation-id.md) | ⚪ pending | task-02 |
 | 5 | [AppHost Integration](tasks/task-05-apphost-integration.md) | ⚪ pending | task-01-04 |
 

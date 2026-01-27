@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-03 |
-| Status | ⚪ pending |
+| Status | 🔵 in_progress |
 | Dependencies | task-02 |
 
 ## Summary
@@ -22,4 +22,4 @@ Add rate limiting middleware with configurable policies.
 
 ---
 ## Notes
-(Updated during implementation)
+- X-RateLimit-* headers omitted - Retry-After is sufficient for demo
