@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=./Configuration/gateway.settings.schema.json
+# Gateway Service Configuration
+# Environment-specific overrides: gateway.settings.{Environment}.yaml
+
+AllowedHosts: "*"
+
+Logging:
+  LogLevel:
+    Default: "Information"
+    Microsoft.AspNetCore: "Warning"
+    Yarp: "Information"
+
+Gateway:
+  Service:
+    Name: "Gateway"
+    Version: "1.0.0"
+
+ReverseProxy:
+  Routes:
+    products-route:
+      ClusterId: "products-cluster"
+      Match:
+        Path: "/api/products/{**catch-all}"
+
+    orders-route:
+      ClusterId: "orders-cluster"
+      Match:
+        Path: "/api/orders/{**catch-all}"
+
+  Clusters:
+    products-cluster:
+      Destinations:
+        products-api:
+          Address: "http://products-api"
+
+    orders-cluster:
+      Destinations:
+        orders-api:
+          Address: "http://orders-api"

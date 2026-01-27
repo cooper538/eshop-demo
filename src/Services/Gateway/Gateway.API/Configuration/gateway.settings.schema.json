@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gateway.settings.schema.json",
+  "title": "Gateway Service Configuration",
+  "description": "Configuration schema for Gateway Service YAML settings",
+  "type": "object",
+  "properties": {
+    "AllowedHosts": {
+      "type": "string",
+      "description": "Allowed hosts for the application"
+    },
+    "Logging": {
+      "type": "object",
+      "properties": {
+        "LogLevel": {
+          "type": "object",
+          "properties": {
+            "Default": {
+              "type": "string",
+              "enum": ["Trace", "Debug", "Information", "Warning", "Error", "Critical", "None"],
+              "description": "Default log level"
+            },
+            "Microsoft.AspNetCore": {
+              "type": "string",
+              "enum": ["Trace", "Debug", "Information", "Warning", "Error", "Critical", "None"],
+              "description": "Log level for ASP.NET Core"
+            },
+            "Yarp": {
+              "type": "string",
+              "enum": ["Trace", "Debug", "Information", "Warning", "Error", "Critical", "None"],
+              "description": "Log level for YARP reverse proxy"
+            }
+          }
+        }
+      }
+    },
+    "Gateway": {
+      "type": "object",
+      "description": "Gateway service specific settings",
+      "required": ["Service"],
+      "properties": {
+        "Service": {
+          "type": "object",
+          "required": ["Name", "Version"],
+          "properties": {
+            "Name": {
+              "type": "string",
+              "maxLength": 50,
+              "description": "Service name"
+            },
+            "Version": {
+              "type": "string",
+              "description": "Service version"
+            }
+          }
+        }
+      }
+    },
+    "ReverseProxy": {
+      "type": "object",
+      "description": "YARP reverse proxy configuration",
+      "properties": {
+        "Routes": {
+          "type": "object",
+          "description": "Route definitions for reverse proxy",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "ClusterId": {
+                "type": "string",
+                "description": "Target cluster for this route"
+              },
+              "Match": {
+                "type": "object",
+                "properties": {
+                  "Path": {
+                    "type": "string",
+                    "description": "Path pattern to match"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "Clusters": {
+          "type": "object",
+          "description": "Cluster definitions with destinations",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "Destinations": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "Address": {
+                      "type": "string",
+                      "description": "Destination address (supports Aspire service discovery)"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
