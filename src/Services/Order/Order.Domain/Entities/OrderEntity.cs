@@ -14,8 +14,8 @@ public class OrderEntity : AggregateRoot
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
 
-    private List<OrderItem> _items = [];
-    public IReadOnlyList<OrderItem> Items
+    private List<OrderItemEntity> _items = [];
+    public IReadOnlyList<OrderItemEntity> Items
     {
         get => _items.AsReadOnly();
         private set => _items = value.ToList();
@@ -27,7 +27,7 @@ public class OrderEntity : AggregateRoot
     public static OrderEntity Create(
         Guid customerId,
         string customerEmail,
-        IEnumerable<OrderItem> items
+        IEnumerable<OrderItemEntity> items
     )
     {
         var itemList = items.ToList();

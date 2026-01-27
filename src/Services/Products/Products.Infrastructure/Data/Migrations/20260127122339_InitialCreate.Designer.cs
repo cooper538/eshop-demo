@@ -12,8 +12,8 @@ using Products.Infrastructure.Data;
 namespace Products.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ProductDbContext))]
-    [Migration("20260125072753_AddStockReservations")]
-    partial class AddStockReservations
+    [Migration("20260127122339_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,9 +44,6 @@ namespace Products.Infrastructure.Data.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
-                    b.Property<int>("LowStockThreshold")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -55,9 +52,6 @@ namespace Products.Infrastructure.Data.Migrations
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
-
-                    b.Property<int>("StockQuantity")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -70,7 +64,36 @@ namespace Products.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Product");
+                });
+
+            modelBuilder.Entity("Products.Domain.Entities.StockEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("LowStockThreshold")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<byte[]>("Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId")
+                        .IsUnique();
+
+                    b.ToTable("Stock");
                 });
 
             modelBuilder.Entity("Products.Domain.Entities.StockReservationEntity", b =>
@@ -97,8 +120,17 @@ namespace Products.Infrastructure.Data.Migrations
                     b.Property<DateTime>("ReservedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<uint>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
+
+                    b.Property<Guid>("StockId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -106,9 +138,25 @@ namespace Products.Infrastructure.Data.Migrations
 
                     b.HasIndex("ProductId");
 
+                    b.HasIndex("StockId");
+
                     b.HasIndex("Status", "ExpiresAt");
 
-                    b.ToTable("StockReservations");
+                    b.ToTable("StockReservation");
+                });
+
+            modelBuilder.Entity("Products.Domain.Entities.StockReservationEntity", b =>
+                {
+                    b.HasOne("Products.Domain.Entities.StockEntity", null)
+                        .WithMany("Reservations")
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Products.Domain.Entities.StockEntity", b =>
+                {
+                    b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618
         }
