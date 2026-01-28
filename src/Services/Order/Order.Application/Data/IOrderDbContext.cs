@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Order.Domain.Entities;
 
 namespace Order.Application.Data;

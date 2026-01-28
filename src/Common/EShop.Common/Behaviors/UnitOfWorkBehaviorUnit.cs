@@ -1,4 +1,4 @@
-using EShop.Common.Cqrs;
+﻿using EShop.Common.Cqrs;
 using EShop.Common.Data;
 using EShop.Common.Events;
 using EShop.Common.Exceptions;

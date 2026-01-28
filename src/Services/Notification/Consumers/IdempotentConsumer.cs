@@ -1,9 +1,8 @@
-using EShop.NotificationService.Data;
+﻿using EShop.NotificationService.Data;
 using EShop.NotificationService.Data.Entities;
 using EShop.SharedKernel.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace EShop.NotificationService.Consumers;
 

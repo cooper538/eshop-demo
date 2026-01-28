@@ -1,4 +1,4 @@
-namespace EShop.SharedKernel.Events;
+﻿namespace EShop.SharedKernel.Events;
 
 public abstract record DomainEventBase : IDomainEvent
 {

@@ -1,4 +1,4 @@
-using Products.Application.Dtos;
+﻿using Products.Application.Dtos;
 
 namespace Products.Application.Queries.GetProductsBatch;
 

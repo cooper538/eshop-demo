@@ -1,4 +1,4 @@
-using EShop.Common.Behaviors;
+﻿using EShop.Common.Behaviors;
 using EShop.Common.Correlation;
 using EShop.Common.Events;
 using EShop.Common.Grpc;

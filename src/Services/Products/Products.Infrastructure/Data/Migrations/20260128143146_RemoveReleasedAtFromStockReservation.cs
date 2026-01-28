@@ -1,28 +1,26 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Products.Infrastructure.Data.Migrations
+namespace Products.Infrastructure.Data.Migrations;
+
+/// <inheritdoc />
+public partial class RemoveReleasedAtFromStockReservation : Migration
 {
     /// <inheritdoc />
-    public partial class RemoveReleasedAtFromStockReservation : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(name: "ReleasedAt", table: "StockReservation");
-        }
+        migrationBuilder.DropColumn(name: "ReleasedAt", table: "StockReservation");
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AddColumn<DateTime>(
-                name: "ReleasedAt",
-                table: "StockReservation",
-                type: "timestamp with time zone",
-                nullable: true
-            );
-        }
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.AddColumn<DateTime>(
+            name: "ReleasedAt",
+            table: "StockReservation",
+            type: "timestamp with time zone",
+            nullable: true
+        );
     }
 }

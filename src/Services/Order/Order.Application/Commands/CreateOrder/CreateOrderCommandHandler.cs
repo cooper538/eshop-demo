@@ -1,4 +1,4 @@
-using EShop.Contracts.ServiceClients.Product;
+﻿using EShop.Contracts.ServiceClients.Product;
 using EShop.SharedKernel.Services;
 using MediatR;
 using Order.Application.Data;

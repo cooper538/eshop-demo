@@ -1,4 +1,4 @@
-namespace Products.Application.Configuration;
+﻿namespace Products.Application.Configuration;
 
 /// <summary>
 /// Configuration options for stock reservation.

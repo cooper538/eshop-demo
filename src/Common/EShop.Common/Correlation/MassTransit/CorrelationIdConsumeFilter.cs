@@ -1,4 +1,4 @@
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace EShop.Common.Correlation.MassTransit;

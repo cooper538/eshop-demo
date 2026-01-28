@@ -1,4 +1,4 @@
-using EShop.SharedKernel.Services;
+﻿using EShop.SharedKernel.Services;
 using MediatR;
 using Products.Application.Data;
 using Products.Application.Dtos;

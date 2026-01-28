@@ -1,4 +1,4 @@
-using EShop.SharedKernel.Events;
+﻿using EShop.SharedKernel.Events;
 using MediatR;
 
 namespace EShop.Common.Events;

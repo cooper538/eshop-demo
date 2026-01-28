@@ -1,4 +1,4 @@
-using EShop.Common.Events;
+﻿using EShop.Common.Events;
 using EShop.Common.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

@@ -1,4 +1,4 @@
-using EShop.Common.Data;
+﻿using EShop.Common.Data;
 using EShop.Common.Events;
 using EShop.SharedKernel.Domain;
 using EShop.SharedKernel.Events;

@@ -1,4 +1,4 @@
-using EShop.Common.Exceptions;
+﻿using EShop.Common.Exceptions;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

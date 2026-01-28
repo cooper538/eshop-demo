@@ -1,10 +1,9 @@
-using EShop.Contracts.Events.Product;
+﻿using EShop.Contracts.Events.Product;
 using EShop.NotificationService.Configuration;
 using EShop.NotificationService.Data;
 using EShop.NotificationService.Services;
 using EShop.SharedKernel.Services;
 using MassTransit;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace EShop.NotificationService.Consumers;

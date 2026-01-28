@@ -1,4 +1,4 @@
-namespace EShop.SharedKernel.Guards;
+﻿namespace EShop.SharedKernel.Guards;
 
 public static class Guard
 {

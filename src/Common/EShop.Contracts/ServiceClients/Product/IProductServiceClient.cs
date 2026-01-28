@@ -1,4 +1,4 @@
-namespace EShop.Contracts.ServiceClients.Product;
+﻿namespace EShop.Contracts.ServiceClients.Product;
 
 /// <summary>
 /// Internal API abstraction for Product Service communication.

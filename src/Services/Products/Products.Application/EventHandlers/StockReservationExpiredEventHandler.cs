@@ -1,4 +1,4 @@
-using EShop.Common.Events;
+﻿using EShop.Common.Events;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Products.Domain.Events;

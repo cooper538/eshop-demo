@@ -1,4 +1,4 @@
-using EShop.SharedKernel.Services;
+﻿using EShop.SharedKernel.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Configuration;

@@ -1,4 +1,4 @@
-namespace EShop.Contracts.Events;
+﻿namespace EShop.Contracts.Events;
 
 public abstract record IntegrationEvent
 {

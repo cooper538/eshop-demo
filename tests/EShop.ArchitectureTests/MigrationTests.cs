@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using EShop.NotificationService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;

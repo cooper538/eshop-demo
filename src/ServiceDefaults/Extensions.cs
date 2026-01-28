@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -8,6 +8,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
 // ReSharper disable once CheckNamespace
+#pragma warning disable IDE0130 // Namespace intentionally differs - extension methods for Microsoft.Extensions.Hosting
 namespace Microsoft.Extensions.Hosting;
 
 public static class Extensions

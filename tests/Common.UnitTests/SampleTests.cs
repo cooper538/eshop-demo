@@ -1,4 +1,4 @@
-namespace EShop.Common.UnitTests;
+﻿namespace EShop.Common.UnitTests;
 
 /// <summary>
 /// Sample tests demonstrating testing patterns.

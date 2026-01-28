@@ -1,4 +1,4 @@
-using Order.Domain.Enums;
+﻿using Order.Domain.Enums;
 
 namespace Order.Domain.Exceptions;
 

@@ -1,3 +1,3 @@
-namespace EShop.SharedKernel.Domain;
+﻿namespace EShop.SharedKernel.Domain;
 
 public interface IAggregateRoot;

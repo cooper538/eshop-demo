@@ -1,4 +1,4 @@
-using EShop.Contracts.ServiceClients.Product;
+﻿using EShop.Contracts.ServiceClients.Product;
 using EShop.ServiceClients.Clients.Product.Mappers;
 using EShop.ServiceClients.Configuration;
 using Microsoft.Extensions.Options;

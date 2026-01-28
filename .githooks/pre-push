@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Pre-push hook for CI validation
+# Runs the same checks as CI to catch issues before push
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo -e "${YELLOW}Pre-push: Verifying code formatting (same as CI)...${NC}"
+
+# Check CSharpier formatting
+echo -e "${YELLOW}Checking CSharpier...${NC}"
+if ! dotnet csharpier check ./src 2>/dev/null; then
+    echo -e "${RED}ERROR: CSharpier check failed. Run 'dotnet csharpier format .' to fix.${NC}"
+    exit 1
+fi
+echo -e "${GREEN}CSharpier: OK${NC}"
+
+# Check dotnet format
+echo -e "${YELLOW}Checking dotnet format...${NC}"
+if ! dotnet format EShopDemo.sln --verify-no-changes 2>/dev/null; then
+    echo -e "${RED}ERROR: dotnet format check failed. Run 'dotnet format EShopDemo.sln' to fix.${NC}"
+    exit 1
+fi
+echo -e "${GREEN}dotnet format: OK${NC}"
+
+echo -e "${GREEN}Pre-push: All checks passed!${NC}"
+exit 0

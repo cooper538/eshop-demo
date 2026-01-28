@@ -1,4 +1,4 @@
-using EShop.Contracts.ServiceClients.Product;
+﻿using EShop.Contracts.ServiceClients.Product;
 using Riok.Mapperly.Abstractions;
 using GrpcProduct = EShop.Grpc.Product;
 

@@ -1,4 +1,4 @@
-namespace EShop.ServiceClients.Configuration;
+﻿namespace EShop.ServiceClients.Configuration;
 
 public sealed class ResilienceOptions
 {

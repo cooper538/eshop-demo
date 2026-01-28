@@ -1,4 +1,4 @@
-using EShop.SharedKernel.Domain;
+﻿using EShop.SharedKernel.Domain;
 using Products.Domain.Events;
 
 namespace Products.Domain.Entities;

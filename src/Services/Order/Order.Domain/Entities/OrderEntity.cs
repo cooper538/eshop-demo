@@ -1,4 +1,4 @@
-using EShop.SharedKernel.Domain;
+﻿using EShop.SharedKernel.Domain;
 using Order.Domain.Enums;
 using Order.Domain.Events;
 using Order.Domain.Exceptions;

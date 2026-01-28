@@ -1,4 +1,4 @@
-namespace EShop.ArchitectureTests.InfrastructureServices;
+﻿namespace EShop.ArchitectureTests.InfrastructureServices;
 
 /// <summary>
 /// Architecture tests for API Gateway.

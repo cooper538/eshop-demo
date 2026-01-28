@@ -1,4 +1,4 @@
-namespace EShop.Contracts.Constants;
+﻿namespace EShop.Contracts.Constants;
 
 public static class EventNames
 {

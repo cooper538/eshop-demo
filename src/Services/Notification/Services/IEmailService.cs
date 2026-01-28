@@ -1,4 +1,4 @@
-namespace EShop.NotificationService.Services;
+﻿namespace EShop.NotificationService.Services;
 
 /// <summary>
 /// Service for sending email notifications.

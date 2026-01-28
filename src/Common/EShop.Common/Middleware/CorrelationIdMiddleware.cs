@@ -1,4 +1,4 @@
-using EShop.Common.Correlation;
+﻿using EShop.Common.Correlation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 

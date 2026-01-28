@@ -6,6 +6,8 @@ using Products.Application.Dtos;
 using Products.Application.Queries.GetProductById;
 using Products.Application.Queries.GetProducts;
 
+#pragma warning disable IDE1006 // ASP.NET Core convention: controller actions don't need Async suffix
+
 namespace Products.API.Controllers;
 
 /// <summary>

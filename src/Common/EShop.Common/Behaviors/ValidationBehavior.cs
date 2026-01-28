@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using ValidationException = EShop.Common.Exceptions.ValidationException;
 

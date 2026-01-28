@@ -1,6 +1,4 @@
-using Microsoft.Extensions.Logging;
-
-namespace EShop.NotificationService.Services;
+﻿namespace EShop.NotificationService.Services;
 
 /// <summary>
 /// Fake email service that logs emails instead of sending them.
