@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Compact;
 
 // ReSharper disable once CheckNamespace
 #pragma warning disable IDE0130 // Namespace intentionally differs - extension methods for Microsoft.Extensions.Hosting
@@ -112,5 +115,38 @@ public static class Extensions
         );
 
         return app;
+    }
+
+    /// <summary>
+    /// Configures Serilog with console (compact JSON) and file sinks.
+    /// </summary>
+    public static IHostApplicationBuilder AddSerilog(
+        this IHostApplicationBuilder builder,
+        string logDirectory = "logs"
+    )
+    {
+        var serviceName =
+            builder.Configuration["OTEL_SERVICE_NAME"] ?? builder.Environment.ApplicationName;
+
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+            .MinimumLevel.Override("System", LogEventLevel.Warning)
+            .Enrich.FromLogContext()
+            .Enrich.WithProperty("ServiceName", serviceName)
+            .WriteTo.Console(new CompactJsonFormatter())
+            .WriteTo.File(
+                new CompactJsonFormatter(),
+                Path.Combine(logDirectory, $"{serviceName}-.log"),
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: 7
+            )
+            .CreateLogger();
+
+        builder.Logging.ClearProviders();
+        builder.Services.AddSerilog();
+
+        return builder;
     }
 }

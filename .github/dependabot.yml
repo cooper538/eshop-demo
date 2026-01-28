@@ -22,6 +22,16 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    ignore:
+      # MassTransit 9+ requires commercial license
+      - dependency-name: "MassTransit*"
+        versions: [">=9.0.0"]
+      # MediatR 13+ requires license key
+      - dependency-name: "MediatR"
+        versions: [">=13.0.0"]
+      # FluentAssertions 8+ requires commercial license
+      - dependency-name: "FluentAssertions"
+        versions: [">=8.0.0"]
 
   # GitHub Actions
   - package-ecosystem: "github-actions"

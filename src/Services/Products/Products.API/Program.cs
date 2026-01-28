@@ -33,6 +33,7 @@ builder.Services.AddSingleton<IStockReservationOptions, StockReservationOptions>
 
 // Aspire ServiceDefaults
 builder.AddServiceDefaults();
+builder.AddSerilog();
 
 // API
 builder.Services.AddControllers();
