@@ -1,4 +1,5 @@
 using EShop.Common.Data;
+using EShop.ServiceDefaults;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Products.Application.Data;
@@ -10,7 +11,7 @@ public static class DependencyInjection
 {
     public static IHostApplicationBuilder AddInfrastructure(this IHostApplicationBuilder builder)
     {
-        builder.AddNpgsqlDbContext<ProductDbContext>("productdb");
+        builder.AddNpgsqlDbContext<ProductDbContext>(ResourceNames.Databases.Product);
 
         builder.Services.AddScoped<IProductDbContext>(sp =>
             sp.GetRequiredService<ProductDbContext>()

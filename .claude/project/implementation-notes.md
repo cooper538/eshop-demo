@@ -10,5 +10,4 @@ Brief implementation notes. Format: `[XX-YY] task name - note`
 - [03-04] Restructure EShop.Common by layers (Application, Infrastructure, API)
 - [04-02] Order Service - Move 15min stockReservation TTL to configuration/settings
 - [04-02] Order Service - Add IDateTimeProvider before writing tests
-- [05-03] Aspire DB naming - Consider configuration for DB resource names ("orderdb", "productdb") between AppHost and services
 - [08-06] StockLowConsumer - Move AdminEmail from hardcoded constant to appsettings.json or environment variable

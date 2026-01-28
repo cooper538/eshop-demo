@@ -4,6 +4,7 @@ using EShop.NotificationService.Configuration;
 using EShop.NotificationService.Consumers;
 using EShop.NotificationService.Data;
 using EShop.NotificationService.Services;
+using EShop.ServiceDefaults;
 using MassTransit;
 using NetEscapades.Configuration.Yaml;
 
@@ -26,7 +27,7 @@ builder
 builder.AddServiceDefaults();
 
 // Aspire-managed PostgreSQL (connection string injected automatically)
-builder.AddNpgsqlDbContext<NotificationDbContext>("notificationdb");
+builder.AddNpgsqlDbContext<NotificationDbContext>(ResourceNames.Databases.Notification);
 
 // Email service (fake for development)
 builder.Services.AddSingleton<IEmailService, FakeEmailService>();
@@ -49,7 +50,9 @@ builder.Services.AddMassTransit(x =>
         (context, cfg) =>
         {
             // Connection string injected via Aspire (ConnectionStrings__messaging)
-            var connectionString = builder.Configuration.GetConnectionString("messaging");
+            var connectionString = builder.Configuration.GetConnectionString(
+                ResourceNames.Messaging
+            );
             if (!string.IsNullOrEmpty(connectionString))
             {
                 cfg.Host(new Uri(connectionString));
