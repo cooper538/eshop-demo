@@ -24,6 +24,7 @@ builder
 
 // Aspire ServiceDefaults (OpenTelemetry, Health Checks, Service Discovery)
 builder.AddServiceDefaults();
+builder.AddSerilog();
 
 // Aspire-managed PostgreSQL (connection string injected automatically)
 builder.AddNpgsqlDbContext<NotificationDbContext>(ResourceNames.Databases.Notification);
