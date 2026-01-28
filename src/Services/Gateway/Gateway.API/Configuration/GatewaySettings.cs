@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using EShop.Common.Configuration;
 
 namespace Gateway.API.Configuration;
 
@@ -10,16 +11,8 @@ public class GatewaySettings
     public ServiceInfo Service { get; init; } = new();
 
     public RateLimitingSettings RateLimiting { get; init; } = new();
-}
 
-public class ServiceInfo
-{
-    [Required]
-    [StringLength(50)]
-    public string Name { get; init; } = string.Empty;
-
-    [Required]
-    public string Version { get; init; } = "1.0.0";
+    public OutputCacheSettings OutputCache { get; init; } = new();
 }
 
 public class RateLimitingSettings
@@ -34,4 +27,16 @@ public class RateLimitingSettings
 
     [Range(0, 100)]
     public int QueueLimit { get; init; } = 0;
+}
+
+public class OutputCacheSettings
+{
+    [Range(1, 1440)]
+    public int ProductsListCacheMinutes { get; init; } = 5;
+
+    [Range(1, 1440)]
+    public int ProductDetailCacheMinutes { get; init; } = 2;
+
+    public TimeSpan ProductsListCacheDuration => TimeSpan.FromMinutes(ProductsListCacheMinutes);
+    public TimeSpan ProductDetailCacheDuration => TimeSpan.FromMinutes(ProductDetailCacheMinutes);
 }

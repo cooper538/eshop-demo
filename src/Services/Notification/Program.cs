@@ -1,11 +1,26 @@
 using EShop.Common.Correlation.MassTransit;
 using EShop.Common.Extensions;
+using EShop.NotificationService.Configuration;
 using EShop.NotificationService.Consumers;
 using EShop.NotificationService.Data;
 using EShop.NotificationService.Services;
 using MassTransit;
+using NetEscapades.Configuration.Yaml;
 
 var builder = Host.CreateApplicationBuilder(args);
+var env = builder.Environment.EnvironmentName;
+
+// YAML Configuration
+builder
+    .Configuration.AddYamlFile("notification.settings.yaml", optional: false, reloadOnChange: true)
+    .AddYamlFile($"notification.settings.{env}.yaml", optional: true, reloadOnChange: true);
+
+// Bind and validate settings (fail-fast on invalid config)
+builder
+    .Services.AddOptions<NotificationSettings>()
+    .BindConfiguration(NotificationSettings.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 
 // Aspire ServiceDefaults (OpenTelemetry, Health Checks, Service Discovery)
 builder.AddServiceDefaults();

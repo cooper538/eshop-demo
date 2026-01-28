@@ -41,16 +41,12 @@
       "properties": {
         "Service": {
           "type": "object",
-          "required": ["Name", "Version"],
+          "required": ["Name"],
           "properties": {
             "Name": {
               "type": "string",
               "maxLength": 50,
               "description": "Service name"
-            },
-            "Version": {
-              "type": "string",
-              "description": "Service version"
             }
           }
         },
@@ -83,6 +79,26 @@
               "maximum": 100,
               "default": 0,
               "description": "Maximum queued requests (0 = no queuing)"
+            }
+          }
+        },
+        "OutputCache": {
+          "type": "object",
+          "description": "Output cache configuration for product endpoints",
+          "properties": {
+            "ProductsListCacheMinutes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1440,
+              "default": 5,
+              "description": "Cache duration for product list endpoint in minutes"
+            },
+            "ProductDetailCacheMinutes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1440,
+              "default": 2,
+              "description": "Cache duration for product detail endpoint in minutes"
             }
           }
         }

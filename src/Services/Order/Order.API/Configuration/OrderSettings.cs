@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using EShop.Common.Configuration;
 
 namespace Order.API.Configuration;
 
@@ -11,16 +12,6 @@ public class OrderSettings
 
     [Required]
     public DatabaseSettings Database { get; init; } = new();
-}
-
-public class ServiceInfo
-{
-    [Required]
-    [StringLength(50)]
-    public string Name { get; init; } = string.Empty;
-
-    [Required]
-    public string Version { get; init; } = "1.0.0";
 }
 
 public class DatabaseSettings

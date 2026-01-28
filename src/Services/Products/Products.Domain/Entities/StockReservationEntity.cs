@@ -5,8 +5,6 @@ namespace Products.Domain.Entities;
 
 public class StockReservationEntity : Entity
 {
-    private static readonly TimeSpan DefaultTtl = TimeSpan.FromMinutes(15);
-
     public Guid StockId { get; private set; }
     public Guid OrderId { get; private set; }
     public Guid ProductId { get; private set; }
@@ -24,7 +22,8 @@ public class StockReservationEntity : Entity
         Guid productId,
         int quantity,
         StockEntity stock,
-        DateTime reservedAt
+        DateTime reservedAt,
+        TimeSpan reservationDuration
     )
     {
         return new StockReservationEntity
@@ -35,7 +34,7 @@ public class StockReservationEntity : Entity
             ProductId = productId,
             Quantity = quantity,
             ReservedAt = reservedAt,
-            ExpiresAt = reservedAt.Add(DefaultTtl),
+            ExpiresAt = reservedAt.Add(reservationDuration),
             Status = EReservationStatus.Active,
         };
     }

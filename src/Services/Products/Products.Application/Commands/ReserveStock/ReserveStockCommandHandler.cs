@@ -1,6 +1,7 @@
 using EShop.SharedKernel.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Products.Application.Configuration;
 using Products.Application.Data;
 using Products.Application.Dtos;
 using Products.Domain.Entities;
@@ -13,14 +14,17 @@ public sealed class ReserveStockCommandHandler
 {
     private readonly IProductDbContext _dbContext;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IStockReservationOptions _options;
 
     public ReserveStockCommandHandler(
         IProductDbContext dbContext,
-        IDateTimeProvider dateTimeProvider
+        IDateTimeProvider dateTimeProvider,
+        IStockReservationOptions options
     )
     {
         _dbContext = dbContext;
         _dateTimeProvider = dateTimeProvider;
+        _options = options;
     }
 
     public async Task<StockReservationResult> Handle(
@@ -36,10 +40,12 @@ public sealed class ReserveStockCommandHandler
 
         var stocks = await LoadStocksAsync(request.Items, cancellationToken);
         var now = _dateTimeProvider.UtcNow;
+        var reservationDuration = _options.DefaultDuration;
 
         foreach (var item in request.Items)
         {
-            stocks[item.ProductId].ReserveStock(request.OrderId, item.Quantity, now);
+            stocks[item.ProductId]
+                .ReserveStock(request.OrderId, item.Quantity, now, reservationDuration);
         }
 
         return StockReservationResult.Succeeded();

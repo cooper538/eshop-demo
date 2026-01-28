@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using NetEscapades.Configuration.Yaml;
 using Products.API.Configuration;
 using Products.API.Grpc;
+using Products.Application.Configuration;
 using Products.Application.Data;
 using Products.Infrastructure.BackgroundJobs;
 using Products.Infrastructure.Data;
@@ -26,6 +27,9 @@ builder
     .BindConfiguration(ProductSettings.SectionName)
     .ValidateDataAnnotations()
     .ValidateOnStart();
+
+// Stock reservation options abstraction for clean architecture
+builder.Services.AddSingleton<IStockReservationOptions, StockReservationOptions>();
 
 // Aspire ServiceDefaults
 builder.AddServiceDefaults();
