@@ -35,7 +35,6 @@ public sealed class ReserveStockCommandHandler
             stocks[item.ProductId].ReserveStock(request.OrderId, item.Quantity);
         }
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
         return StockReservationResult.Succeeded();
     }
 

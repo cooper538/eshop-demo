@@ -7,7 +7,7 @@ using Order.Domain.Entities;
 
 namespace Order.Infrastructure.Data;
 
-public class OrderDbContext : DbContext, IOrderDbContext, IChangeTrackerAccessor
+public class OrderDbContext : DbContext, IOrderDbContext, IChangeTrackerAccessor, IUnitOfWork
 {
     public OrderDbContext(DbContextOptions<OrderDbContext> options)
         : base(options) { }

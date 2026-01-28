@@ -44,15 +44,6 @@ public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductC
         // Only modify the Product aggregate - Stock is updated via domain event
         request.ApplyToProduct(product);
 
-        try
-        {
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            throw new ConflictException($"Product {request.Id} was modified by another user.");
-        }
-
         return ProductDto.FromEntity(product, stock);
     }
 }

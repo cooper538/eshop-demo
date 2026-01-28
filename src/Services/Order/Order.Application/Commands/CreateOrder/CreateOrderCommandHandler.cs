@@ -45,7 +45,6 @@ public sealed class CreateOrderCommandHandler
         }
 
         _dbContext.Orders.Add(order);
-        await _dbContext.SaveChangesAsync(cancellationToken);
 
         return new CreateOrderResult(order.Id, order.Status.ToString());
     }
