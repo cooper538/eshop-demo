@@ -7,28 +7,23 @@ using Microsoft.AspNetCore.RateLimiting;
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment.EnvironmentName;
 
-// YAML Configuration
 builder
     .Configuration.AddYamlFile("gateway.settings.yaml", optional: false, reloadOnChange: true)
     .AddYamlFile($"gateway.settings.{env}.yaml", optional: true, reloadOnChange: true);
 
-// Bind and validate settings (fail-fast on invalid config)
 builder
     .Services.AddOptions<GatewaySettings>()
     .BindConfiguration(GatewaySettings.SectionName)
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
-// Read settings for startup configuration
 var gatewaySettings =
     builder.Configuration.GetSection(GatewaySettings.SectionName).Get<GatewaySettings>()
     ?? new GatewaySettings();
 
-// Aspire ServiceDefaults
 builder.AddServiceDefaults();
 builder.AddSerilog();
 
-// Rate Limiting
 if (gatewaySettings.RateLimiting.Enabled)
 {
     builder.Services.AddRateLimiter(options =>
@@ -64,7 +59,6 @@ if (gatewaySettings.RateLimiting.Enabled)
     });
 }
 
-// Output Caching for Products
 builder.Services.AddOutputCache(options =>
 {
     options.AddPolicy(
@@ -83,18 +77,15 @@ builder.Services.AddOutputCache(options =>
     );
 });
 
-// YARP Reverse Proxy with Service Discovery
 builder
     .Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
     .AddServiceDiscoveryDestinationResolver();
 
-// CorrelationId support
 builder.Services.AddCorrelationId();
 
 var app = builder.Build();
 
-// Middleware pipeline
 app.UseCorrelationId();
 
 if (gatewaySettings.RateLimiting.Enabled)

@@ -22,7 +22,6 @@ public class StockReservationConfiguration : EntityConfiguration<StockReservatio
 
         builder.Property(e => e.Status).IsRequired();
 
-        // Optimistic concurrency - PostgreSQL xmin system column
         builder.Property(e => e.RowVersion).IsRowVersion();
 
         builder.HasIndex(e => e.StockId);

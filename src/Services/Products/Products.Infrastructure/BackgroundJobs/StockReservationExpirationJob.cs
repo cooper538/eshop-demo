@@ -8,10 +8,7 @@ using Products.Application.Configuration;
 
 namespace Products.Infrastructure.BackgroundJobs;
 
-/// <summary>
-/// Background job that expires stale stock reservations and releases stock back to inventory.
-/// Check interval and batch size are configurable via <see cref="IStockReservationOptions"/>.
-/// </summary>
+// Background job that expires stale stock reservations and releases stock back to inventory
 public sealed partial class StockReservationExpirationJob : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;

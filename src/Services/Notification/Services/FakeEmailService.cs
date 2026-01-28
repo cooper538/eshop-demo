@@ -1,9 +1,5 @@
 ﻿namespace EShop.NotificationService.Services;
 
-/// <summary>
-/// Fake email service that logs emails instead of sending them.
-/// Useful for development and testing environments.
-/// </summary>
 public class FakeEmailService(ILogger<FakeEmailService> logger) : IEmailService
 {
     public Task<EmailResult> SendAsync(

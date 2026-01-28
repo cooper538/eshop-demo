@@ -3,9 +3,6 @@ using Products.Application.Configuration;
 
 namespace Products.API.Configuration;
 
-/// <summary>
-/// Implementation of <see cref="IStockReservationOptions"/> that reads from <see cref="ProductSettings"/>.
-/// </summary>
 public sealed class StockReservationOptions : IStockReservationOptions
 {
     private readonly ProductSettings _settings;

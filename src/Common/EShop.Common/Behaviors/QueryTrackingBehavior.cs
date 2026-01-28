@@ -5,9 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EShop.Common.Behaviors;
 
-/// <summary>
-/// Pipeline behavior that automatically sets NoTracking for all queries.
-/// </summary>
 public sealed class QueryTrackingBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IQuery<TResponse>

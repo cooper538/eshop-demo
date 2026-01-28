@@ -16,30 +16,24 @@ using Products.Infrastructure.Data;
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment.EnvironmentName;
 
-// YAML Configuration
 builder
     .Configuration.AddYamlFile("product.settings.yaml", optional: false, reloadOnChange: true)
     .AddYamlFile($"product.settings.{env}.yaml", optional: true, reloadOnChange: true);
 
-// Bind and validate settings (fail-fast on invalid config)
 builder
     .Services.AddOptions<ProductSettings>()
     .BindConfiguration(ProductSettings.SectionName)
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
-// Stock reservation options abstraction for clean architecture
 builder.Services.AddSingleton<IStockReservationOptions, StockReservationOptions>();
 
-// Aspire ServiceDefaults
 builder.AddServiceDefaults();
 builder.AddSerilog();
 
-// API
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-// gRPC
 builder.Services.AddGrpc(options =>
 {
     options.Interceptors.Add<CorrelationIdServerInterceptor>();
@@ -48,19 +42,15 @@ builder.Services.AddGrpc(options =>
     options.Interceptors.Add<GrpcExceptionInterceptor>();
 });
 
-// gRPC request validators
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-// MediatR + Behaviors
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IProductDbContext>());
 builder.Services.AddCommonBehaviors();
 builder.Services.AddDomainEvents();
 builder.Services.AddDateTimeProvider();
 
-// FluentValidation
 builder.Services.AddValidatorsFromAssemblyContaining<IProductDbContext>();
 
-// EF Core
 builder.Services.AddDbContext<ProductDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString(ResourceNames.Databases.Product))
 );
@@ -68,7 +58,6 @@ builder.Services.AddScoped<IProductDbContext>(sp => sp.GetRequiredService<Produc
 builder.Services.AddScoped<IChangeTrackerAccessor>(sp => sp.GetRequiredService<ProductDbContext>());
 builder.Services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ProductDbContext>());
 
-// MassTransit with RabbitMQ and Entity Framework Outbox
 builder.Services.AddMassTransit(x =>
 {
     x.AddEntityFrameworkOutbox<ProductDbContext>(o =>
@@ -94,16 +83,13 @@ builder.Services.AddMassTransit(x =>
     );
 });
 
-// Error handling
 builder.Services.AddErrorHandling();
 builder.Services.AddCorrelationId();
 
-// Background jobs
 builder.Services.AddHostedService<StockReservationExpirationJob>();
 
 var app = builder.Build();
 
-// Middleware pipeline
 app.UseCorrelationId();
 app.UseErrorHandling();
 

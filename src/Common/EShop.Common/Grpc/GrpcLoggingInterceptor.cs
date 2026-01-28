@@ -5,9 +5,6 @@ using Microsoft.Extensions.Logging;
 
 namespace EShop.Common.Grpc;
 
-/// <summary>
-/// Server-side interceptor that logs gRPC call entry, exit, and duration.
-/// </summary>
 public sealed class GrpcLoggingInterceptor : Interceptor
 {
     private readonly ILogger<GrpcLoggingInterceptor> _logger;

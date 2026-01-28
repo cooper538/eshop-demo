@@ -5,9 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EShop.Common.Behaviors;
 
-/// <summary>
-/// Pipeline behavior that automatically sets TrackAll for commands without result.
-/// </summary>
 public sealed class CommandTrackingBehaviorUnit<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : ICommand

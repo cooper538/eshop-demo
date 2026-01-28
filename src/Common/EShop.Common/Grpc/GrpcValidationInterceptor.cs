@@ -5,9 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EShop.Common.Grpc;
 
-/// <summary>
-/// Server-side interceptor that validates incoming gRPC requests using FluentValidation.
-/// </summary>
 public sealed class GrpcValidationInterceptor : Interceptor
 {
     private readonly IServiceProvider _serviceProvider;
