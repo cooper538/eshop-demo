@@ -1,3 +1,5 @@
+using EShop.ServiceDefaults;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 // INFRASTRUCTURE
@@ -6,12 +8,12 @@ var postgres = builder
     .WithLifetime(ContainerLifetime.Persistent)
     .WithPgAdmin();
 
-var productDb = postgres.AddDatabase("productdb");
-var orderDb = postgres.AddDatabase("orderdb");
-var notificationDb = postgres.AddDatabase("notificationdb");
+var productDb = postgres.AddDatabase(ResourceNames.Databases.Product);
+var orderDb = postgres.AddDatabase(ResourceNames.Databases.Order);
+var notificationDb = postgres.AddDatabase(ResourceNames.Databases.Notification);
 
 var rabbitmq = builder
-    .AddRabbitMQ("messaging")
+    .AddRabbitMQ(ResourceNames.Messaging)
     .WithLifetime(ContainerLifetime.Persistent)
     .WithManagementPlugin();
 

@@ -1,4 +1,5 @@
 using EShop.Common.Data;
+using EShop.ServiceDefaults;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Order.Application.Data;
@@ -10,7 +11,7 @@ public static class DependencyInjection
 {
     public static IHostApplicationBuilder AddInfrastructure(this IHostApplicationBuilder builder)
     {
-        builder.AddNpgsqlDbContext<OrderDbContext>("orderdb");
+        builder.AddNpgsqlDbContext<OrderDbContext>(ResourceNames.Databases.Order);
 
         builder.Services.AddScoped<IOrderDbContext>(sp => sp.GetRequiredService<OrderDbContext>());
 

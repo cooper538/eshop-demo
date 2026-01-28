@@ -1,6 +1,7 @@
 using EShop.Common.Correlation.MassTransit;
 using EShop.Common.Extensions;
 using EShop.ServiceClients.Extensions;
+using EShop.ServiceDefaults;
 using FluentValidation;
 using MassTransit;
 using NetEscapades.Configuration.Yaml;
@@ -58,7 +59,9 @@ builder.Services.AddMassTransit(x =>
     x.UsingRabbitMq(
         (context, cfg) =>
         {
-            var connectionString = builder.Configuration.GetConnectionString("messaging");
+            var connectionString = builder.Configuration.GetConnectionString(
+                ResourceNames.Messaging
+            );
             if (!string.IsNullOrEmpty(connectionString))
             {
                 cfg.Host(new Uri(connectionString));

@@ -2,6 +2,7 @@ using EShop.Common.Correlation.MassTransit;
 using EShop.Common.Data;
 using EShop.Common.Extensions;
 using EShop.Common.Grpc;
+using EShop.ServiceDefaults;
 using FluentValidation;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -61,7 +62,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<IProductDbContext>();
 
 // EF Core
 builder.Services.AddDbContext<ProductDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("productdb"))
+    options.UseNpgsql(builder.Configuration.GetConnectionString(ResourceNames.Databases.Product))
 );
 builder.Services.AddScoped<IProductDbContext>(sp => sp.GetRequiredService<ProductDbContext>());
 builder.Services.AddScoped<IChangeTrackerAccessor>(sp => sp.GetRequiredService<ProductDbContext>());
@@ -79,7 +80,9 @@ builder.Services.AddMassTransit(x =>
     x.UsingRabbitMq(
         (context, cfg) =>
         {
-            var connectionString = builder.Configuration.GetConnectionString("messaging");
+            var connectionString = builder.Configuration.GetConnectionString(
+                ResourceNames.Messaging
+            );
             if (!string.IsNullOrEmpty(connectionString))
             {
                 cfg.Host(new Uri(connectionString));
