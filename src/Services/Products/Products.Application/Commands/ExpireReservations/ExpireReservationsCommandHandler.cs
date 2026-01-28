@@ -44,16 +44,18 @@ public sealed partial class ExpireReservationsCommandHandler
 
         foreach (var stock in stocks)
         {
-            foreach (var reservation in stock.Reservations)
+            var expired = stock.ExpireStaleReservations(now);
+
+            foreach (var reservation in expired)
             {
-                stock.ExpireReservation(reservation);
                 LogReservationExpired(
                     reservation.OrderId,
                     reservation.ProductId,
                     reservation.Quantity
                 );
-                totalExpired++;
             }
+
+            totalExpired += expired.Count;
         }
 
         LogFoundExpiredReservations(totalExpired);
