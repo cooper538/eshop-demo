@@ -171,3 +171,15 @@ EShopDemo.sln
 - Use CSharpier for formatting (120 char width, 4 spaces)
 - All `.md` files in the repository must be in English only
 
+## Comments
+
+**Remove:** section comments in Program.cs, XML docs on internal classes, comments describing WHAT
+
+**Keep:**
+- XML docs on controllers (generates OpenAPI)
+- `// EF Core constructor` - explains private constructor
+- Business rules explaining WHY
+- One-liner for patterns: `// Inbox Pattern - ensures exactly-once processing`
+- Critical ordering: `// UnitOfWork MUST be LAST`
+- TODO comments
+
