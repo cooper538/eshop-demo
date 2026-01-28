@@ -1,3 +1,4 @@
+using EShop.Common.Exceptions;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -41,6 +42,11 @@ public sealed partial class StockReservationExpirationJob : BackgroundService
             {
                 break;
             }
+            catch (ConflictException ex)
+            {
+                // Concurrency conflict is expected when multiple instances process reservations
+                LogConcurrencyConflict(ex);
+            }
             catch (Exception ex)
             {
                 LogProcessingError(ex);
@@ -74,4 +80,10 @@ public sealed partial class StockReservationExpirationJob : BackgroundService
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Error processing expired reservations")]
     private partial void LogProcessingError(Exception ex);
+
+    [LoggerMessage(
+        Level = LogLevel.Warning,
+        Message = "Concurrency conflict while processing expired reservations, will retry on next run"
+    )]
+    private partial void LogConcurrencyConflict(Exception ex);
 }

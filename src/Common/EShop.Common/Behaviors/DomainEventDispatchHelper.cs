@@ -10,7 +10,11 @@ namespace EShop.Common.Behaviors;
 /// </summary>
 internal static class DomainEventDispatchHelper
 {
-    public static async Task DispatchDomainEventsAsync(
+    /// <summary>
+    /// Dispatches domain events from tracked entities.
+    /// </summary>
+    /// <returns>True if any events were dispatched, false otherwise.</returns>
+    public static async Task<bool> DispatchDomainEventsAsync(
         IChangeTrackerAccessor? changeTrackerAccessor,
         IDomainEventDispatcher eventDispatcher,
         CancellationToken cancellationToken
@@ -18,7 +22,7 @@ internal static class DomainEventDispatchHelper
     {
         if (changeTrackerAccessor is null)
         {
-            return;
+            return false;
         }
 
         var domainEvents = CollectDomainEvents(changeTrackerAccessor);
@@ -26,7 +30,10 @@ internal static class DomainEventDispatchHelper
         if (domainEvents.Count > 0)
         {
             await eventDispatcher.DispatchAsync(domainEvents, cancellationToken);
+            return true;
         }
+
+        return false;
     }
 
     private static List<IDomainEvent> CollectDomainEvents(

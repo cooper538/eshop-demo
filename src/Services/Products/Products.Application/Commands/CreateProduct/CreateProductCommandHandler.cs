@@ -21,7 +21,6 @@ public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductC
         var product = request.ToEntity();
 
         _dbContext.Products.Add(product);
-        await _dbContext.SaveChangesAsync(cancellationToken);
 
         // Stock is created by ProductCreatedEventHandler via domain event
         // Return DTO with the initial stock quantity from the command

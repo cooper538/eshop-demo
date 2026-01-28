@@ -36,7 +36,5 @@ public sealed class ProductUpdatedEventHandler
         }
 
         stock.UpdateLowStockThreshold(@event.LowStockThreshold);
-
-        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

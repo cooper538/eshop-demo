@@ -37,12 +37,9 @@ public static class ServiceCollectionExtensions
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(QueryTrackingBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandTrackingBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandTrackingBehaviorUnit<,>));
-        // Domain event dispatch must be LAST to run after SaveChangesAsync
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainEventDispatchBehavior<,>));
-        services.AddTransient(
-            typeof(IPipelineBehavior<,>),
-            typeof(DomainEventDispatchBehaviorUnit<,>)
-        );
+        // UnitOfWork MUST be LAST - dispatches domain events then saves
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehaviorUnit<,>));
         return services;
     }
 

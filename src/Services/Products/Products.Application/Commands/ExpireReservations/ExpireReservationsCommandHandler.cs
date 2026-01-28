@@ -59,17 +59,7 @@ public sealed partial class ExpireReservationsCommandHandler
         }
 
         LogFoundExpiredReservations(totalExpired);
-
-        try
-        {
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            LogProcessingCompleted(totalExpired);
-        }
-        catch (DbUpdateConcurrencyException ex)
-        {
-            // Another instance processed some reservations - will retry on next run
-            LogConcurrencyConflict(ex);
-        }
+        LogProcessingCompleted(totalExpired);
     }
 
     private static Expression<Func<StockReservationEntity, bool>> IsExpiredFilter(DateTime now) =>
@@ -92,10 +82,4 @@ public sealed partial class ExpireReservationsCommandHandler
         Message = "Successfully processed {Count} expired reservations"
     )]
     private partial void LogProcessingCompleted(int count);
-
-    [LoggerMessage(
-        Level = LogLevel.Warning,
-        Message = "Concurrency conflict while processing expired reservations, will retry on next run"
-    )]
-    private partial void LogConcurrencyConflict(Exception ex);
 }

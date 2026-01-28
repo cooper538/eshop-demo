@@ -8,7 +8,7 @@ using Products.Domain.Entities;
 
 namespace Products.Infrastructure.Data;
 
-public class ProductDbContext : DbContext, IProductDbContext, IChangeTrackerAccessor
+public class ProductDbContext : DbContext, IProductDbContext, IChangeTrackerAccessor, IUnitOfWork
 {
     public ProductDbContext(DbContextOptions<ProductDbContext> options)
         : base(options) { }

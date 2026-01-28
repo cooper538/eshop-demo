@@ -18,6 +18,8 @@ public static class DependencyInjection
             sp.GetRequiredService<OrderDbContext>()
         );
 
+        builder.Services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<OrderDbContext>());
+
         return builder;
     }
 }

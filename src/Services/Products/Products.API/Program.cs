@@ -1,4 +1,5 @@
 using EShop.Common.Correlation.MassTransit;
+using EShop.Common.Data;
 using EShop.Common.Extensions;
 using EShop.Common.Grpc;
 using FluentValidation;
@@ -58,9 +59,8 @@ builder.Services.AddDbContext<ProductDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("productdb"))
 );
 builder.Services.AddScoped<IProductDbContext>(sp => sp.GetRequiredService<ProductDbContext>());
-builder.Services.AddScoped<EShop.Common.Data.IChangeTrackerAccessor>(sp =>
-    sp.GetRequiredService<ProductDbContext>()
-);
+builder.Services.AddScoped<IChangeTrackerAccessor>(sp => sp.GetRequiredService<ProductDbContext>());
+builder.Services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ProductDbContext>());
 
 // MassTransit with RabbitMQ and Entity Framework Outbox
 builder.Services.AddMassTransit(x =>

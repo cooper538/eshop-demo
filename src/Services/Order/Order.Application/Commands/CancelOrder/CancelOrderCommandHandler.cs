@@ -56,8 +56,6 @@ public sealed class CancelOrderCommandHandler
             );
         }
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
-
         // Release reserved stock - don't fail cancellation if release fails
         await ReleaseStockAsync(order.Id, cancellationToken);
 
