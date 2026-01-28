@@ -1,8 +1,5 @@
 ﻿namespace EShop.ServiceClients.Exceptions;
 
-/// <summary>
-/// Unified exception for service client errors, regardless of protocol.
-/// </summary>
 public sealed class ServiceClientException : Exception
 {
     public EServiceClientErrorCode ErrorCode { get; }

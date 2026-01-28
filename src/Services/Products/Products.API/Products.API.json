@@ -502,8 +502,7 @@
           "category": {
             "type": "string"
           }
-        },
-        "description": "DTO for product API responses."
+        }
       },
       "UpdateProductCommand": {
         "required": [

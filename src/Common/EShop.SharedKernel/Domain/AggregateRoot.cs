@@ -17,9 +17,5 @@ public abstract class AggregateRoot : Entity, IAggregateRoot
         _domainEvents.Clear();
     }
 
-    /// <summary>
-    /// Row version for optimistic concurrency control.
-    /// Value is automatically generated and managed by the database.
-    /// </summary>
     public byte[] Version { get; protected set; } = null!;
 }

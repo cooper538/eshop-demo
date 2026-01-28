@@ -3,10 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EShop.Common.Data;
 
-/// <summary>
-/// Base EF configuration for aggregate roots.
-/// Configures Id (inherited) and Version for optimistic concurrency.
-/// </summary>
 public abstract class AggregateRootConfiguration<TAggregate> : EntityConfiguration<TAggregate>
     where TAggregate : AggregateRoot
 {

@@ -5,9 +5,6 @@ using Microsoft.Extensions.Logging;
 
 namespace EShop.Common.Grpc;
 
-/// <summary>
-/// Server-side interceptor that converts application exceptions to appropriate gRPC status codes.
-/// </summary>
 public sealed class GrpcExceptionInterceptor : Interceptor
 {
     private readonly ILogger<GrpcExceptionInterceptor> _logger;
@@ -39,7 +36,6 @@ public sealed class GrpcExceptionInterceptor : Interceptor
         }
         catch (RpcException)
         {
-            // Already an RpcException, rethrow as-is
             throw;
         }
         catch (Exception ex)

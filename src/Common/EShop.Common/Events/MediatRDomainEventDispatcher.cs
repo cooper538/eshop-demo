@@ -5,9 +5,6 @@ using MediatR;
 
 namespace EShop.Common.Events;
 
-/// <summary>
-/// Dispatches domain events via MediatR by wrapping them in DomainEventNotification.
-/// </summary>
 public sealed class MediatRDomainEventDispatcher : IDomainEventDispatcher
 {
     private static readonly ConcurrentDictionary<Type, ConstructorInfo> ConstructorCache = new();

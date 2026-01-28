@@ -3,10 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EShop.NotificationService.Data;
 
-/// <summary>
-/// Database context for the Notification Service.
-/// Tracks processed messages to ensure idempotent message handling (Inbox Pattern).
-/// </summary>
 public class NotificationDbContext : DbContext
 {
     public NotificationDbContext(DbContextOptions<NotificationDbContext> options)

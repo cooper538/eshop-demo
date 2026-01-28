@@ -2,14 +2,7 @@
 
 namespace EShop.Common.Cqrs;
 
-/// <summary>
-/// Marker interface for commands that modify state and return a result.
-/// Commands using this interface will automatically have TrackAll behavior applied.
-/// </summary>
+// Marker for state-changing commands (auto TrackAll)
 public interface ICommand<TResult> : IRequest<TResult>;
 
-/// <summary>
-/// Marker interface for commands that modify state without returning a result.
-/// Commands using this interface will automatically have TrackAll behavior applied.
-/// </summary>
 public interface ICommand : IRequest;

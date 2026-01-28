@@ -12,42 +12,33 @@ using Order.Infrastructure.Data;
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment.EnvironmentName;
 
-// YAML Configuration
 builder
     .Configuration.AddYamlFile("order.settings.yaml", optional: false, reloadOnChange: true)
     .AddYamlFile($"order.settings.{env}.yaml", optional: true, reloadOnChange: true);
 
-// Bind and validate settings (fail-fast on invalid config)
 builder
     .Services.AddOptions<OrderSettings>()
     .BindConfiguration(OrderSettings.SectionName)
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
-// Aspire ServiceDefaults
 builder.AddServiceDefaults();
 builder.AddSerilog();
 
-// Service Clients (gRPC)
 builder.Services.AddServiceClients(builder.Configuration, builder.Environment);
 
-// API
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-// MediatR + Behaviors
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IOrderDbContext>());
 builder.Services.AddCommonBehaviors();
 builder.Services.AddDomainEvents();
 builder.Services.AddDateTimeProvider();
 
-// FluentValidation
 builder.Services.AddValidatorsFromAssemblyContaining<IOrderDbContext>();
 
-// Infrastructure (DbContext)
 builder.AddInfrastructure();
 
-// MassTransit with RabbitMQ and Entity Framework Outbox
 builder.Services.AddMassTransit(x =>
 {
     x.AddEntityFrameworkOutbox<OrderDbContext>(o =>
@@ -73,13 +64,11 @@ builder.Services.AddMassTransit(x =>
     );
 });
 
-// Error handling
 builder.Services.AddErrorHandling();
 builder.Services.AddCorrelationId();
 
 var app = builder.Build();
 
-// Middleware pipeline
 app.UseCorrelationId();
 app.UseErrorHandling();
 

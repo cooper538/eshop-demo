@@ -2,7 +2,6 @@
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-// INFRASTRUCTURE
 var postgres = builder
     .AddPostgres("postgres")
     .WithLifetime(ContainerLifetime.Persistent)
@@ -17,7 +16,6 @@ var rabbitmq = builder
     .WithLifetime(ContainerLifetime.Persistent)
     .WithManagementPlugin();
 
-// SERVICES
 var productService = builder
     .AddProject<Projects.Products_API>("product-service")
     .WithReference(productDb)
@@ -40,7 +38,6 @@ var notificationService = builder
     .WithReference(rabbitmq)
     .WaitFor(rabbitmq);
 
-// API GATEWAY
 var gateway = builder
     .AddProject<Projects.Gateway_API>("gateway")
     .WithReference(productService)

@@ -4,10 +4,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EShop.Common.Data;
 
-/// <summary>
-/// Base EF configuration for all entities.
-/// Configures Id as primary key.
-/// </summary>
 public abstract class EntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
     where TEntity : Entity
 {

@@ -4,10 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace EShop.Common.Data;
 
-/// <summary>
-/// EF Core convention that removes "Entity" suffix from table names.
-/// E.g., OrderEntity -> Order, ProductEntity -> Product
-/// </summary>
+// EF convention: OrderEntity -> Order
 public class RemoveEntitySuffixConvention : IModelFinalizingConvention
 {
     private const string EntitySuffix = "Entity";

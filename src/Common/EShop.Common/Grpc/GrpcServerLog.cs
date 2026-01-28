@@ -2,9 +2,6 @@
 
 namespace EShop.Common.Grpc;
 
-/// <summary>
-/// High-performance logging for gRPC server operations using source-generated LoggerMessage delegates.
-/// </summary>
 public static partial class GrpcServerLog
 {
     [LoggerMessage(Level = LogLevel.Debug, Message = "gRPC {Method} called")]
