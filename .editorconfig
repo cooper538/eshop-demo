@@ -421,6 +421,15 @@ dotnet_diagnostic.IDE0130.severity = warning
 
 # Validate arguments of public methods
 dotnet_diagnostic.CA1062.severity = suggestion
+
+###################################
+# MSTest Analyzers                #
+###################################
+
+# Parallelization - suggestion only (we'll configure it properly later)
+dotnet_diagnostic.MSTEST0001.severity = suggestion
+# Use specific Assert methods - suggestion only
+dotnet_diagnostic.MSTEST0037.severity = suggestion
 # Mark members as static when possible
 dotnet_diagnostic.CA1822.severity = suggestion
 # ConfigureAwait - not needed for ASP.NET Core
