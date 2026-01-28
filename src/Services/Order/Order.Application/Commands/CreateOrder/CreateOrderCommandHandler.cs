@@ -1,4 +1,5 @@
 using EShop.Contracts.ServiceClients.Product;
+using EShop.SharedKernel.Services;
 using MediatR;
 using Order.Application.Data;
 
@@ -9,14 +10,17 @@ public sealed class CreateOrderCommandHandler
 {
     private readonly IOrderDbContext _dbContext;
     private readonly IProductServiceClient _productServiceClient;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
     public CreateOrderCommandHandler(
         IOrderDbContext dbContext,
-        IProductServiceClient productServiceClient
+        IProductServiceClient productServiceClient,
+        IDateTimeProvider dateTimeProvider
     )
     {
         _dbContext = dbContext;
         _productServiceClient = productServiceClient;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task<CreateOrderResult> Handle(
@@ -24,7 +28,7 @@ public sealed class CreateOrderCommandHandler
         CancellationToken cancellationToken
     )
     {
-        var order = request.ToEntity();
+        var order = request.ToEntity(_dateTimeProvider.UtcNow);
 
         var orderItems = request
             .Items.Select(i => new OrderItemRequest(i.ProductId, i.Quantity))

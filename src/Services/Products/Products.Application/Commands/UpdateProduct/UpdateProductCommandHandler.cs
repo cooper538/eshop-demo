@@ -1,4 +1,5 @@
 using EShop.Common.Exceptions;
+using EShop.SharedKernel.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Data;
@@ -10,10 +11,15 @@ namespace Products.Application.Commands.UpdateProduct;
 public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, ProductDto>
 {
     private readonly IProductDbContext _dbContext;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
-    public UpdateProductCommandHandler(IProductDbContext dbContext)
+    public UpdateProductCommandHandler(
+        IProductDbContext dbContext,
+        IDateTimeProvider dateTimeProvider
+    )
     {
         _dbContext = dbContext;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task<ProductDto> Handle(
@@ -42,7 +48,7 @@ public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductC
         }
 
         // Only modify the Product aggregate - Stock is updated via domain event
-        request.ApplyToProduct(product);
+        request.ApplyToProduct(product, _dateTimeProvider.UtcNow);
 
         return ProductDto.FromEntity(product, stock);
     }

@@ -1,4 +1,5 @@
 using EShop.Common.Correlation.MassTransit;
+using EShop.Common.Extensions;
 using EShop.NotificationService.Consumers;
 using EShop.NotificationService.Data;
 using EShop.NotificationService.Services;
@@ -14,6 +15,9 @@ builder.AddNpgsqlDbContext<NotificationDbContext>("notificationdb");
 
 // Email service (fake for development)
 builder.Services.AddSingleton<IEmailService, FakeEmailService>();
+
+// DateTime provider
+builder.Services.AddDateTimeProvider();
 
 // MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>

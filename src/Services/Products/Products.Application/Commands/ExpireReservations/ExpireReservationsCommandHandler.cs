@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using EShop.SharedKernel.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -12,20 +13,23 @@ public sealed partial class ExpireReservationsCommandHandler
     : IRequestHandler<ExpireReservationsCommand>
 {
     private readonly IProductDbContext _dbContext;
+    private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ILogger<ExpireReservationsCommandHandler> _logger;
 
     public ExpireReservationsCommandHandler(
         IProductDbContext dbContext,
+        IDateTimeProvider dateTimeProvider,
         ILogger<ExpireReservationsCommandHandler> logger
     )
     {
         _dbContext = dbContext;
+        _dateTimeProvider = dateTimeProvider;
         _logger = logger;
     }
 
     public async Task Handle(ExpireReservationsCommand request, CancellationToken cancellationToken)
     {
-        var now = DateTime.UtcNow;
+        var now = _dateTimeProvider.UtcNow;
         var isExpired = IsExpiredFilter(now);
 
         var stocks = await _dbContext

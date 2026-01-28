@@ -1,5 +1,6 @@
 using EShop.Common.Events;
 using EShop.Contracts.Events.Order;
+using EShop.SharedKernel.Services;
 using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,7 @@ namespace Order.Application.EventHandlers;
 
 public sealed class OrderCancelledDomainEventHandler(
     IPublishEndpoint publishEndpoint,
+    IDateTimeProvider dateTimeProvider,
     ILogger<OrderCancelledDomainEventHandler> logger
 ) : INotificationHandler<DomainEventNotification<OrderCancelledDomainEvent>>
 {
@@ -31,7 +33,10 @@ public sealed class OrderCancelledDomainEventHandler(
             domainEvent.CustomerId,
             domainEvent.CustomerEmail,
             domainEvent.Reason
-        );
+        )
+        {
+            Timestamp = dateTimeProvider.UtcNow,
+        };
 
         await publishEndpoint.Publish(integrationEvent, cancellationToken);
     }

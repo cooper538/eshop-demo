@@ -3,6 +3,8 @@ using EShop.Common.Correlation;
 using EShop.Common.Events;
 using EShop.Common.Grpc;
 using EShop.Common.Middleware;
+using EShop.Common.Services;
+using EShop.SharedKernel.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +13,12 @@ namespace EShop.Common.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddDateTimeProvider(this IServiceCollection services)
+    {
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        return services;
+    }
+
     public static IServiceCollection AddDomainEvents(this IServiceCollection services)
     {
         services.AddScoped<IDomainEventDispatcher, MediatRDomainEventDispatcher>();

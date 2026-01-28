@@ -15,7 +15,7 @@ public sealed record CreateProductCommand(
 
 public static class CreateProductCommandMapper
 {
-    public static ProductEntity ToEntity(this CreateProductCommand command)
+    public static ProductEntity ToEntity(this CreateProductCommand command, DateTime createdAt)
     {
         return ProductEntity.Create(
             command.Name,
@@ -23,7 +23,8 @@ public static class CreateProductCommandMapper
             command.Price,
             command.StockQuantity,
             command.LowStockThreshold,
-            command.Category
+            command.Category,
+            createdAt
         );
     }
 }

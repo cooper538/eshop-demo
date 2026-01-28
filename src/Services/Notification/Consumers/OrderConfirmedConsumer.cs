@@ -1,6 +1,7 @@
 using EShop.Contracts.Events.Order;
 using EShop.NotificationService.Data;
 using EShop.NotificationService.Services;
+using EShop.SharedKernel.Services;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -8,9 +9,10 @@ namespace EShop.NotificationService.Consumers;
 
 public sealed class OrderConfirmedConsumer(
     NotificationDbContext dbContext,
+    IDateTimeProvider dateTimeProvider,
     IEmailService emailService,
     ILogger<OrderConfirmedConsumer> logger
-) : IdempotentConsumer<OrderConfirmedEvent>(dbContext, logger)
+) : IdempotentConsumer<OrderConfirmedEvent>(dbContext, dateTimeProvider, logger)
 {
     protected override async Task ProcessMessage(ConsumeContext<OrderConfirmedEvent> context)
     {

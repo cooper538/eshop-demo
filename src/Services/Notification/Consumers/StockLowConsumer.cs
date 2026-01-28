@@ -1,6 +1,7 @@
 using EShop.Contracts.Events.Product;
 using EShop.NotificationService.Data;
 using EShop.NotificationService.Services;
+using EShop.SharedKernel.Services;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -8,9 +9,10 @@ namespace EShop.NotificationService.Consumers;
 
 public sealed class StockLowConsumer(
     NotificationDbContext dbContext,
+    IDateTimeProvider dateTimeProvider,
     IEmailService emailService,
     ILogger<StockLowConsumer> logger
-) : IdempotentConsumer<StockLowEvent>(dbContext, logger)
+) : IdempotentConsumer<StockLowEvent>(dbContext, dateTimeProvider, logger)
 {
     // TODO: Move to configuration (appsettings.json or environment variable)
     private const string AdminEmail = "admin@eshop.local";
