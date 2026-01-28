@@ -26,6 +26,7 @@ var gatewaySettings =
 
 // Aspire ServiceDefaults
 builder.AddServiceDefaults();
+builder.AddSerilog();
 
 // Rate Limiting
 if (gatewaySettings.RateLimiting.Enabled)

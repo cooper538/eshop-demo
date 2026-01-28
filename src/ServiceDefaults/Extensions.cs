@@ -127,6 +127,7 @@ public static class Extensions
     {
         var serviceName =
             builder.Configuration["OTEL_SERVICE_NAME"] ?? builder.Environment.ApplicationName;
+        var timestamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
 
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Information()
@@ -138,9 +139,7 @@ public static class Extensions
             .WriteTo.Console(new CompactJsonFormatter())
             .WriteTo.File(
                 new CompactJsonFormatter(),
-                Path.Combine(logDirectory, $"{serviceName}-.log"),
-                rollingInterval: RollingInterval.Day,
-                retainedFileCountLimit: 7
+                Path.Combine(logDirectory, $"{serviceName}-{timestamp}.log")
             )
             .CreateLogger();
 

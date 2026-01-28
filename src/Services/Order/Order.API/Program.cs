@@ -26,6 +26,7 @@ builder
 
 // Aspire ServiceDefaults
 builder.AddServiceDefaults();
+builder.AddSerilog();
 
 // Service Clients (gRPC)
 builder.Services.AddServiceClients(builder.Configuration, builder.Environment);
