@@ -23,11 +23,10 @@ public class StockReservationEntity : Entity
         Guid orderId,
         Guid productId,
         int quantity,
-        StockEntity stock
+        StockEntity stock,
+        DateTime reservedAt
     )
     {
-        var now = DateTime.UtcNow;
-
         return new StockReservationEntity
         {
             Id = Guid.NewGuid(),
@@ -35,8 +34,8 @@ public class StockReservationEntity : Entity
             OrderId = orderId,
             ProductId = productId,
             Quantity = quantity,
-            ReservedAt = now,
-            ExpiresAt = now.Add(DefaultTtl),
+            ReservedAt = reservedAt,
+            ExpiresAt = reservedAt.Add(DefaultTtl),
             Status = EReservationStatus.Active,
         };
     }

@@ -38,6 +38,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IOrderDbContext>());
 builder.Services.AddCommonBehaviors();
 builder.Services.AddDomainEvents();
+builder.Services.AddDateTimeProvider();
 
 // FluentValidation
 builder.Services.AddValidatorsFromAssemblyContaining<IOrderDbContext>();

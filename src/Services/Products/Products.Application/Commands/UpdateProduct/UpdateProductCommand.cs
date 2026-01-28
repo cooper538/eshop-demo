@@ -17,7 +17,8 @@ public static class UpdateProductCommandMapper
 {
     public static void ApplyToProduct(
         this UpdateProductCommand command,
-        ProductEntity productEntity
+        ProductEntity productEntity,
+        DateTime updatedAt
     )
     {
         productEntity.Update(
@@ -25,7 +26,8 @@ public static class UpdateProductCommandMapper
             command.Description,
             command.Price,
             command.Category,
-            command.LowStockThreshold
+            command.LowStockThreshold,
+            updatedAt
         );
     }
 }

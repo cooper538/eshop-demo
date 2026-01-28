@@ -21,7 +21,8 @@ public class ProductEntity : AggregateRoot
         decimal price,
         int initialStockQuantity,
         int lowStockThreshold,
-        string category
+        string category,
+        DateTime createdAt
     )
     {
         var product = new ProductEntity
@@ -31,11 +32,14 @@ public class ProductEntity : AggregateRoot
             Description = description,
             Price = price,
             Category = category,
-            CreatedAt = DateTime.UtcNow,
+            CreatedAt = createdAt,
         };
 
         product.AddDomainEvent(
             new ProductCreatedDomainEvent(product.Id, initialStockQuantity, lowStockThreshold)
+            {
+                OccurredOn = createdAt,
+            }
         );
 
         return product;
@@ -46,15 +50,18 @@ public class ProductEntity : AggregateRoot
         string description,
         decimal price,
         string category,
-        int lowStockThreshold
+        int lowStockThreshold,
+        DateTime updatedAt
     )
     {
         Name = name;
         Description = description;
         Price = price;
         Category = category;
-        UpdatedAt = DateTime.UtcNow;
+        UpdatedAt = updatedAt;
 
-        AddDomainEvent(new ProductUpdatedDomainEvent(Id, lowStockThreshold));
+        AddDomainEvent(
+            new ProductUpdatedDomainEvent(Id, lowStockThreshold) { OccurredOn = updatedAt }
+        );
     }
 }

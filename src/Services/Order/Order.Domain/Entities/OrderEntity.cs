@@ -28,7 +28,8 @@ public class OrderEntity : AggregateRoot
     public static OrderEntity Create(
         Guid customerId,
         string customerEmail,
-        IEnumerable<OrderItem> items
+        IEnumerable<OrderItem> items,
+        DateTime createdAt
     )
     {
         var itemList = items.ToList();
@@ -40,12 +41,12 @@ public class OrderEntity : AggregateRoot
             CustomerEmail = customerEmail,
             Status = EOrderStatus.Created,
             TotalAmount = itemList.Sum(i => i.LineTotal),
-            CreatedAt = DateTime.UtcNow,
+            CreatedAt = createdAt,
             Items = itemList,
         };
     }
 
-    public void Confirm()
+    public void Confirm(DateTime occurredAt)
     {
         if (Status != EOrderStatus.Created)
         {
@@ -53,7 +54,7 @@ public class OrderEntity : AggregateRoot
         }
 
         Status = EOrderStatus.Confirmed;
-        UpdatedAt = DateTime.UtcNow;
+        UpdatedAt = occurredAt;
 
         AddDomainEvent(
             new OrderConfirmedDomainEvent(
@@ -70,10 +71,13 @@ public class OrderEntity : AggregateRoot
                     ))
                     .ToList()
             )
+            {
+                OccurredOn = occurredAt,
+            }
         );
     }
 
-    public void Reject(string reason)
+    public void Reject(string reason, DateTime occurredAt)
     {
         if (Status != EOrderStatus.Created)
         {
@@ -82,12 +86,17 @@ public class OrderEntity : AggregateRoot
 
         Status = EOrderStatus.Rejected;
         RejectionReason = reason;
-        UpdatedAt = DateTime.UtcNow;
+        UpdatedAt = occurredAt;
 
-        AddDomainEvent(new OrderRejectedDomainEvent(Id, CustomerId, CustomerEmail, reason));
+        AddDomainEvent(
+            new OrderRejectedDomainEvent(Id, CustomerId, CustomerEmail, reason)
+            {
+                OccurredOn = occurredAt,
+            }
+        );
     }
 
-    public void Cancel(string reason)
+    public void Cancel(string reason, DateTime occurredAt)
     {
         if (Status != EOrderStatus.Confirmed)
         {
@@ -96,8 +105,13 @@ public class OrderEntity : AggregateRoot
 
         Status = EOrderStatus.Cancelled;
         RejectionReason = reason;
-        UpdatedAt = DateTime.UtcNow;
+        UpdatedAt = occurredAt;
 
-        AddDomainEvent(new OrderCancelledDomainEvent(Id, CustomerId, CustomerEmail, reason));
+        AddDomainEvent(
+            new OrderCancelledDomainEvent(Id, CustomerId, CustomerEmail, reason)
+            {
+                OccurredOn = occurredAt,
+            }
+        );
     }
 }

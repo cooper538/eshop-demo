@@ -1,5 +1,6 @@
 using EShop.Common.Exceptions;
 using EShop.Contracts.ServiceClients.Product;
+using EShop.SharedKernel.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,16 +15,19 @@ public sealed class CancelOrderCommandHandler
 {
     private readonly IOrderDbContext _dbContext;
     private readonly IProductServiceClient _productServiceClient;
+    private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ILogger<CancelOrderCommandHandler> _logger;
 
     public CancelOrderCommandHandler(
         IOrderDbContext dbContext,
         IProductServiceClient productServiceClient,
+        IDateTimeProvider dateTimeProvider,
         ILogger<CancelOrderCommandHandler> logger
     )
     {
         _dbContext = dbContext;
         _productServiceClient = productServiceClient;
+        _dateTimeProvider = dateTimeProvider;
         _logger = logger;
     }
 
@@ -44,7 +48,7 @@ public sealed class CancelOrderCommandHandler
 
         try
         {
-            order.Cancel(request.Reason);
+            order.Cancel(request.Reason, _dateTimeProvider.UtcNow);
         }
         catch (InvalidOrderStateException ex)
         {

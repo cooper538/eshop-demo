@@ -1,7 +1,7 @@
 # Phase 11: Improvements & Refactoring
 
 ## Status
-- [ ] In progress
+- [x] In progress
 
 ## Overview
 
@@ -12,8 +12,10 @@ These are enhancements that improve code quality, domain model alignment, or arc
 
 | # | Task | Description | Status |
 |---|------|-------------|--------|
-| 01 | [Product Domain Refactoring](tasks/task-01-product-domain-refactoring.md) | Separate Product catalog from Stock inventory into distinct aggregates | Completed |
-| 02 | [Architecture Tests](tasks/task-02-architecture-tests.md) | NetArchTest.Rules tests for Clean Architecture and DDD compliance | Not started |
+| 01 | [Product Domain Refactoring](tasks/task-01-product-domain-refactoring.md) | Separate Product catalog from Stock inventory into distinct aggregates | ✅ Completed |
+| 02 | [Architecture Tests](tasks/task-02-architecture-tests.md) | NetArchTest.Rules tests for Clean Architecture and DDD compliance | ✅ Completed |
+| 03 | [UnitOfWork Behavior](tasks/task-03-unitofwork-behavior.md) | Refactor domain event dispatch to run before SaveChangesAsync | ⚪ Not started |
+| 04 | [IDateTimeProvider](tasks/task-04-datetime-provider.md) | Introduce IDateTimeProvider abstraction for testability | ✅ Completed |
 
 ## Goals
 

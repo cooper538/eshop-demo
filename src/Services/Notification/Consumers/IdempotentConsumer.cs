@@ -1,5 +1,6 @@
 using EShop.NotificationService.Data;
 using EShop.NotificationService.Data.Entities;
+using EShop.SharedKernel.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -15,11 +16,17 @@ public abstract class IdempotentConsumer<TMessage> : IConsumer<TMessage>
     where TMessage : class
 {
     private readonly NotificationDbContext _dbContext;
+    private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ILogger _logger;
 
-    protected IdempotentConsumer(NotificationDbContext dbContext, ILogger logger)
+    protected IdempotentConsumer(
+        NotificationDbContext dbContext,
+        IDateTimeProvider dateTimeProvider,
+        ILogger logger
+    )
     {
         _dbContext = dbContext;
+        _dateTimeProvider = dateTimeProvider;
         _logger = logger;
     }
 
@@ -65,7 +72,7 @@ public abstract class IdempotentConsumer<TMessage> : IConsumer<TMessage>
                 {
                     MessageId = messageId,
                     ConsumerType = ConsumerTypeName,
-                    ProcessedAt = DateTime.UtcNow,
+                    ProcessedAt = _dateTimeProvider.UtcNow,
                 }
             );
 

@@ -18,12 +18,12 @@ public sealed record CreateOrderItemDto(
 
 public static class CreateOrderCommandMapper
 {
-    public static OrderEntity ToEntity(this CreateOrderCommand command)
+    public static OrderEntity ToEntity(this CreateOrderCommand command, DateTime createdAt)
     {
         var items = command.Items.Select(i =>
             OrderItem.Create(i.ProductId, i.ProductName, i.Quantity, i.UnitPrice)
         );
 
-        return OrderEntity.Create(command.CustomerId, command.CustomerEmail, items);
+        return OrderEntity.Create(command.CustomerId, command.CustomerEmail, items, createdAt);
     }
 }

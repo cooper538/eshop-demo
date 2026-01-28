@@ -32,7 +32,7 @@ public class StockEntity : AggregateRoot
         };
     }
 
-    public StockReservationEntity ReserveStock(Guid orderId, int quantity)
+    public StockReservationEntity ReserveStock(Guid orderId, int quantity, DateTime reservedAt)
     {
         if (AvailableQuantity < quantity)
         {
@@ -41,13 +41,22 @@ public class StockEntity : AggregateRoot
             );
         }
 
-        var reservation = StockReservationEntity.Create(orderId, ProductId, quantity, this);
+        var reservation = StockReservationEntity.Create(
+            orderId,
+            ProductId,
+            quantity,
+            this,
+            reservedAt
+        );
         _reservations.Add(reservation);
 
         if (IsLowStock)
         {
             AddDomainEvent(
                 new LowStockWarningDomainEvent(ProductId, AvailableQuantity, LowStockThreshold)
+                {
+                    OccurredOn = reservedAt,
+                }
             );
         }
 
@@ -81,6 +90,9 @@ public class StockEntity : AggregateRoot
                     reservation.ProductId,
                     reservation.Quantity
                 )
+                {
+                    OccurredOn = now,
+                }
             );
         }
 

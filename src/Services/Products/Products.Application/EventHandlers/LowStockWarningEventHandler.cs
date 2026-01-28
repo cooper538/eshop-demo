@@ -1,5 +1,6 @@
 using EShop.Common.Events;
 using EShop.Contracts.Events.Product;
+using EShop.SharedKernel.Services;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace Products.Application.EventHandlers;
 public sealed class LowStockWarningEventHandler(
     IProductDbContext dbContext,
     IPublishEndpoint publishEndpoint,
+    IDateTimeProvider dateTimeProvider,
     ILogger<LowStockWarningEventHandler> logger
 ) : INotificationHandler<DomainEventNotification<LowStockWarningDomainEvent>>
 {
@@ -54,7 +56,10 @@ public sealed class LowStockWarningEventHandler(
             productName,
             domainEvent.AvailableQuantity,
             domainEvent.Threshold
-        );
+        )
+        {
+            Timestamp = dateTimeProvider.UtcNow,
+        };
 
         await publishEndpoint.Publish(integrationEvent, cancellationToken);
     }

@@ -1,3 +1,4 @@
+using EShop.SharedKernel.Services;
 using MediatR;
 using Products.Application.Data;
 using Products.Application.Dtos;
@@ -7,10 +8,15 @@ namespace Products.Application.Commands.CreateProduct;
 public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ProductDto>
 {
     private readonly IProductDbContext _dbContext;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
-    public CreateProductCommandHandler(IProductDbContext dbContext)
+    public CreateProductCommandHandler(
+        IProductDbContext dbContext,
+        IDateTimeProvider dateTimeProvider
+    )
     {
         _dbContext = dbContext;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task<ProductDto> Handle(
@@ -18,7 +24,7 @@ public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductC
         CancellationToken cancellationToken
     )
     {
-        var product = request.ToEntity();
+        var product = request.ToEntity(_dateTimeProvider.UtcNow);
 
         _dbContext.Products.Add(product);
 
