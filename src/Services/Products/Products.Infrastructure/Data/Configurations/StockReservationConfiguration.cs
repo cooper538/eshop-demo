@@ -21,8 +21,6 @@ public class StockReservationConfiguration : EntityConfiguration<StockReservatio
 
         builder.Property(e => e.ExpiresAt).IsRequired();
 
-        builder.Property(e => e.ReleasedAt);
-
         builder.Property(e => e.Status).IsRequired();
 
         // Optimistic concurrency - PostgreSQL xmin system column

@@ -66,40 +66,25 @@ public class StockEntity : AggregateRoot
         }
     }
 
-    public void ExpireReservation(Guid reservationId)
+    public IReadOnlyList<StockReservationEntity> ExpireStaleReservations(DateTime now)
     {
-        var reservation = _reservations.FirstOrDefault(r =>
-            r.Id == reservationId && r.Status == EReservationStatus.Active
-        );
+        var expiredReservations = _reservations
+            .Where(r => r.Status == EReservationStatus.Active && r.ExpiresAt < now)
+            .ToList();
 
-        if (reservation != null)
+        foreach (var reservation in expiredReservations)
         {
-            ExpireReservation(reservation);
-        }
-    }
-
-    public void ExpireReservation(StockReservationEntity reservation)
-    {
-        if (reservation.StockId != Id)
-        {
-            throw new InvalidOperationException(
-                $"Reservation {reservation.Id} does not belong to this stock {Id}."
+            reservation.Expire();
+            AddDomainEvent(
+                new StockReservationExpiredDomainEvent(
+                    reservation.OrderId,
+                    reservation.ProductId,
+                    reservation.Quantity
+                )
             );
         }
 
-        if (reservation.Status != EReservationStatus.Active)
-        {
-            return;
-        }
-
-        reservation.Expire();
-        AddDomainEvent(
-            new StockReservationExpiredDomainEvent(
-                reservation.OrderId,
-                reservation.ProductId,
-                reservation.Quantity
-            )
-        );
+        return expiredReservations;
     }
 
     public void UpdateLowStockThreshold(int threshold) => LowStockThreshold = threshold;

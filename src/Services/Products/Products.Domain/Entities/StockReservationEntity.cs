@@ -13,11 +13,8 @@ public class StockReservationEntity : Entity
     public int Quantity { get; private set; }
     public DateTime ReservedAt { get; private set; }
     public DateTime ExpiresAt { get; private set; }
-    public DateTime? ReleasedAt { get; private set; }
     public EReservationStatus Status { get; private set; }
     public uint RowVersion { get; private set; }
-
-    public bool IsExpired => Status == EReservationStatus.Active && DateTime.UtcNow >= ExpiresAt;
 
     // EF Core constructor
     private StockReservationEntity() { }
@@ -40,7 +37,6 @@ public class StockReservationEntity : Entity
             Quantity = quantity,
             ReservedAt = now,
             ExpiresAt = now.Add(DefaultTtl),
-            ReleasedAt = null,
             Status = EReservationStatus.Active,
         };
     }
@@ -55,7 +51,6 @@ public class StockReservationEntity : Entity
         }
 
         Status = EReservationStatus.Released;
-        ReleasedAt = DateTime.UtcNow;
     }
 
     public void Expire()
