@@ -14,7 +14,12 @@ public class OrderItem : IOwnedEntity
     // EF Core constructor
     private OrderItem() { }
 
-    public static OrderItem Create(Guid productId, string productName, int quantity, decimal unitPrice)
+    public static OrderItem Create(
+        Guid productId,
+        string productName,
+        int quantity,
+        decimal unitPrice
+    )
     {
         return new OrderItem
         {
