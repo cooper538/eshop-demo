@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=./Configuration/notification.settings.schema.json
+# Notification Service Configuration
+# Environment-specific overrides: notification.settings.{Environment}.yaml
+
+Logging:
+  LogLevel:
+    Default: "Information"
+    Microsoft.AspNetCore: "Warning"
+
+Notification:
+  Service:
+    Name: "Notification"
+
+  Email:
+    AdminEmail: "admin@eshop.local"

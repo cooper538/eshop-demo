@@ -1,14 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "order.settings.schema.json",
-  "title": "Order Service Configuration",
-  "description": "Configuration schema for Order Service YAML settings",
+  "$id": "notification.settings.schema.json",
+  "title": "Notification Service Configuration",
+  "description": "Configuration schema for Notification Service YAML settings",
   "type": "object",
   "properties": {
-    "AllowedHosts": {
-      "type": "string",
-      "description": "Allowed hosts for the application"
-    },
     "Logging": {
       "type": "object",
       "properties": {
@@ -29,10 +25,10 @@
         }
       }
     },
-    "Order": {
+    "Notification": {
       "type": "object",
-      "description": "Order service specific settings",
-      "required": ["Service", "Database"],
+      "description": "Notification service specific settings",
+      "required": ["Service", "Email"],
       "properties": {
         "Service": {
           "type": "object",
@@ -45,27 +41,17 @@
             }
           }
         },
-        "Database": {
+        "Email": {
           "type": "object",
+          "description": "Email configuration",
+          "required": ["AdminEmail"],
           "properties": {
-            "CommandTimeoutSec": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 300,
-              "default": 30,
-              "description": "Database command timeout in seconds"
-            },
-            "EnableRetry": {
-              "type": "boolean",
-              "default": true,
-              "description": "Enable automatic retry on transient failures"
-            },
-            "MaxRetryCount": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 10,
-              "default": 3,
-              "description": "Maximum number of retry attempts"
+            "AdminEmail": {
+              "type": "string",
+              "format": "email",
+              "maxLength": 320,
+              "default": "admin@eshop.local",
+              "description": "Admin email address for system notifications (low stock alerts, etc.)"
             }
           }
         }

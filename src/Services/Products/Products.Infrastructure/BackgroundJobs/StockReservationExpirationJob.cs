@@ -4,27 +4,28 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Products.Application.Commands.ExpireReservations;
+using Products.Application.Configuration;
 
 namespace Products.Infrastructure.BackgroundJobs;
 
 /// <summary>
 /// Background job that expires stale stock reservations and releases stock back to inventory.
-/// Runs every minute to check for Active reservations where ExpiresAt has passed.
+/// Check interval and batch size are configurable via <see cref="IStockReservationOptions"/>.
 /// </summary>
 public sealed partial class StockReservationExpirationJob : BackgroundService
 {
-    private const int BatchSize = 100;
-    private static readonly TimeSpan CheckInterval = TimeSpan.FromMinutes(1);
-
     private readonly IServiceProvider _serviceProvider;
+    private readonly IStockReservationOptions _options;
     private readonly ILogger<StockReservationExpirationJob> _logger;
 
     public StockReservationExpirationJob(
         IServiceProvider serviceProvider,
+        IStockReservationOptions options,
         ILogger<StockReservationExpirationJob> logger
     )
     {
         _serviceProvider = serviceProvider;
+        _options = options;
         _logger = logger;
     }
 
@@ -52,7 +53,7 @@ public sealed partial class StockReservationExpirationJob : BackgroundService
                 LogProcessingError(ex);
             }
 
-            await Task.Delay(CheckInterval, stoppingToken);
+            await Task.Delay(_options.Expiration.CheckInterval, stoppingToken);
         }
 
         LogJobStopped();
@@ -63,7 +64,10 @@ public sealed partial class StockReservationExpirationJob : BackgroundService
         using var scope = _serviceProvider.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-        await mediator.Send(new ExpireReservationsCommand(BatchSize), cancellationToken);
+        await mediator.Send(
+            new ExpireReservationsCommand(_options.Expiration.BatchSize),
+            cancellationToken
+        );
     }
 
     [LoggerMessage(

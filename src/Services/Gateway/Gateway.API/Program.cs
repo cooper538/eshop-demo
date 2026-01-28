@@ -20,17 +20,16 @@ builder
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
+// Read settings for startup configuration
+var gatewaySettings =
+    builder.Configuration.GetSection(GatewaySettings.SectionName).Get<GatewaySettings>()
+    ?? new GatewaySettings();
+
 // Aspire ServiceDefaults
 builder.AddServiceDefaults();
 
 // Rate Limiting
-var rateLimitSettings =
-    builder
-        .Configuration.GetSection($"{GatewaySettings.SectionName}:RateLimiting")
-        .Get<RateLimitingSettings>()
-    ?? new RateLimitingSettings();
-
-if (rateLimitSettings.Enabled)
+if (gatewaySettings.RateLimiting.Enabled)
 {
     builder.Services.AddRateLimiter(options =>
     {
@@ -56,10 +55,10 @@ if (rateLimitSettings.Enabled)
             "fixed",
             opt =>
             {
-                opt.PermitLimit = rateLimitSettings.PermitLimit;
-                opt.Window = TimeSpan.FromSeconds(rateLimitSettings.WindowSeconds);
+                opt.PermitLimit = gatewaySettings.RateLimiting.PermitLimit;
+                opt.Window = TimeSpan.FromSeconds(gatewaySettings.RateLimiting.WindowSeconds);
                 opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                opt.QueueLimit = rateLimitSettings.QueueLimit;
+                opt.QueueLimit = gatewaySettings.RateLimiting.QueueLimit;
             }
         );
     });
@@ -70,13 +69,17 @@ builder.Services.AddOutputCache(options =>
 {
     options.AddPolicy(
         "ProductsCache",
-        policy => policy.Expire(TimeSpan.FromMinutes(5)).Tag("products")
+        policy =>
+            policy.Expire(gatewaySettings.OutputCache.ProductsListCacheDuration).Tag("products")
     );
 
     options.AddPolicy(
         "ProductDetailCache",
         policy =>
-            policy.Expire(TimeSpan.FromMinutes(2)).SetVaryByRouteValue("catch-all").Tag("products")
+            policy
+                .Expire(gatewaySettings.OutputCache.ProductDetailCacheDuration)
+                .SetVaryByRouteValue("catch-all")
+                .Tag("products")
     );
 });
 
@@ -94,7 +97,7 @@ var app = builder.Build();
 // Middleware pipeline
 app.UseCorrelationId();
 
-if (rateLimitSettings.Enabled)
+if (gatewaySettings.RateLimiting.Enabled)
 {
     app.UseRateLimiter();
 }

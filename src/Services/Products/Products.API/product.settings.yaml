@@ -12,7 +12,6 @@ Logging:
 Product:
   Service:
     Name: "Products"
-    Version: "1.0.0"
 
   Database:
     CommandTimeoutSec: 30
@@ -22,3 +21,9 @@ Product:
   Cache:
     Enabled: true
     ExpirationMin: 60
+
+  StockReservation:
+    DefaultDurationMinutes: 15
+    Expiration:
+      CheckIntervalMinutes: 1
+      BatchSize: 100

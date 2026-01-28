@@ -32,7 +32,12 @@ public class StockEntity : AggregateRoot
         };
     }
 
-    public StockReservationEntity ReserveStock(Guid orderId, int quantity, DateTime reservedAt)
+    public StockReservationEntity ReserveStock(
+        Guid orderId,
+        int quantity,
+        DateTime reservedAt,
+        TimeSpan reservationDuration
+    )
     {
         if (AvailableQuantity < quantity)
         {
@@ -46,7 +51,8 @@ public class StockEntity : AggregateRoot
             ProductId,
             quantity,
             this,
-            reservedAt
+            reservedAt,
+            reservationDuration
         );
         _reservations.Add(reservation);
 
