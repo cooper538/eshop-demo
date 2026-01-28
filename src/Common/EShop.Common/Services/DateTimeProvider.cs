@@ -1,4 +1,4 @@
-using EShop.SharedKernel.Services;
+﻿using EShop.SharedKernel.Services;
 
 namespace EShop.Common.Services;
 

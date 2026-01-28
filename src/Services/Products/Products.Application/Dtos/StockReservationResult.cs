@@ -1,4 +1,4 @@
-namespace Products.Application.Dtos;
+﻿namespace Products.Application.Dtos;
 
 public sealed record StockReservationResult(bool IsSuccess, string? FailureMessage = null)
 {

@@ -1,4 +1,4 @@
-namespace EShop.NotificationService.Services;
+﻿namespace EShop.NotificationService.Services;
 
 /// <summary>
 /// Represents the result of an email send operation.

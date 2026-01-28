@@ -1,4 +1,4 @@
-namespace EShop.Common.Correlation;
+﻿namespace EShop.Common.Correlation;
 
 public sealed class CorrelationContext
 {

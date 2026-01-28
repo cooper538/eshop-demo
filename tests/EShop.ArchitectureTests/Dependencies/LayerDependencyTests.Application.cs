@@ -1,4 +1,4 @@
-namespace EShop.ArchitectureTests.Dependencies;
+﻿namespace EShop.ArchitectureTests.Dependencies;
 
 public partial class LayerDependencyTests
 {

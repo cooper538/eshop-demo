@@ -1,4 +1,4 @@
-using EShop.Common.Correlation.MassTransit;
+﻿using EShop.Common.Correlation.MassTransit;
 using EShop.Common.Extensions;
 using EShop.NotificationService.Configuration;
 using EShop.NotificationService.Consumers;
@@ -6,7 +6,6 @@ using EShop.NotificationService.Data;
 using EShop.NotificationService.Services;
 using EShop.ServiceDefaults;
 using MassTransit;
-using NetEscapades.Configuration.Yaml;
 
 var builder = Host.CreateApplicationBuilder(args);
 var env = builder.Environment.EnvironmentName;

@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using Products.Application.Dtos;
 
 namespace Products.Application.Commands.ReserveStock;

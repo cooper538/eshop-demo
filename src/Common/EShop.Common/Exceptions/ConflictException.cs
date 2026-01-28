@@ -1,4 +1,4 @@
-namespace EShop.Common.Exceptions;
+﻿namespace EShop.Common.Exceptions;
 
 public sealed class ConflictException : ApplicationException
 {

@@ -1,4 +1,4 @@
-using EShop.SharedKernel.Domain;
+﻿using EShop.SharedKernel.Domain;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EShop.Common.Data;

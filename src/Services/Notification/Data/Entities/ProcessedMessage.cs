@@ -1,4 +1,4 @@
-namespace EShop.NotificationService.Data.Entities;
+﻿namespace EShop.NotificationService.Data.Entities;
 
 /// <summary>
 /// Tracks processed messages for idempotency (Inbox Pattern).

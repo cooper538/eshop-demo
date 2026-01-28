@@ -1,4 +1,4 @@
-using Grpc.Core;
+﻿using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Microsoft.Extensions.Logging;
 
@@ -26,7 +26,7 @@ internal sealed class LoggingInterceptor : Interceptor
         var call = continuation(request, context);
 
         return new AsyncUnaryCall<TResponse>(
-            HandleResponse(call.ResponseAsync, operation),
+            HandleResponseAsync(call.ResponseAsync, operation),
             call.ResponseHeadersAsync,
             call.GetStatus,
             call.GetTrailers,
@@ -34,7 +34,7 @@ internal sealed class LoggingInterceptor : Interceptor
         );
     }
 
-    private async Task<TResponse> HandleResponse<TResponse>(
+    private async Task<TResponse> HandleResponseAsync<TResponse>(
         Task<TResponse> responseTask,
         string operation
     )

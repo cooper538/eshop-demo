@@ -1,4 +1,4 @@
-namespace Order.Application.Dtos;
+﻿namespace Order.Application.Dtos;
 
 public sealed record OrderItemDto(
     Guid ProductId,

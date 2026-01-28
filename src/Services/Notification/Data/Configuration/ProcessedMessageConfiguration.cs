@@ -1,4 +1,4 @@
-using EShop.NotificationService.Data.Entities;
+﻿using EShop.NotificationService.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

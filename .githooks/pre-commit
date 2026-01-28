@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Pre-commit hook for CSharpier formatting
-# This hook automatically formats staged .cs files before commit
+# Pre-commit hook for C# code formatting
+# This hook automatically formats staged .cs files using CSharpier.
+# Full CI validation (dotnet format) runs in pre-push hook.
 
 set -e
 
 # Colors for output
-RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
@@ -27,29 +27,15 @@ if ! dotnet tool list | grep -q "csharpier"; then
     dotnet tool restore
 fi
 
-# Format each staged file
-FORMATTED_FILES=""
-for FILE in $STAGED_CS_FILES; do
-    if [ -f "$FILE" ]; then
-        # Run CSharpier on the file
-        dotnet csharpier format "$FILE" 2>/dev/null
+# Format all staged files at once (much faster than per-file)
+echo "$STAGED_CS_FILES" | xargs dotnet csharpier format 2>/dev/null
 
-        # Check if file was modified
-        if ! git diff --quiet "$FILE" 2>/dev/null; then
-            FORMATTED_FILES="$FORMATTED_FILES $FILE"
-            # Re-add the formatted file to staging
-            git add "$FILE"
-        fi
+# Re-stage any files that were modified
+for FILE in $STAGED_CS_FILES; do
+    if [ -f "$FILE" ] && ! git diff --quiet "$FILE" 2>/dev/null; then
+        git add "$FILE"
     fi
 done
-
-# Report results
-if [ -n "$FORMATTED_FILES" ]; then
-    echo -e "${GREEN}CSharpier: Formatted and re-staged:${NC}"
-    for FILE in $FORMATTED_FILES; do
-        echo -e "  ${GREEN}✓${NC} $FILE"
-    done
-fi
 
 echo -e "${GREEN}CSharpier: Done!${NC}"
 exit 0

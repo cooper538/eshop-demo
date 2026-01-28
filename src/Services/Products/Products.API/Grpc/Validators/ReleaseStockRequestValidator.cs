@@ -1,4 +1,4 @@
-using EShop.Grpc.Product;
+﻿using EShop.Grpc.Product;
 using FluentValidation;
 
 namespace Products.API.Grpc.Validators;

@@ -10,10 +10,12 @@
         "tags": [
           "Products"
         ],
+        "summary": "List products with optional filtering and pagination.",
         "parameters": [
           {
             "name": "category",
             "in": "query",
+            "description": "Filter by category",
             "schema": {
               "type": "string"
             }
@@ -21,6 +23,7 @@
           {
             "name": "page",
             "in": "query",
+            "description": "Page number (default: 1)",
             "schema": {
               "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": [
@@ -34,6 +37,7 @@
           {
             "name": "pageSize",
             "in": "query",
+            "description": "Page size (default: 20, max: 100)",
             "schema": {
               "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": [
@@ -47,7 +51,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Paginated list of products",
             "content": {
               "text/plain": {
                 "schema": {
@@ -72,7 +76,9 @@
         "tags": [
           "Products"
         ],
+        "summary": "Create a new product.",
         "requestBody": {
+          "description": "Product creation data",
           "content": {
             "application/json": {
               "schema": {
@@ -141,10 +147,12 @@
         "tags": [
           "Products"
         ],
+        "summary": "Get product by ID.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "Product ID",
             "required": true,
             "schema": {
               "type": "string",
@@ -199,10 +207,12 @@
         "tags": [
           "Products"
         ],
+        "summary": "Update an existing product.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "Product ID",
             "required": true,
             "schema": {
               "type": "string",
@@ -211,6 +221,7 @@
           }
         ],
         "requestBody": {
+          "description": "Product update data",
           "content": {
             "application/json": {
               "schema": {
@@ -491,7 +502,8 @@
           "category": {
             "type": "string"
           }
-        }
+        },
+        "description": "DTO for product API responses."
       },
       "UpdateProductCommand": {
         "required": [

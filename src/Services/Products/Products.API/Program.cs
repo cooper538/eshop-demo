@@ -1,4 +1,4 @@
-using EShop.Common.Correlation.MassTransit;
+﻿using EShop.Common.Correlation.MassTransit;
 using EShop.Common.Data;
 using EShop.Common.Extensions;
 using EShop.Common.Grpc;
@@ -6,7 +6,6 @@ using EShop.ServiceDefaults;
 using FluentValidation;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using NetEscapades.Configuration.Yaml;
 using Products.API.Configuration;
 using Products.API.Grpc;
 using Products.Application.Configuration;

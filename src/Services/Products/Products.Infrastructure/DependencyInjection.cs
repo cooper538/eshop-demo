@@ -1,4 +1,4 @@
-using EShop.Common.Data;
+﻿using EShop.Common.Data;
 using EShop.ServiceDefaults;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

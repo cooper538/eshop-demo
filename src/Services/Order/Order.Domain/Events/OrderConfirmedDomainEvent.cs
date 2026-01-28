@@ -1,4 +1,4 @@
-using EShop.SharedKernel.Events;
+﻿using EShop.SharedKernel.Events;
 
 namespace Order.Domain.Events;
 

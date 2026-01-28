@@ -1,4 +1,4 @@
-namespace EShop.ArchitectureTests.LayerRules.Application;
+﻿namespace EShop.ArchitectureTests.LayerRules.Application;
 
 /// <summary>
 /// Tests for Application layer: Commands, Queries, Handlers, Validators.

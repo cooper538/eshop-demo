@@ -1,4 +1,4 @@
-using EShop.SharedKernel.Domain;
+﻿using EShop.SharedKernel.Domain;
 using Products.Domain.Enums;
 
 namespace Products.Domain.Entities;

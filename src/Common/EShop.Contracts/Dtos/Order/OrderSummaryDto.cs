@@ -1,4 +1,4 @@
-namespace EShop.Contracts.Dtos.Order;
+﻿namespace EShop.Contracts.Dtos.Order;
 
 public sealed record OrderSummaryDto(
     Guid OrderId,

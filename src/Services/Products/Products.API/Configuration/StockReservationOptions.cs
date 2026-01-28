@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Products.Application.Configuration;
 
 namespace Products.API.Configuration;

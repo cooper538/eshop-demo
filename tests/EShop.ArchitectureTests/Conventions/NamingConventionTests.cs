@@ -1,4 +1,4 @@
-namespace EShop.ArchitectureTests.Conventions;
+﻿namespace EShop.ArchitectureTests.Conventions;
 
 /// <summary>
 /// Tests for naming conventions across all layers.

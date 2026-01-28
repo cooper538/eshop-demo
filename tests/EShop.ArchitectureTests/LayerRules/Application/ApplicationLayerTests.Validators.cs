@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace EShop.ArchitectureTests.LayerRules.Application;
 

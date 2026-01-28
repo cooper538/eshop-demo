@@ -1,4 +1,4 @@
-using EShop.Common.Cqrs;
+﻿using EShop.Common.Cqrs;
 
 namespace Products.Application.Queries.GetProducts;
 

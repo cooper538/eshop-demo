@@ -1,3 +1,3 @@
-namespace EShop.SharedKernel.Events;
+﻿namespace EShop.SharedKernel.Events;
 
 public interface IDomainEvent;

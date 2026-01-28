@@ -1,6 +1,4 @@
-using AutoFixture;
-using AutoFixture.AutoMoq;
-using AutoFixture.Xunit2;
+﻿using AutoFixture.AutoMoq;
 
 namespace EShop.Common.UnitTests.Fixtures;
 

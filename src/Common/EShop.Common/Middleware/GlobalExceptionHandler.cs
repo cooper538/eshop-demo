@@ -1,4 +1,4 @@
-using EShop.Common.Correlation;
+﻿using EShop.Common.Correlation;
 using EShop.Common.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;

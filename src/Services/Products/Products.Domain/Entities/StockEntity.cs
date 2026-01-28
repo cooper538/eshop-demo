@@ -1,4 +1,4 @@
-using EShop.SharedKernel.Domain;
+﻿using EShop.SharedKernel.Domain;
 using Products.Domain.Enums;
 using Products.Domain.Events;
 

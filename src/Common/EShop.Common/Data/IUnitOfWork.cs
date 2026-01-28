@@ -1,4 +1,4 @@
-namespace EShop.Common.Data;
+﻿namespace EShop.Common.Data;
 
 public interface IUnitOfWork
 {

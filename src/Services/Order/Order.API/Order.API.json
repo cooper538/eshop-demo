@@ -10,10 +10,12 @@
         "tags": [
           "Orders"
         ],
+        "summary": "List orders with optional filtering and pagination.",
         "parameters": [
           {
             "name": "customerId",
             "in": "query",
+            "description": "Filter by customer ID",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -22,6 +24,7 @@
           {
             "name": "page",
             "in": "query",
+            "description": "Page number (default: 1)",
             "schema": {
               "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": [
@@ -35,6 +38,7 @@
           {
             "name": "pageSize",
             "in": "query",
+            "description": "Page size (default: 20, max: 100)",
             "schema": {
               "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": [
@@ -48,7 +52,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Paginated list of orders",
             "content": {
               "text/plain": {
                 "schema": {
@@ -73,7 +77,9 @@
         "tags": [
           "Orders"
         ],
+        "summary": "Create a new order.",
         "requestBody": {
+          "description": "Order creation data",
           "content": {
             "application/json": {
               "schema": {
@@ -142,10 +148,12 @@
         "tags": [
           "Orders"
         ],
+        "summary": "Get order by ID.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "Order ID",
             "required": true,
             "schema": {
               "type": "string",
@@ -202,10 +210,12 @@
         "tags": [
           "Orders"
         ],
+        "summary": "Cancel an order.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "Order ID",
             "required": true,
             "schema": {
               "type": "string",
@@ -214,6 +224,7 @@
           }
         ],
         "requestBody": {
+          "description": "Cancellation reason",
           "content": {
             "application/json": {
               "schema": {
@@ -289,7 +300,8 @@
           "reason": {
             "type": "string"
           }
-        }
+        },
+        "description": "Request body for order cancellation."
       },
       "CancelOrderResult": {
         "required": [

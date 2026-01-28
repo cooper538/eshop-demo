@@ -1,4 +1,4 @@
-using EShop.Common.Events;
+﻿using EShop.Common.Events;
 using EShop.Contracts.Events.Product;
 using EShop.SharedKernel.Services;
 using MassTransit;

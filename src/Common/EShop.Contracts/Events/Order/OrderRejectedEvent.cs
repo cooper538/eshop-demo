@@ -1,4 +1,4 @@
-namespace EShop.Contracts.Events.Order;
+﻿namespace EShop.Contracts.Events.Order;
 
 public sealed record OrderRejectedEvent(
     Guid OrderId,

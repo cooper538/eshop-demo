@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace EShop.ArchitectureTests.TestBase;
 
@@ -157,7 +157,9 @@ public abstract class ArchitectureTestBase
         // Records have a compiler-generated method called <Clone>$
         var cloneMethod = type.GetMethod("<Clone>$", BindingFlags.Public | BindingFlags.Instance);
         if (cloneMethod != null)
+        {
             return true;
+        }
 
         // Alternative check: records have EqualityContract property
         var equalityContract = type.GetProperty(

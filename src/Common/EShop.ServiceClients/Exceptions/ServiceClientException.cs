@@ -1,4 +1,4 @@
-namespace EShop.ServiceClients.Exceptions;
+﻿namespace EShop.ServiceClients.Exceptions;
 
 /// <summary>
 /// Unified exception for service client errors, regardless of protocol.

@@ -1,10 +1,9 @@
-using EShop.Common.Correlation.MassTransit;
+﻿using EShop.Common.Correlation.MassTransit;
 using EShop.Common.Extensions;
 using EShop.ServiceClients.Extensions;
 using EShop.ServiceDefaults;
 using FluentValidation;
 using MassTransit;
-using NetEscapades.Configuration.Yaml;
 using Order.API.Configuration;
 using Order.Application.Data;
 using Order.Infrastructure;

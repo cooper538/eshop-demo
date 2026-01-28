@@ -1,4 +1,4 @@
-using EShop.NotificationService.Data.Entities;
+﻿using EShop.NotificationService.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace EShop.NotificationService.Data;

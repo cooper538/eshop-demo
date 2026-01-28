@@ -1,4 +1,4 @@
-using EShop.Common.Events;
+﻿using EShop.Common.Events;
 using MediatR;
 using Products.Application.Data;
 using Products.Domain.Entities;

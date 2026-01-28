@@ -1,4 +1,4 @@
-namespace EShop.Contracts.Events.Product;
+﻿namespace EShop.Contracts.Events.Product;
 
 public sealed record StockLowEvent(
     Guid ProductId,

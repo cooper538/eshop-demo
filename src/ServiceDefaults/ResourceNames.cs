@@ -1,4 +1,4 @@
-namespace EShop.ServiceDefaults;
+﻿namespace EShop.ServiceDefaults;
 
 public static class ResourceNames
 {

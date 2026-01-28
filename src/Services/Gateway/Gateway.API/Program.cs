@@ -1,9 +1,8 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Threading.RateLimiting;
 using EShop.Common.Extensions;
 using Gateway.API.Configuration;
 using Microsoft.AspNetCore.RateLimiting;
-using NetEscapades.Configuration.Yaml;
 
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment.EnvironmentName;

@@ -1,4 +1,4 @@
-namespace Products.Application.Dtos;
+﻿namespace Products.Application.Dtos;
 
 /// <summary>
 /// Product info DTO for internal API (gRPC).

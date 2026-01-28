@@ -1,4 +1,4 @@
-namespace EShop.SharedKernel.Services;
+﻿namespace EShop.SharedKernel.Services;
 
 public interface IDateTimeProvider
 {

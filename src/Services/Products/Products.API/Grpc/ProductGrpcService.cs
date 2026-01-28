@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using EShop.Grpc.Product;
 using Grpc.Core;
 using MediatR;

@@ -1,4 +1,4 @@
-using EShop.Common.Cqrs;
+﻿using EShop.Common.Cqrs;
 using Products.Application.Dtos;
 
 namespace Products.Application.Commands.ReleaseStock;
