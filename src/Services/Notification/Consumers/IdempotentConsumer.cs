@@ -66,7 +66,7 @@ public abstract class IdempotentConsumer<TMessage> : IConsumer<TMessage>
             await _dbContext.SaveChangesAsync(context.CancellationToken);
             await transaction.CommitAsync(context.CancellationToken);
 
-            _logger.LogDebug(
+            _logger.LogInformation(
                 "Message processed successfully. MessageId: {MessageId}, Consumer: {ConsumerType}",
                 messageId,
                 ConsumerTypeName

@@ -9,12 +9,25 @@ public class FakeEmailService(ILogger<FakeEmailService> logger) : IEmailService
     {
         logger.LogInformation(
             "Simulated email sent. To: {To}, Subject: {Subject}",
-            message.To,
+            MaskEmail(message.To),
             message.Subject
         );
 
-        logger.LogDebug("Email body: {HtmlBody}", message.HtmlBody);
-
         return Task.FromResult(EmailResult.Ok());
+    }
+
+    private static string MaskEmail(string email)
+    {
+        var atIndex = email.IndexOf('@');
+        if (atIndex <= 1)
+        {
+            return "***@***";
+        }
+
+        var localPart = email[..atIndex];
+        var domain = email[atIndex..];
+        var visibleChars = Math.Min(2, localPart.Length);
+
+        return $"{localPart[..visibleChars]}***{domain}";
     }
 }

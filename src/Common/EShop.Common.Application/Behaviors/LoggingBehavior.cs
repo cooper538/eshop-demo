@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.Diagnostics;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace EShop.Common.Application.Behaviors;
@@ -20,12 +21,18 @@ public sealed class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRe
     )
     {
         var requestName = typeof(TRequest).Name;
+        var stopwatch = Stopwatch.StartNew();
 
         _logger.LogDebug("Handling {RequestName}", requestName);
 
         var response = await next();
 
-        _logger.LogDebug("Handled {RequestName}", requestName);
+        stopwatch.Stop();
+        _logger.LogDebug(
+            "Handled {RequestName} in {ElapsedMs}ms",
+            requestName,
+            stopwatch.ElapsedMilliseconds
+        );
 
         return response;
     }
