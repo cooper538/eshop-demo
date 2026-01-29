@@ -22,7 +22,7 @@ public static class DependencyInjection
 
         builder.Services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<OrderDbContext>());
 
-        builder.Services.AddMessaging<OrderDbContext>(builder.Configuration);
+        builder.Services.AddMessaging<OrderDbContext>(builder.Configuration, "order");
 
         builder.Services.AddFluentValidation(
             typeof(Order.Application.DependencyInjection).Assembly

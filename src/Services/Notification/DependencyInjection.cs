@@ -63,7 +63,10 @@ public static class DependencyInjection
                     );
 
                     cfg.UseCorrelationIdFilters(context);
-                    cfg.ConfigureEndpoints(context);
+                    cfg.ConfigureEndpoints(
+                        context,
+                        new KebabCaseEndpointNameFormatter("notification", false)
+                    );
                 }
             );
         });
