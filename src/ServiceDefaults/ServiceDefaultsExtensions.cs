@@ -14,7 +14,7 @@ using Serilog.Formatting.Compact;
 #pragma warning disable IDE0130 // Namespace intentionally differs - extension methods for Microsoft.Extensions.Hosting
 namespace Microsoft.Extensions.Hosting;
 
-public static class Extensions
+public static class ServiceDefaultsExtensions
 {
     /// <summary>
     /// Adds common Aspire service defaults including OpenTelemetry, health checks,
@@ -42,6 +42,8 @@ public static class Extensions
         this IHostApplicationBuilder builder
     )
     {
+        const string activitySourcePattern = "EShop.*";
+
         builder.Logging.AddOpenTelemetry(logging =>
         {
             logging.IncludeFormattedMessage = true;
@@ -60,7 +62,7 @@ public static class Extensions
             .WithTracing(tracing =>
             {
                 tracing
-                    .AddSource("EShop.*")
+                    .AddSource(activitySourcePattern)
                     .AddAspNetCoreInstrumentation()
                     .AddGrpcClientInstrumentation()
                     .AddHttpClientInstrumentation()
@@ -125,9 +127,13 @@ public static class Extensions
         string logDirectory = "logs"
     )
     {
+        const string otelServiceNameKey = "OTEL_SERVICE_NAME";
+        const string timestampFormat = "yyyyMMdd-HHmmss";
+
         var serviceName =
-            builder.Configuration["OTEL_SERVICE_NAME"] ?? builder.Environment.ApplicationName;
-        var timestamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
+            builder.Configuration[otelServiceNameKey] ?? builder.Environment.ApplicationName;
+
+        var timestamp = DateTime.UtcNow.ToString(timestampFormat);
 
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Information()
