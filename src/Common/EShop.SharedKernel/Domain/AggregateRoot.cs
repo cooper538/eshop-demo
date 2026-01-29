@@ -17,5 +17,5 @@ public abstract class AggregateRoot : Entity, IAggregateRoot
         _domainEvents.Clear();
     }
 
-    public byte[] Version { get; protected set; } = null!;
+    public uint Version { get; protected set; }
 }
