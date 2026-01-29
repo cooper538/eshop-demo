@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=./Configuration/order.settings.schema.json
 # Order Service - Development Configuration
 # Overrides base order.settings.yaml for local development
 

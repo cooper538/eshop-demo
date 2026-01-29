@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=./Configuration/product.settings.schema.json
 # Product Service - Production Configuration
 # Overrides base product.settings.yaml for production environment
 

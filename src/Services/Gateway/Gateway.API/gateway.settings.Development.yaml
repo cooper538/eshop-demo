@@ -1,5 +1,5 @@
-# yaml-language-server: $schema=./Configuration/gateway.settings.schema.json
-# Gateway Service Configuration - Development Environment
+# Gateway Service - Development Configuration
+# Overrides base gateway.settings.yaml for local development
 
 Logging:
   LogLevel:
