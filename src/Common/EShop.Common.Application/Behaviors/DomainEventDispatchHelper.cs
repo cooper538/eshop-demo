@@ -13,6 +13,21 @@ internal static class DomainEventDispatchHelper
     /// <summary>
     /// Dispatches domain events from tracked entities.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// IMPORTANT: Events are cleared BEFORE dispatch to prevent infinite loops.
+    /// If a handler fails mid-dispatch:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item>Side effects (HTTP calls, external services) may have already occurred</item>
+    ///   <item>SaveChanges will NOT be called (exception propagates)</item>
+    ///   <item>On retry, events will be recreated by the command handler</item>
+    /// </list>
+    /// <para>
+    /// Event handlers should be IDEMPOTENT for retry scenarios.
+    /// Integration events use MassTransit Outbox for transactional delivery.
+    /// </para>
+    /// </remarks>
     /// <returns>True if any events were dispatched, false otherwise.</returns>
     public static async Task<bool> DispatchDomainEventsAsync(
         IChangeTrackerAccessor? changeTrackerAccessor,
