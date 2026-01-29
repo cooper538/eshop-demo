@@ -1,6 +1,7 @@
 ﻿using EShop.Common.Application.Data;
 using EShop.Common.Infrastructure.Extensions;
 using EShop.ServiceDefaults;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Products.Application.Data;
@@ -13,7 +14,19 @@ public static class DependencyInjection
 {
     public static IHostApplicationBuilder AddInfrastructure(this IHostApplicationBuilder builder)
     {
-        builder.AddNpgsqlDbContext<ProductDbContext>(ResourceNames.Databases.Product);
+        builder.AddNpgsqlDbContext<ProductDbContext>(
+            ResourceNames.Databases.Product,
+            configureDbContextOptions: options =>
+            {
+                if (builder.Environment.IsDevelopment())
+                {
+                    options.UseSeeding((context, _) => ProductDbContextSeed.Seed(context));
+                    options.UseAsyncSeeding(
+                        (context, _, ct) => ProductDbContextSeed.SeedAsync(context, ct)
+                    );
+                }
+            }
+        );
 
         builder.Services.AddScoped<IProductDbContext>(sp =>
             sp.GetRequiredService<ProductDbContext>()
