@@ -1,4 +1,4 @@
-﻿using EShop.ServiceDefaults;
+using EShop.ServiceDefaults;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -16,26 +16,41 @@ var rabbitmq = builder
     .WithLifetime(ContainerLifetime.Persistent)
     .WithManagementPlugin();
 
+// Migration service runs first and applies all database migrations
+var migrationService = builder
+    .AddProject<Projects.EShop_DatabaseMigration>("migration-service")
+    .WithReference(productDb)
+    .WithReference(orderDb)
+    .WithReference(notificationDb)
+    .WaitFor(productDb)
+    .WaitFor(orderDb)
+    .WaitFor(notificationDb);
+
+// All services wait for migrations to complete
 var productService = builder
     .AddProject<Projects.Products_API>("product-service")
+    .WithHttpEndpoint()
+    .WithHttpsEndpoint()
     .WithReference(productDb)
-    .WaitFor(productDb)
     .WithReference(rabbitmq)
+    .WaitFor(migrationService)
     .WaitFor(rabbitmq);
 
 var orderService = builder
     .AddProject<Projects.Order_API>("order-service")
+    .WithHttpEndpoint()
+    .WithHttpsEndpoint()
     .WithReference(orderDb)
-    .WaitFor(orderDb)
     .WithReference(rabbitmq)
-    .WaitFor(rabbitmq)
-    .WithReference(productService);
+    .WithReference(productService)
+    .WaitFor(migrationService)
+    .WaitFor(rabbitmq);
 
 var notificationService = builder
     .AddProject<Projects.EShop_NotificationService>("notification-service")
     .WithReference(notificationDb)
-    .WaitFor(notificationDb)
     .WithReference(rabbitmq)
+    .WaitFor(migrationService)
     .WaitFor(rabbitmq);
 
 var analyticsService = builder
@@ -45,6 +60,8 @@ var analyticsService = builder
 
 var gateway = builder
     .AddProject<Projects.Gateway_API>("gateway")
+    .WithHttpEndpoint()
+    .WithHttpsEndpoint()
     .WithReference(productService)
     .WithReference(orderService)
     .WithExternalHttpEndpoints();
