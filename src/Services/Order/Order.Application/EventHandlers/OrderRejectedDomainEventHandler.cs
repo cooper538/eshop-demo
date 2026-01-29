@@ -1,5 +1,5 @@
 ﻿using EShop.Common.Application.Events;
-using EShop.Contracts.Events.Order;
+using EShop.Contracts.IntegrationEvents.Order;
 using EShop.SharedKernel.Services;
 using MassTransit;
 using MediatR;

@@ -1,4 +1,4 @@
-﻿namespace EShop.Contracts.Events.Order;
+﻿namespace EShop.Contracts.IntegrationEvents.Order;
 
 public sealed record OrderConfirmedEvent(
     Guid OrderId,

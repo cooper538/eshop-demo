@@ -1,4 +1,4 @@
-﻿using EShop.Contracts.Events.Product;
+﻿using EShop.Contracts.IntegrationEvents.Product;
 using EShop.NotificationService.Configuration;
 using EShop.NotificationService.Data;
 using EShop.NotificationService.Services;
