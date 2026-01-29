@@ -1,4 +1,4 @@
-﻿using EShop.Contracts.Events.Order;
+﻿using EShop.Contracts.IntegrationEvents.Order;
 using EShop.NotificationService.Data;
 using EShop.NotificationService.Services;
 using EShop.SharedKernel.Services;
