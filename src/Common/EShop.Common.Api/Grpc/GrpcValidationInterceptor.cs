@@ -32,6 +32,7 @@ public sealed class GrpcValidationInterceptor : Interceptor
             if (!validationResult.IsValid)
             {
                 var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+                // RpcException is handled by gRPC framework - returns InvalidArgument status to client
                 throw new RpcException(new Status(StatusCode.InvalidArgument, errors));
             }
         }

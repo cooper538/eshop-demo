@@ -24,20 +24,24 @@ public sealed class GrpcExceptionInterceptor : Interceptor
         {
             return await continuation(request, context);
         }
+        // Domain entity not found (e.g., product, order)
         catch (NotFoundException ex)
         {
             _logger.LogWarning(ex, "Resource not found: {Message}", ex.Message);
             throw new RpcException(new Status(StatusCode.NotFound, ex.Message));
         }
+        // Business validation from Application layer (e.g., insufficient stock)
         catch (ValidationException ex)
         {
             _logger.LogWarning(ex, "Validation error: {Message}", ex.Message);
             throw new RpcException(new Status(StatusCode.InvalidArgument, ex.Message));
         }
+        // RpcException from other interceptors (e.g., GrpcValidationInterceptor) - pass through
         catch (RpcException)
         {
             throw;
         }
+        // Unexpected errors - hide details from client for security
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception in gRPC call: {Message}", ex.Message);

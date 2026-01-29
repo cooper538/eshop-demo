@@ -1,9 +1,5 @@
-﻿using EShop.Common.Application.Cqrs;
-using EShop.Common.Application.Data;
-using EShop.Common.Application.Events;
-using EShop.Common.Application.Exceptions;
+using EShop.Common.Application.Cqrs;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace EShop.Common.Application.Behaviors;
 
@@ -17,70 +13,19 @@ public sealed class UnitOfWorkBehaviorUnit<TRequest, TResponse>
     where TRequest : ICommand
     where TResponse : notnull
 {
-    private const int MaxDispatchLoops = 10;
+    private readonly UnitOfWorkExecutor _executor;
 
-    private readonly IUnitOfWork? _unitOfWork;
-    private readonly IChangeTrackerAccessor? _changeTrackerAccessor;
-    private readonly IDomainEventDispatcher _eventDispatcher;
-
-    public UnitOfWorkBehaviorUnit(
-        IDomainEventDispatcher eventDispatcher,
-        IUnitOfWork? unitOfWork = null,
-        IChangeTrackerAccessor? changeTrackerAccessor = null
-    )
+    public UnitOfWorkBehaviorUnit(UnitOfWorkExecutor executor)
     {
-        _eventDispatcher = eventDispatcher;
-        _unitOfWork = unitOfWork;
-        _changeTrackerAccessor = changeTrackerAccessor;
+        _executor = executor;
     }
 
-    public async Task<TResponse> Handle(
+    public Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken
     )
     {
-        // Execute handler (WITHOUT SaveChanges)
-        var response = await next();
-
-        // Dispatch domain events in a loop (handlers may raise new events)
-        await DispatchDomainEventsWithLoopAsync(cancellationToken);
-
-        // Single SaveChanges for all modifications
-        if (_unitOfWork is not null)
-        {
-            try
-            {
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new ConflictException("Entity was modified by another user.", ex);
-            }
-        }
-
-        return response;
-    }
-
-    private async Task DispatchDomainEventsWithLoopAsync(CancellationToken cancellationToken)
-    {
-        for (var i = 0; i < MaxDispatchLoops; i++)
-        {
-            var hasEvents = await DomainEventDispatchHelper.DispatchDomainEventsAsync(
-                _changeTrackerAccessor,
-                _eventDispatcher,
-                cancellationToken
-            );
-
-            if (!hasEvents)
-            {
-                return;
-            }
-        }
-
-        throw new InvalidOperationException(
-            $"Domain event dispatch loop exceeded {MaxDispatchLoops} iterations. "
-                + "This may indicate circular event dependencies."
-        );
+        return _executor.ExecuteAsync(next, cancellationToken);
     }
 }
