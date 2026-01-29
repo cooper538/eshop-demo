@@ -8,7 +8,6 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Events;
-using Serilog.Formatting.Compact;
 
 // ReSharper disable once CheckNamespace
 #pragma warning disable IDE0130 // Namespace intentionally differs - extension methods for Microsoft.Extensions.Hosting
@@ -120,7 +119,7 @@ public static class ServiceDefaultsExtensions
     }
 
     /// <summary>
-    /// Configures Serilog with console (compact JSON) and file sinks.
+    /// Configures Serilog with console and file sinks using human-readable format.
     /// </summary>
     public static IHostApplicationBuilder AddSerilog(
         this IHostApplicationBuilder builder,
@@ -129,6 +128,8 @@ public static class ServiceDefaultsExtensions
     {
         const string otelServiceNameKey = "OTEL_SERVICE_NAME";
         const string timestampFormat = "yyyyMMdd-HHmmss";
+        const string devOutputTemplate =
+            "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} \u001b[90m{SourceContext}\u001b[0m{NewLine}{Exception}";
 
         var serviceName =
             builder.Configuration[otelServiceNameKey] ?? builder.Environment.ApplicationName;
@@ -142,10 +143,10 @@ public static class ServiceDefaultsExtensions
             .MinimumLevel.Override("System", LogEventLevel.Warning)
             .Enrich.FromLogContext()
             .Enrich.WithProperty("ServiceName", serviceName)
-            .WriteTo.Console(new CompactJsonFormatter())
+            .WriteTo.Console(outputTemplate: devOutputTemplate)
             .WriteTo.File(
-                new CompactJsonFormatter(),
-                Path.Combine(logDirectory, $"{serviceName}-{timestamp}.log")
+                Path.Combine(logDirectory, $"{serviceName}-{timestamp}.log"),
+                outputTemplate: devOutputTemplate
             )
             .CreateLogger();
 
