@@ -16,6 +16,7 @@ These are enhancements that improve code quality, domain model alignment, or arc
 | 02 | [Architecture Tests](tasks/task-02-architecture-tests.md) | NetArchTest.Rules tests for Clean Architecture and DDD compliance | ✅ Completed |
 | 03 | [UnitOfWork Behavior](tasks/task-03-unitofwork-behavior.md) | Refactor domain event dispatch to run before SaveChangesAsync | ⚪ Not started |
 | 04 | [IDateTimeProvider](tasks/task-04-datetime-provider.md) | Introduce IDateTimeProvider abstraction for testability | ✅ Completed |
+| 05 | [Analytics Service](tasks/task-05-analytics-service.md) | New microservice demonstrating pub-sub pattern with OrderConfirmed consumer | ⚪ Not started |
 
 ## Goals
 
