@@ -38,6 +38,11 @@ var notificationService = builder
     .WithReference(rabbitmq)
     .WaitFor(rabbitmq);
 
+var analyticsService = builder
+    .AddProject<Projects.EShop_AnalyticsService>("analytics-service")
+    .WithReference(rabbitmq)
+    .WaitFor(rabbitmq);
+
 var gateway = builder
     .AddProject<Projects.Gateway_API>("gateway")
     .WithReference(productService)

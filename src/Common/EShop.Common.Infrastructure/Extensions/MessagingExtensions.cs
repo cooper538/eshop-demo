@@ -10,6 +10,46 @@ public static class MessagingExtensions
 {
     private const string DefaultMessagingConnectionName = "messaging";
 
+    public static IServiceCollection AddMessaging(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        string endpointPrefix,
+        Action<IBusRegistrationConfigurator>? configureConsumers = null,
+        string connectionName = DefaultMessagingConnectionName
+    )
+    {
+        services.AddMassTransit(x =>
+        {
+            configureConsumers?.Invoke(x);
+
+            x.UsingRabbitMq(
+                (context, cfg) =>
+                {
+                    var connectionString = configuration.GetConnectionString(connectionName);
+                    if (!string.IsNullOrEmpty(connectionString))
+                    {
+                        cfg.Host(new Uri(connectionString));
+                    }
+
+                    cfg.UseMessageRetry(r =>
+                        r.Intervals(
+                            TimeSpan.FromSeconds(1),
+                            TimeSpan.FromSeconds(5),
+                            TimeSpan.FromSeconds(15)
+                        )
+                    );
+                    cfg.UseCorrelationIdFilters(context);
+                    cfg.ConfigureEndpoints(
+                        context,
+                        new KebabCaseEndpointNameFormatter(endpointPrefix, false)
+                    );
+                }
+            );
+        });
+
+        return services;
+    }
+
     public static IServiceCollection AddMessaging<TDbContext>(
         this IServiceCollection services,
         IConfiguration configuration,
