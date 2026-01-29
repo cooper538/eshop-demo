@@ -1,4 +1,4 @@
-﻿using EShop.Common.Exceptions;
+﻿using EShop.Common.Application.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Data;

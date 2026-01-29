@@ -1,4 +1,4 @@
-﻿using EShop.Common.Grpc;
+﻿using EShop.Common.Api.Grpc;
 using EShop.Contracts.ServiceClients.Product;
 using EShop.ServiceClients.Clients.Product;
 using EShop.ServiceClients.Configuration;

@@ -1,4 +1,4 @@
-﻿using EShop.Common.Exceptions;
+﻿using EShop.Common.Application.Exceptions;
 using EShop.Contracts.ServiceClients.Product;
 using EShop.SharedKernel.Services;
 using MediatR;
