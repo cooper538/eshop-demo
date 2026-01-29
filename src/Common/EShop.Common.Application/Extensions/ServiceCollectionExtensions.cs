@@ -3,7 +3,6 @@ using EShop.Common.Application.Behaviors;
 using EShop.Common.Application.Events;
 using EShop.Common.Application.Services;
 using EShop.SharedKernel.Services;
-using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,7 +17,6 @@ public static class ServiceCollectionExtensions
     {
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
         services.AddCommonBehaviors();
-        services.AddValidatorsFromAssembly(assembly);
         services.AddDomainEvents();
         services.AddDateTimeProvider();
 

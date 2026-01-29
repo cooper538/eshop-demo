@@ -29,6 +29,10 @@ public static class DependencyInjection
 
         builder.Services.AddHostedService<StockReservationExpirationJob>();
 
+        builder.Services.AddFluentValidation(
+            typeof(Products.Application.DependencyInjection).Assembly
+        );
+
         return builder;
     }
 }

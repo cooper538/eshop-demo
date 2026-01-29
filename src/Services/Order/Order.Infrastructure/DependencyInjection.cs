@@ -24,6 +24,10 @@ public static class DependencyInjection
 
         builder.Services.AddMessaging<OrderDbContext>(builder.Configuration);
 
+        builder.Services.AddFluentValidation(
+            typeof(Order.Application.DependencyInjection).Assembly
+        );
+
         return builder;
     }
 }
