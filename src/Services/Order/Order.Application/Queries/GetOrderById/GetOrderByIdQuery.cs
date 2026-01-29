@@ -1,4 +1,4 @@
-﻿using EShop.Common.Cqrs;
+﻿using EShop.Common.Application.Cqrs;
 using Order.Application.Dtos;
 
 namespace Order.Application.Queries.GetOrderById;

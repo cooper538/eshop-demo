@@ -1,4 +1,5 @@
-﻿using EShop.Common.Data;
+﻿using EShop.Common.Application.Data;
+using EShop.Common.Infrastructure.Data;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;

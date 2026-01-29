@@ -11,6 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Configuration -->
+    <PackageReference Include="NetEscapades.Configuration.Yaml" />
+
     <!-- Service Discovery -->
     <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" />
 

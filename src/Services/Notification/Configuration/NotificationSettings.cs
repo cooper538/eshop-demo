@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using EShop.Common.Configuration;
+using EShop.Common.Application.Configuration;
 
 namespace EShop.NotificationService.Configuration;
 

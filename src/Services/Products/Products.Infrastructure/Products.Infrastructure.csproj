@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../Products.Application/Products.Application.csproj" />
-    <ProjectReference Include="../../../Common/EShop.Common/EShop.Common.csproj" />
+    <ProjectReference Include="../../../Common/EShop.Common.Infrastructure/EShop.Common.Infrastructure.csproj" />
     <ProjectReference Include="../../../ServiceDefaults/EShop.ServiceDefaults.csproj" />
   </ItemGroup>
 

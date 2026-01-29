@@ -31,7 +31,9 @@
     <ProjectReference Include="..\..\src\Services\Gateway\Gateway.API\Gateway.API.csproj" />
     <ProjectReference Include="..\..\src\Services\Notification\EShop.NotificationService.csproj" />
     <ProjectReference Include="..\..\src\Common\EShop.SharedKernel\EShop.SharedKernel.csproj" />
-    <ProjectReference Include="..\..\src\Common\EShop.Common\EShop.Common.csproj" />
+    <ProjectReference Include="..\..\src\Common\EShop.Common.Application\EShop.Common.Application.csproj" />
+    <ProjectReference Include="..\..\src\Common\EShop.Common.Infrastructure\EShop.Common.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Common\EShop.Common.Api\EShop.Common.Api.csproj" />
     <ProjectReference Include="..\..\src\Common\EShop.Contracts\EShop.Contracts.csproj" />
     <ProjectReference Include="..\..\src\Common\EShop.ServiceClients\EShop.ServiceClients.csproj" />
   </ItemGroup>

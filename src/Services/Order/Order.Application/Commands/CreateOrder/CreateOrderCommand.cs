@@ -1,4 +1,4 @@
-﻿using EShop.Common.Cqrs;
+﻿using EShop.Common.Application.Cqrs;
 using Order.Domain.Entities;
 
 namespace Order.Application.Commands.CreateOrder;

@@ -39,7 +39,8 @@ public abstract class ArchitectureTestBase
     protected static readonly Assembly SharedKernelAssembly =
         typeof(EShop.SharedKernel.Domain.Entity).Assembly;
 
-    protected static readonly Assembly CommonAssembly = typeof(EShop.Common.Cqrs.ICommand).Assembly;
+    protected static readonly Assembly CommonAssembly =
+        typeof(EShop.Common.Application.Cqrs.ICommand).Assembly;
 
     protected static readonly Assembly ContractsAssembly =
         typeof(EShop.Contracts.ServiceClients.Product.IProductServiceClient).Assembly;

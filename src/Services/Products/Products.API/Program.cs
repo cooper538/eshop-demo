@@ -1,106 +1,23 @@
-﻿using EShop.Common.Correlation.MassTransit;
-using EShop.Common.Data;
-using EShop.Common.Extensions;
-using EShop.Common.Grpc;
-using EShop.ServiceDefaults;
-using FluentValidation;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
-using Products.API.Configuration;
-using Products.API.Grpc;
-using Products.Application.Configuration;
-using Products.Application.Data;
-using Products.Infrastructure.BackgroundJobs;
-using Products.Infrastructure.Data;
+using EShop.Common.Api.Extensions;
+using EShop.Common.Infrastructure.Extensions;
+using Products.API;
+using Products.Application;
+using Products.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
-var env = builder.Environment.EnvironmentName;
 
-builder
-    .Configuration.AddYamlFile("product.settings.yaml", optional: false, reloadOnChange: true)
-    .AddYamlFile($"product.settings.{env}.yaml", optional: true, reloadOnChange: true);
-
-builder
-    .Services.AddOptions<ProductSettings>()
-    .BindConfiguration(ProductSettings.SectionName)
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
-
-builder.Services.AddSingleton<IStockReservationOptions, StockReservationOptions>();
-
+builder.AddYamlConfiguration("product");
 builder.AddServiceDefaults();
 builder.AddSerilog();
 
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
-
-builder.Services.AddGrpc(options =>
-{
-    options.Interceptors.Add<CorrelationIdServerInterceptor>();
-    options.Interceptors.Add<GrpcLoggingInterceptor>();
-    options.Interceptors.Add<GrpcValidationInterceptor>();
-    options.Interceptors.Add<GrpcExceptionInterceptor>();
-});
-
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IProductDbContext>());
-builder.Services.AddCommonBehaviors();
-builder.Services.AddDomainEvents();
-builder.Services.AddDateTimeProvider();
-
-builder.Services.AddValidatorsFromAssemblyContaining<IProductDbContext>();
-
-builder.Services.AddDbContext<ProductDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString(ResourceNames.Databases.Product))
-);
-builder.Services.AddScoped<IProductDbContext>(sp => sp.GetRequiredService<ProductDbContext>());
-builder.Services.AddScoped<IChangeTrackerAccessor>(sp => sp.GetRequiredService<ProductDbContext>());
-builder.Services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ProductDbContext>());
-
-builder.Services.AddMassTransit(x =>
-{
-    x.AddEntityFrameworkOutbox<ProductDbContext>(o =>
-    {
-        o.UsePostgres();
-        o.UseBusOutbox();
-    });
-
-    x.UsingRabbitMq(
-        (context, cfg) =>
-        {
-            var connectionString = builder.Configuration.GetConnectionString(
-                ResourceNames.Messaging
-            );
-            if (!string.IsNullOrEmpty(connectionString))
-            {
-                cfg.Host(new Uri(connectionString));
-            }
-
-            cfg.UseCorrelationIdFilters(context);
-            cfg.ConfigureEndpoints(context);
-        }
-    );
-});
-
-builder.Services.AddErrorHandling();
-builder.Services.AddCorrelationId();
-
-builder.Services.AddHostedService<StockReservationExpirationJob>();
+builder.Services.AddApplication();
+builder.AddInfrastructure();
+builder.AddPresentation();
 
 var app = builder.Build();
 
-app.UseCorrelationId();
-app.UseErrorHandling();
-
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "Products API"));
-}
-
-app.MapControllers();
-app.MapGrpcService<ProductGrpcService>();
+app.UseApiDefaults();
+app.MapProductsEndpoints();
 app.MapDefaultEndpoints();
 
 app.Run();

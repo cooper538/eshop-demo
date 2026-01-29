@@ -31,6 +31,6 @@
 
   <ItemGroup Label="Project References">
     <ProjectReference Include="..\..\src\Common\EShop.SharedKernel\EShop.SharedKernel.csproj" />
-    <ProjectReference Include="..\..\src\Common\EShop.Common\EShop.Common.csproj" />
+    <ProjectReference Include="..\..\src\Common\EShop.Common.Application\EShop.Common.Application.csproj" />
   </ItemGroup>
 </Project>
