@@ -1,5 +1,4 @@
-﻿using EShop.Common.Api.Grpc;
-using EShop.Common.Api.Middleware;
+﻿using EShop.Common.Api.Http;
 using EShop.Common.Application.Correlation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,12 +25,6 @@ public static class ServiceCollectionExtensions
     {
         services.AddCorrelationId();
         services.AddErrorHandling();
-        return services;
-    }
-
-    public static IServiceCollection AddGrpcServerInterceptors(this IServiceCollection services)
-    {
-        services.AddSingleton<CorrelationIdServerInterceptor>();
         return services;
     }
 

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace EShop.Common.Api.Middleware;
+namespace EShop.Common.Api.Http;
 
 public sealed class GlobalExceptionHandler : IExceptionHandler
 {
