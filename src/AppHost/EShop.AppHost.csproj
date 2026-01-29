@@ -18,6 +18,7 @@
     <ProjectReference Include="../Services/Products/Products.API/Products.API.csproj" />
     <ProjectReference Include="../Services/Order/Order.API/Order.API.csproj" />
     <ProjectReference Include="../Services/Notification/EShop.NotificationService.csproj" />
+    <ProjectReference Include="../Services/Analytics/EShop.AnalyticsService.csproj" />
     <ProjectReference Include="../Services/Gateway/Gateway.API/Gateway.API.csproj" />
   </ItemGroup>
 </Project>
