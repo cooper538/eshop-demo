@@ -51,7 +51,7 @@ public static partial class GrpcServerLog
     );
 
     [LoggerMessage(
-        Level = LogLevel.Warning,
+        Level = LogLevel.Error,
         Message = "gRPC call failed: {Method} after {ElapsedMs}ms"
     )]
     public static partial void GrpcCallFailed(
