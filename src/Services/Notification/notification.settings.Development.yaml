@@ -1,0 +1,7 @@
+# Notification Service - Development Configuration
+# Overrides base notification.settings.yaml for local development
+
+Logging:
+  LogLevel:
+    Default: "Debug"
+    Microsoft.AspNetCore: "Information"

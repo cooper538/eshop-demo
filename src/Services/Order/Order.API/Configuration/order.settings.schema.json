@@ -70,6 +70,29 @@
           }
         }
       }
+    },
+    "ServiceClients": {
+      "type": "object",
+      "description": "Service clients configuration for inter-service communication",
+      "properties": {
+        "TimeoutSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300,
+          "default": 30,
+          "description": "Default timeout for service client calls in seconds"
+        },
+        "ProductService": {
+          "type": "object",
+          "description": "Product service client configuration",
+          "properties": {
+            "Url": {
+              "type": "string",
+              "description": "Product service URL (supports https+http:// for service discovery)"
+            }
+          }
+        }
+      }
     }
   }
 }

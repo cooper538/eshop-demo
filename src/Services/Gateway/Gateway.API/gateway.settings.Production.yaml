@@ -1,0 +1,13 @@
+# Gateway Service - Production Configuration
+# Overrides base gateway.settings.yaml for production environment
+
+Logging:
+  LogLevel:
+    Default: "Warning"
+    Microsoft.AspNetCore: "Warning"
+    Yarp: "Warning"
+
+Gateway:
+  RateLimiting:
+    PermitLimit: 1000
+    WindowSeconds: 60

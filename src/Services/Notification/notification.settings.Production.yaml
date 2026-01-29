@@ -1,0 +1,7 @@
+# Notification Service - Production Configuration
+# Overrides base notification.settings.yaml for production environment
+
+Logging:
+  LogLevel:
+    Default: "Warning"
+    Microsoft.AspNetCore: "Warning"
