@@ -1,5 +1,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Logging;
 using Products.Domain.Entities;
 
 namespace Products.Infrastructure.Data;
@@ -13,10 +15,15 @@ public static class ProductDbContextSeed
             return;
         }
 
+        var logger = GetLogger(context);
+
         if (db.Products.Any())
         {
+            logger.LogDebug("Database already seeded, skipping");
             return;
         }
+
+        logger.LogInformation("Seeding product database...");
 
         var now = DateTime.UtcNow;
         var products = CreateSeedProducts(now);
@@ -25,6 +32,12 @@ public static class ProductDbContextSeed
         db.Products.AddRange(products);
         db.Stocks.AddRange(stocks);
         db.SaveChanges();
+
+        logger.LogInformation(
+            "Seeded {ProductCount} products and {StockCount} stocks",
+            products.Count,
+            stocks.Count
+        );
     }
 
     public static async Task SeedAsync(DbContext context, CancellationToken cancellationToken)
@@ -34,10 +47,15 @@ public static class ProductDbContextSeed
             return;
         }
 
+        var logger = GetLogger(context);
+
         if (await db.Products.AnyAsync(cancellationToken))
         {
+            logger.LogDebug("Database already seeded, skipping");
             return;
         }
+
+        logger.LogInformation("Seeding product database...");
 
         var now = DateTime.UtcNow;
         var products = CreateSeedProducts(now);
@@ -46,6 +64,18 @@ public static class ProductDbContextSeed
         db.Products.AddRange(products);
         db.Stocks.AddRange(stocks);
         await db.SaveChangesAsync(cancellationToken);
+
+        logger.LogInformation(
+            "Seeded {ProductCount} products and {StockCount} stocks",
+            products.Count,
+            stocks.Count
+        );
+    }
+
+    private static ILogger GetLogger(DbContext context)
+    {
+        var loggerFactory = context.GetService<ILoggerFactory>();
+        return loggerFactory.CreateLogger(typeof(ProductDbContextSeed));
     }
 
     private static List<ProductEntity> CreateSeedProducts(DateTime createdAt) =>
