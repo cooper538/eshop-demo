@@ -37,51 +37,13 @@ public static class MessagingExtensions
                         cfg.Host(new Uri(connectionString));
                     }
 
-                    cfg.UseCorrelationIdFilters(context);
-                    cfg.ConfigureEndpoints(context);
-                }
-            );
-        });
-
-        return services;
-    }
-
-    public static IServiceCollection AddMessagingWithRetry<TDbContext>(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        Action<IBusRegistrationConfigurator>? configureConsumers = null,
-        TimeSpan[]? retryIntervals = null,
-        string connectionName = DefaultMessagingConnectionName
-    )
-        where TDbContext : DbContext
-    {
-        retryIntervals ??=
-        [
-            TimeSpan.FromSeconds(1),
-            TimeSpan.FromSeconds(5),
-            TimeSpan.FromSeconds(15),
-        ];
-
-        services.AddMassTransit(x =>
-        {
-            x.AddEntityFrameworkOutbox<TDbContext>(o =>
-            {
-                o.UsePostgres();
-                o.UseBusOutbox();
-            });
-
-            configureConsumers?.Invoke(x);
-
-            x.UsingRabbitMq(
-                (context, cfg) =>
-                {
-                    var connectionString = configuration.GetConnectionString(connectionName);
-                    if (!string.IsNullOrEmpty(connectionString))
-                    {
-                        cfg.Host(new Uri(connectionString));
-                    }
-
-                    cfg.UseMessageRetry(r => r.Intervals(retryIntervals));
+                    cfg.UseMessageRetry(r =>
+                        r.Intervals(
+                            TimeSpan.FromSeconds(1),
+                            TimeSpan.FromSeconds(5),
+                            TimeSpan.FromSeconds(15)
+                        )
+                    );
                     cfg.UseCorrelationIdFilters(context);
                     cfg.ConfigureEndpoints(context);
                 }
