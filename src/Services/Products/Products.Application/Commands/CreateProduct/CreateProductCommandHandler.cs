@@ -19,7 +19,7 @@ public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductC
         _dateTimeProvider = dateTimeProvider;
     }
 
-    public async Task<ProductDto> Handle(
+    public Task<ProductDto> Handle(
         CreateProductCommand request,
         CancellationToken cancellationToken
     )
@@ -30,6 +30,6 @@ public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductC
 
         // Stock is created by ProductCreatedEventHandler via domain event
         // Return DTO with the initial stock quantity from the command
-        return ProductDto.FromEntity(product, request.StockQuantity);
+        return Task.FromResult(ProductDto.FromEntity(product, request.StockQuantity));
     }
 }

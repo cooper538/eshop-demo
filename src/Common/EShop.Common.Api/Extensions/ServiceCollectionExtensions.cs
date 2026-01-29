@@ -1,4 +1,4 @@
-using EShop.Common.Api.Grpc;
+﻿using EShop.Common.Api.Grpc;
 using EShop.Common.Api.Middleware;
 using EShop.Common.Application.Correlation;
 using Microsoft.AspNetCore.Builder;

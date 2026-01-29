@@ -1,8 +1,5 @@
-using EShop.Common.Api.Extensions;
-using EShop.Common.Infrastructure.Extensions;
+﻿using EShop.Common.Api.Extensions;
 using EShop.ServiceClients.Extensions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Order.API.Configuration;
 
 namespace Order.API;

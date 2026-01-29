@@ -1,9 +1,6 @@
-using EShop.Common.Api.Extensions;
+﻿using EShop.Common.Api.Extensions;
 using EShop.Common.Api.Grpc;
-using EShop.Common.Infrastructure.Extensions;
 using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Products.API.Configuration;
 using Products.API.Grpc;
 using Products.Application.Configuration;

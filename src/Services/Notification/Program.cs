@@ -1,4 +1,4 @@
-using EShop.NotificationService;
+﻿using EShop.NotificationService;
 
 var builder = Host.CreateApplicationBuilder(args);
 

@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 
 // ReSharper disable once CheckNamespace
 #pragma warning disable IDE0130

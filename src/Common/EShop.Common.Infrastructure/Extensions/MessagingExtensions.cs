@@ -1,4 +1,4 @@
-using EShop.Common.Infrastructure.Correlation.MassTransit;
+﻿using EShop.Common.Infrastructure.Correlation.MassTransit;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

@@ -1,10 +1,8 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Threading.RateLimiting;
 using EShop.Common.Api.Extensions;
 using Gateway.API.Configuration;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Gateway.API;
 

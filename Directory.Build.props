@@ -10,7 +10,11 @@
     <UseArtifactsOutput>true</UseArtifactsOutput>
     <WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
-    <NoWarn>NU1901;NU1902;NU1903;NU1904;CS1591;CS1573</NoWarn>
+    <NoWarn>NU1901;NU1902;NU1903;NU1904</NoWarn>
+    <!-- Enforce IDE analyzers in build (not just in IDE) -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <!-- Latest analysis level for consistent warnings -->
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
   </PropertyGroup>
 
   <!-- Include EShop analyzers for all projects except the analyzer itself -->
