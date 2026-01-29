@@ -1,8 +1,8 @@
-﻿using EShop.Common.Application.Correlation;
+using EShop.Common.Application.Correlation;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 
-namespace EShop.Common.Api.Grpc;
+namespace EShop.ServiceClients.Infrastructure.Grpc;
 
 public sealed class CorrelationIdClientInterceptor : Interceptor
 {

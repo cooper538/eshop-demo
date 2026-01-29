@@ -7,11 +7,12 @@
   <ItemGroup>
     <PackageReference Include="Grpc.Net.Client" />
     <PackageReference Include="Grpc.Net.ClientFactory" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Riok.Mapperly" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EShop.Common.Api\EShop.Common.Api.csproj" />
+    <ProjectReference Include="..\EShop.Common.Application\EShop.Common.Application.csproj" />
     <ProjectReference Include="..\EShop.Contracts\EShop.Contracts.csproj" />
     <ProjectReference Include="..\EShop.Grpc\EShop.Grpc.csproj" />
   </ItemGroup>
