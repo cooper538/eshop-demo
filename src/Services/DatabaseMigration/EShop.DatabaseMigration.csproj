@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>EShop.DatabaseMigration</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="NetEscapades.Configuration.Yaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../ServiceDefaults/EShop.ServiceDefaults.csproj" />
+    <ProjectReference Include="../Order/Order.Infrastructure/Order.Infrastructure.csproj" />
+    <ProjectReference Include="../Products/Products.Infrastructure/Products.Infrastructure.csproj" />
+    <ProjectReference Include="../Notification/EShop.NotificationService.csproj" />
+  </ItemGroup>
+
+</Project>

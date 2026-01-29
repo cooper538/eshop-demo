@@ -20,5 +20,6 @@
     <ProjectReference Include="../Services/Notification/EShop.NotificationService.csproj" />
     <ProjectReference Include="../Services/Analytics/EShop.AnalyticsService.csproj" />
     <ProjectReference Include="../Services/Gateway/Gateway.API/Gateway.API.csproj" />
+    <ProjectReference Include="../Services/DatabaseMigration/EShop.DatabaseMigration.csproj" />
   </ItemGroup>
 </Project>
