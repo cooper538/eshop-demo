@@ -13,6 +13,7 @@ public static class MessagingExtensions
     public static IServiceCollection AddMessaging<TDbContext>(
         this IServiceCollection services,
         IConfiguration configuration,
+        string endpointPrefix,
         Action<IBusRegistrationConfigurator>? configureConsumers = null,
         string connectionName = DefaultMessagingConnectionName
     )
@@ -45,7 +46,10 @@ public static class MessagingExtensions
                         )
                     );
                     cfg.UseCorrelationIdFilters(context);
-                    cfg.ConfigureEndpoints(context);
+                    cfg.ConfigureEndpoints(
+                        context,
+                        new KebabCaseEndpointNameFormatter(endpointPrefix, false)
+                    );
                 }
             );
         });

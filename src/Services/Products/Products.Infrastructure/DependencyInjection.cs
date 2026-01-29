@@ -25,7 +25,7 @@ public static class DependencyInjection
 
         builder.Services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ProductDbContext>());
 
-        builder.Services.AddMessaging<ProductDbContext>(builder.Configuration);
+        builder.Services.AddMessaging<ProductDbContext>(builder.Configuration, "products");
 
         builder.Services.AddHostedService<StockReservationExpirationJob>();
 
