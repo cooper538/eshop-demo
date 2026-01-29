@@ -1,4 +1,4 @@
-using EShop.Common.Application.Extensions;
+﻿using EShop.Common.Application.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Products.Application;

@@ -1,5 +1,4 @@
-using EShop.Common.Application.Correlation;
-using MassTransit;
+﻿using MassTransit;
 
 namespace EShop.Common.Infrastructure.Correlation.MassTransit;
 

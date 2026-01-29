@@ -1,15 +1,11 @@
-using EShop.Common.Application.Extensions;
+﻿using EShop.Common.Application.Extensions;
 using EShop.Common.Infrastructure.Correlation.MassTransit;
-using EShop.Common.Infrastructure.Extensions;
 using EShop.NotificationService.Configuration;
 using EShop.NotificationService.Consumers;
 using EShop.NotificationService.Data;
 using EShop.NotificationService.Services;
 using EShop.ServiceDefaults;
 using MassTransit;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace EShop.NotificationService;
 

@@ -1,5 +1,4 @@
-using EShop.Common.Api.Extensions;
-using EShop.Common.Infrastructure.Extensions;
+﻿using EShop.Common.Api.Extensions;
 using Order.API;
 using Order.Application;
 using Order.Infrastructure;

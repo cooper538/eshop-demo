@@ -307,8 +307,8 @@ dotnet_naming_symbols.type_parameter.applicable_accessibilities = *
 #----------------------------------
 # Naming Rules: Async Methods
 #----------------------------------
-# Async methods must end with Async
-dotnet_naming_rule.async_methods_should_end_with_async.severity = warning
+# Async methods should end with Async (suggestion - interface implementations may not follow this)
+dotnet_naming_rule.async_methods_should_end_with_async.severity = suggestion
 dotnet_naming_rule.async_methods_should_end_with_async.symbols = async_methods
 dotnet_naming_rule.async_methods_should_end_with_async.style = async_method_style
 dotnet_naming_symbols.async_methods.applicable_kinds = method
@@ -388,6 +388,20 @@ dotnet_naming_symbols.types.applicable_kinds = class, struct, enum
 dotnet_naming_symbols.types.applicable_accessibilities = *
 
 ###################################
+# Compiler Warnings               #
+###################################
+
+#----------------------------------
+# Async/Await
+#----------------------------------
+# CS1998: Async method lacks await - disabled for interface implementations (Roslyn #77001)
+dotnet_diagnostic.CS1998.severity = none
+# CS1591: Missing XML comment for publicly visible type - disabled (GenerateDocumentationFile)
+dotnet_diagnostic.CS1591.severity = none
+# CS1573: Parameter has no matching param tag in XML comment
+dotnet_diagnostic.CS1573.severity = none
+
+###################################
 # IDE Analyzers                   #
 ###################################
 
@@ -421,6 +435,12 @@ dotnet_diagnostic.IDE0130.severity = warning
 
 # Validate arguments of public methods
 dotnet_diagnostic.CA1062.severity = suggestion
+# CA1711: Identifiers should not have incorrect suffix - disabled for EventHandler (valid DDD naming)
+dotnet_diagnostic.CA1711.severity = none
+# CA1305: Specify IFormatProvider - suggestion (not all cases need it)
+dotnet_diagnostic.CA1305.severity = suggestion
+# CA1310: Specify StringComparison - suggestion (not critical for internal code)
+dotnet_diagnostic.CA1310.severity = suggestion
 
 ###################################
 # MSTest Analyzers                #
@@ -443,3 +463,23 @@ dotnet_diagnostic.CA1848.severity = suggestion
 
 # Braces for single-line if - warning
 resharper_enforce_if_statement_braces_highlighting = warning
+
+###################################
+# Test Projects                   #
+###################################
+[tests/**/*.cs]
+# CA1707: Allow underscores in test method names (Given_When_Then convention)
+dotnet_diagnostic.CA1707.severity = none
+
+[*Tests*/**/*.cs]
+# CA1707: Allow underscores in test method names
+dotnet_diagnostic.CA1707.severity = none
+
+###################################
+# Generated Code                  #
+###################################
+[**/Migrations/*.cs]
+# Disable analyzers for EF Core migrations (generated code)
+dotnet_diagnostic.CA1861.severity = none
+dotnet_diagnostic.IDE0005.severity = none
+generated_code = true

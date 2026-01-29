@@ -1,5 +1,4 @@
 ﻿using EShop.Common.Application.Data;
-using EShop.Common.Application.Extensions;
 using EShop.Common.Infrastructure.Extensions;
 using EShop.ServiceDefaults;
 using Microsoft.Extensions.DependencyInjection;
