@@ -48,6 +48,7 @@ public static class ServiceCollectionExtensions
             {
                 o.Address = new Uri(options.ProductService.Url);
             })
+            .AddServiceDiscovery()
             .ConfigureChannel(o =>
             {
                 o.ServiceConfig = serviceConfig;
