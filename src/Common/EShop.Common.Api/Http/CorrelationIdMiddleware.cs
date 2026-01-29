@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace EShop.Common.Api.Middleware;
+namespace EShop.Common.Api.Http;
 
 public sealed class CorrelationIdMiddleware
 {
