@@ -81,6 +81,7 @@ When user says "pokračuj" or "continue":
 | `/sort-tasks` | Topological task sorting |
 | `/phase-breakdown` | Break down phase into tasks |
 | `/analyze` | Run code analyzers (packages, quality, security) |
+| `/e2e-test` | Run E2E test scenarios against running services |
 | `/review-task` | Tech lead review of task implementation |
 
 ### When to Use Feature Branch or Worktree
