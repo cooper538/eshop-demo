@@ -159,6 +159,7 @@ EShopDemo.sln
 | Format | `dotnet csharpier format .` |
 | Format check | `dotnet csharpier check .` |
 | Analyze code | `./tools/analyzers/run-all.sh` or `/analyze` |
+| List dependencies | `./tools/list-dependencies.sh` |
 
 ## Aspire
 | Action | Command |
