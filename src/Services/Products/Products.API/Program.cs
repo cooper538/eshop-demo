@@ -9,6 +9,8 @@ builder.AddYamlConfiguration("product");
 builder.AddServiceDefaults();
 builder.AddSerilog();
 
+builder.Services.AddHealthChecks().AddPostgresHealthCheck("productdb");
+
 builder.Services.AddApplication();
 builder.AddInfrastructure();
 builder.AddPresentation();
