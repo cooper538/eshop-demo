@@ -2,6 +2,7 @@
 using System.Threading.RateLimiting;
 using EShop.Common.Api.Extensions;
 using Gateway.API.Configuration;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
 namespace Gateway.API;
@@ -65,22 +66,33 @@ public static class DependencyInjection
 
             options.OnRejected = async (context, cancellationToken) =>
             {
+                var retryAfterSeconds = 60;
                 if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
                 {
-                    context.HttpContext.Response.Headers.RetryAfter = (
-                        (int)retryAfter.TotalSeconds
-                    ).ToString(CultureInfo.InvariantCulture);
+                    retryAfterSeconds = (int)retryAfter.TotalSeconds;
+                    context.HttpContext.Response.Headers.RetryAfter = retryAfterSeconds.ToString(
+                        CultureInfo.InvariantCulture
+                    );
                 }
 
-                context.HttpContext.Response.ContentType = "application/json";
-                await context.HttpContext.Response.WriteAsync(
-                    """{"error":"Rate limit exceeded. Please try again later."}""",
+                var problemDetails = new ProblemDetails
+                {
+                    Status = StatusCodes.Status429TooManyRequests,
+                    Title = "Too Many Requests",
+                    Detail =
+                        $"Rate limit exceeded. Please retry after {retryAfterSeconds} seconds.",
+                    Instance = context.HttpContext.Request.Path,
+                };
+
+                context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                await context.HttpContext.Response.WriteAsJsonAsync(
+                    problemDetails,
                     cancellationToken
                 );
             };
 
             options.AddFixedWindowLimiter(
-                "fixed",
+                RateLimitingSettings.FixedWindowPolicyName,
                 opt =>
                 {
                     opt.PermitLimit = settings.RateLimiting.PermitLimit;
