@@ -9,12 +9,22 @@
 | Type | Validation (non-dev) |
 
 ## Summary
-Manual E2E validation of remaining happy flows across the microservices system. This is a verification task, not implementation.
+Complete E2E validation of all happy flows across the microservices system. This is a verification task, not implementation.
 
 ## Scope
-- [ ] Validate Order Rejection flow (insufficient stock)
+
+### Order Flows (Complete)
+- [ ] Validate Create Order flow (stock reserved → confirmed → notification)
+- [ ] Validate Cancel Order flow (cancelled → stock released → notification)
+- [ ] Validate Order Rejection flow (insufficient stock → rejected → notification)
+
+### Stock & Notification Flows
 - [ ] Validate Stock Low Alert flow (stock below threshold → notification)
+
+### Infrastructure Flows
 - [ ] Validate Correlation ID propagation (Gateway → Order → Product → Notification)
+
+### Documentation
 - [ ] Document test results and any issues found
 
 ## Related Specs

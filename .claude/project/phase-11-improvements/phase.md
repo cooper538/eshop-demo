@@ -17,7 +17,7 @@ These are enhancements that improve code quality, domain model alignment, or arc
 | 03 | [UnitOfWork Behavior](tasks/task-03-unitofwork-behavior.md) | Refactor domain event dispatch to run before SaveChangesAsync | ⚪ Not started |
 | 04 | [IDateTimeProvider](tasks/task-04-datetime-provider.md) | Introduce IDateTimeProvider abstraction for testability | ✅ Completed |
 | 05 | [Analytics Service](tasks/task-05-analytics-service.md) | New microservice demonstrating pub-sub pattern with OrderConfirmed consumer | ⚪ Not started |
-| 06 | [E2E Happy Flow Validation](tasks/task-06-e2e-happy-flow-validation.md) | Manual validation of Order Rejection, Stock Low Alert, and Correlation ID flows | ⚪ Not started |
+| 06 | [E2E Happy Flow Validation](tasks/task-06-e2e-happy-flow-validation.md) | Complete E2E validation of all Order flows, Stock Low Alert, and Correlation ID propagation | ⚪ Not started |
 
 ## Goals
 
