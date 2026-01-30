@@ -1,0 +1,231 @@
+services:
+  docker-compose-dashboard:
+    image: "mcr.microsoft.com/dotnet/nightly/aspire-dashboard:latest"
+    ports:
+      - "18888"
+    expose:
+      - "18889"
+      - "18890"
+    networks:
+      - "aspire"
+    restart: "always"
+  postgres:
+    image: "docker.io/library/postgres:17.6"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256"
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    expose:
+      - "5432"
+    networks:
+      - "aspire"
+    restart: "unless-stopped"
+  messaging:
+    image: "docker.io/library/rabbitmq:4.2-management"
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "${MESSAGING_PASSWORD}"
+    expose:
+      - "5672"
+      - "15672"
+    networks:
+      - "aspire"
+    restart: "unless-stopped"
+  migration-service:
+    image: "${MIGRATION_SERVICE_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ConnectionStrings__productdb: "Host=postgres;Port=5432;Username=postgres;Password=${POSTGRES_PASSWORD};Database=productdb"
+      PRODUCTDB_HOST: "postgres"
+      PRODUCTDB_PORT: "5432"
+      PRODUCTDB_USERNAME: "postgres"
+      PRODUCTDB_PASSWORD: "${POSTGRES_PASSWORD}"
+      PRODUCTDB_URI: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/productdb"
+      PRODUCTDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres:5432/productdb"
+      PRODUCTDB_DATABASENAME: "productdb"
+      ConnectionStrings__orderdb: "Host=postgres;Port=5432;Username=postgres;Password=${POSTGRES_PASSWORD};Database=orderdb"
+      ORDERDB_HOST: "postgres"
+      ORDERDB_PORT: "5432"
+      ORDERDB_USERNAME: "postgres"
+      ORDERDB_PASSWORD: "${POSTGRES_PASSWORD}"
+      ORDERDB_URI: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/orderdb"
+      ORDERDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres:5432/orderdb"
+      ORDERDB_DATABASENAME: "orderdb"
+      ConnectionStrings__notificationdb: "Host=postgres;Port=5432;Username=postgres;Password=${POSTGRES_PASSWORD};Database=notificationdb"
+      NOTIFICATIONDB_HOST: "postgres"
+      NOTIFICATIONDB_PORT: "5432"
+      NOTIFICATIONDB_USERNAME: "postgres"
+      NOTIFICATIONDB_PASSWORD: "${POSTGRES_PASSWORD}"
+      NOTIFICATIONDB_URI: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/notificationdb"
+      NOTIFICATIONDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres:5432/notificationdb"
+      NOTIFICATIONDB_DATABASENAME: "notificationdb"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://docker-compose-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "migration-service"
+    depends_on:
+      postgres:
+        condition: "service_started"
+    networks:
+      - "aspire"
+    restart: "no"
+  product-service:
+    image: "${PRODUCT_SERVICE_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${PRODUCT_SERVICE_PORT}"
+      HTTPS_PORTS: "${PRODUCT_SERVICE_PORT}"
+      ConnectionStrings__productdb: "Host=postgres;Port=5432;Username=postgres;Password=${POSTGRES_PASSWORD};Database=productdb"
+      PRODUCTDB_HOST: "postgres"
+      PRODUCTDB_PORT: "5432"
+      PRODUCTDB_USERNAME: "postgres"
+      PRODUCTDB_PASSWORD: "${POSTGRES_PASSWORD}"
+      PRODUCTDB_URI: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/productdb"
+      PRODUCTDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres:5432/productdb"
+      PRODUCTDB_DATABASENAME: "productdb"
+      ConnectionStrings__messaging: "amqp://guest:${MESSAGING_PASSWORD}@messaging:5672"
+      MESSAGING_HOST: "messaging"
+      MESSAGING_PORT: "5672"
+      MESSAGING_USERNAME: "guest"
+      MESSAGING_PASSWORD: "${MESSAGING_PASSWORD}"
+      MESSAGING_URI: "amqp://guest:${MESSAGING_PASSWORD}@messaging:5672"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://docker-compose-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "product-service"
+    expose:
+      - "${PRODUCT_SERVICE_PORT}"
+    depends_on:
+      migration-service:
+        condition: "service_completed_successfully"
+      messaging:
+        condition: "service_started"
+    networks:
+      - "aspire"
+    restart: "on-failure"
+  order-service:
+    image: "${ORDER_SERVICE_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${ORDER_SERVICE_PORT}"
+      HTTPS_PORTS: "${ORDER_SERVICE_PORT}"
+      ConnectionStrings__orderdb: "Host=postgres;Port=5432;Username=postgres;Password=${POSTGRES_PASSWORD};Database=orderdb"
+      ORDERDB_HOST: "postgres"
+      ORDERDB_PORT: "5432"
+      ORDERDB_USERNAME: "postgres"
+      ORDERDB_PASSWORD: "${POSTGRES_PASSWORD}"
+      ORDERDB_URI: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/orderdb"
+      ORDERDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres:5432/orderdb"
+      ORDERDB_DATABASENAME: "orderdb"
+      ConnectionStrings__messaging: "amqp://guest:${MESSAGING_PASSWORD}@messaging:5672"
+      MESSAGING_HOST: "messaging"
+      MESSAGING_PORT: "5672"
+      MESSAGING_USERNAME: "guest"
+      MESSAGING_PASSWORD: "${MESSAGING_PASSWORD}"
+      MESSAGING_URI: "amqp://guest:${MESSAGING_PASSWORD}@messaging:5672"
+      PRODUCT_SERVICE_HTTP: "http://product-service:${PRODUCT_SERVICE_PORT}"
+      services__product-service__http__0: "http://product-service:${PRODUCT_SERVICE_PORT}"
+      PRODUCT_SERVICE_HTTPS: "https://product-service:${PRODUCT_SERVICE_PORT}"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://docker-compose-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "order-service"
+    expose:
+      - "${ORDER_SERVICE_PORT}"
+    depends_on:
+      migration-service:
+        condition: "service_completed_successfully"
+      messaging:
+        condition: "service_started"
+    networks:
+      - "aspire"
+    restart: "on-failure"
+  notification-service:
+    image: "${NOTIFICATION_SERVICE_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ConnectionStrings__notificationdb: "Host=postgres;Port=5432;Username=postgres;Password=${POSTGRES_PASSWORD};Database=notificationdb"
+      NOTIFICATIONDB_HOST: "postgres"
+      NOTIFICATIONDB_PORT: "5432"
+      NOTIFICATIONDB_USERNAME: "postgres"
+      NOTIFICATIONDB_PASSWORD: "${POSTGRES_PASSWORD}"
+      NOTIFICATIONDB_URI: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/notificationdb"
+      NOTIFICATIONDB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres:5432/notificationdb"
+      NOTIFICATIONDB_DATABASENAME: "notificationdb"
+      ConnectionStrings__messaging: "amqp://guest:${MESSAGING_PASSWORD}@messaging:5672"
+      MESSAGING_HOST: "messaging"
+      MESSAGING_PORT: "5672"
+      MESSAGING_USERNAME: "guest"
+      MESSAGING_PASSWORD: "${MESSAGING_PASSWORD}"
+      MESSAGING_URI: "amqp://guest:${MESSAGING_PASSWORD}@messaging:5672"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://docker-compose-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "notification-service"
+    depends_on:
+      migration-service:
+        condition: "service_completed_successfully"
+      messaging:
+        condition: "service_started"
+    networks:
+      - "aspire"
+    restart: "on-failure"
+  analytics-service:
+    image: "${ANALYTICS_SERVICE_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ConnectionStrings__messaging: "amqp://guest:${MESSAGING_PASSWORD}@messaging:5672"
+      MESSAGING_HOST: "messaging"
+      MESSAGING_PORT: "5672"
+      MESSAGING_USERNAME: "guest"
+      MESSAGING_PASSWORD: "${MESSAGING_PASSWORD}"
+      MESSAGING_URI: "amqp://guest:${MESSAGING_PASSWORD}@messaging:5672"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://docker-compose-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "analytics-service"
+    depends_on:
+      messaging:
+        condition: "service_started"
+    networks:
+      - "aspire"
+    restart: "on-failure"
+  gateway:
+    image: "${GATEWAY_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${GATEWAY_PORT}"
+      HTTPS_PORTS: "${GATEWAY_PORT}"
+      PRODUCT_SERVICE_HTTP: "http://product-service:${PRODUCT_SERVICE_PORT}"
+      services__product-service__http__0: "http://product-service:${PRODUCT_SERVICE_PORT}"
+      PRODUCT_SERVICE_HTTPS: "https://product-service:${PRODUCT_SERVICE_PORT}"
+      ORDER_SERVICE_HTTP: "http://order-service:${ORDER_SERVICE_PORT}"
+      services__order-service__http__0: "http://order-service:${ORDER_SERVICE_PORT}"
+      ORDER_SERVICE_HTTPS: "https://order-service:${ORDER_SERVICE_PORT}"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://docker-compose-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "gateway"
+    ports:
+      - "${GATEWAY_PORT}"
+    depends_on:
+      product-service:
+        condition: "service_started"
+      order-service:
+        condition: "service_started"
+    networks:
+      - "aspire"
+    restart: "on-failure"
+networks:
+  aspire:
+    driver: "bridge"
