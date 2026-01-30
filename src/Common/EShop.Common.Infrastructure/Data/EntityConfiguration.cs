@@ -10,6 +10,7 @@ public abstract class EntityConfiguration<TEntity> : IEntityTypeConfiguration<TE
     public void Configure(EntityTypeBuilder<TEntity> builder)
     {
         builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id).ValueGeneratedNever();
 
         ConfigureEntity(builder);
     }

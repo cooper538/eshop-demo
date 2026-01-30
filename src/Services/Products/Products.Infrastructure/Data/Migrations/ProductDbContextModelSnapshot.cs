@@ -193,7 +193,6 @@ namespace Products.Infrastructure.Data.Migrations
             modelBuilder.Entity("Products.Domain.Entities.ProductEntity", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Category")
@@ -221,11 +220,9 @@ namespace Products.Infrastructure.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<uint>("Version")
+                    b.Property<int>("Version")
                         .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -235,7 +232,6 @@ namespace Products.Infrastructure.Data.Migrations
             modelBuilder.Entity("Products.Domain.Entities.StockEntity", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<int>("LowStockThreshold")
@@ -247,11 +243,9 @@ namespace Products.Infrastructure.Data.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.Property<uint>("Version")
+                    b.Property<int>("Version")
                         .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -264,7 +258,6 @@ namespace Products.Infrastructure.Data.Migrations
             modelBuilder.Entity("Products.Domain.Entities.StockReservationEntity", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ExpiresAt")
@@ -281,12 +274,6 @@ namespace Products.Infrastructure.Data.Migrations
 
                     b.Property<DateTime>("ReservedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<uint>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

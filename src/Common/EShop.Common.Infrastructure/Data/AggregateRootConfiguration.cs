@@ -8,7 +8,11 @@ public abstract class AggregateRootConfiguration<TAggregate> : EntityConfigurati
 {
     protected override void ConfigureEntity(EntityTypeBuilder<TAggregate> builder)
     {
-        builder.Property(e => e.Version).IsRowVersion();
+        // Version is manually incremented by aggregate when state changes
+        // This enables proper DDD-style optimistic concurrency for aggregates with child entities
+        // ValueGeneratedNever() tells EF Core this is NOT a store-generated value
+        builder.Property(e => e.Version).IsConcurrencyToken().ValueGeneratedNever();
+
         builder.Ignore(e => e.DomainEvents);
 
         ConfigureAggregate(builder);

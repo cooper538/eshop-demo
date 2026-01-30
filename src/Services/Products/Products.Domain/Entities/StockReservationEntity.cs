@@ -12,7 +12,6 @@ public class StockReservationEntity : Entity
     public DateTime ReservedAt { get; private set; }
     public DateTime ExpiresAt { get; private set; }
     public EReservationStatus Status { get; private set; }
-    public uint RowVersion { get; private set; }
 
     // EF Core constructor
     private StockReservationEntity() { }

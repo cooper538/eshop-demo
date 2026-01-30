@@ -5,22 +5,22 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Products.Infrastructure.Data;
+using Order.Infrastructure.Data;
 
 #nullable disable
 
-namespace Products.Infrastructure.Data.Migrations
+namespace Order.Infrastructure.Data.Migrations
 {
-    [DbContext(typeof(ProductDbContext))]
-    [Migration("20260127205825_AddMassTransitOutbox")]
-    partial class AddMassTransitOutbox
+    [DbContext(typeof(OrderDbContext))]
+    [Migration("20260129212019_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.1")
+                .HasAnnotation("ProductVersion", "10.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -193,124 +193,43 @@ namespace Products.Infrastructure.Data.Migrations
                     b.ToTable("OutboxState");
                 });
 
-            modelBuilder.Entity("Products.Domain.Entities.ProductEntity", b =>
+            modelBuilder.Entity("Order.Domain.Entities.OrderEntity", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("CustomerEmail")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasMaxLength(320)
+                        .HasColumnType("character varying(320)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
 
-                    b.Property<decimal>("Price")
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TotalAmount")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<byte[]>("Version")
+                    b.Property<int>("Version")
                         .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Product");
-                });
-
-            modelBuilder.Entity("Products.Domain.Entities.StockEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("LowStockThreshold")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<byte[]>("Version")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId")
-                        .IsUnique();
-
-                    b.ToTable("Stock");
-                });
-
-            modelBuilder.Entity("Products.Domain.Entities.StockReservationEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("ReleasedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("ReservedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<uint>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("StockId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("StockId");
-
-                    b.HasIndex("Status", "ExpiresAt");
-
-                    b.ToTable("StockReservation");
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>
@@ -325,18 +244,43 @@ namespace Products.Infrastructure.Data.Migrations
                         .HasPrincipalKey("MessageId", "ConsumerId");
                 });
 
-            modelBuilder.Entity("Products.Domain.Entities.StockReservationEntity", b =>
+            modelBuilder.Entity("Order.Domain.Entities.OrderEntity", b =>
                 {
-                    b.HasOne("Products.Domain.Entities.StockEntity", null)
-                        .WithMany("Reservations")
-                        .HasForeignKey("StockId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    b.OwnsMany("Order.Domain.Entities.OrderItem", "Items", b1 =>
+                        {
+                            b1.Property<Guid>("OrderEntityId")
+                                .HasColumnType("uuid");
 
-            modelBuilder.Entity("Products.Domain.Entities.StockEntity", b =>
-                {
-                    b.Navigation("Reservations");
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
+
+                            b1.Property<Guid>("ProductId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("ProductName")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)");
+
+                            b1.Property<int>("Quantity")
+                                .HasColumnType("integer");
+
+                            b1.Property<decimal>("UnitPrice")
+                                .HasPrecision(18, 2)
+                                .HasColumnType("numeric(18,2)");
+
+                            b1.HasKey("OrderEntityId", "Id");
+
+                            b1.ToTable("OrderItem");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderEntityId");
+                        });
+
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

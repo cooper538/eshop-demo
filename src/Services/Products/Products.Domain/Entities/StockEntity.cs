@@ -55,6 +55,7 @@ public class StockEntity : AggregateRoot
             reservationDuration
         );
         _reservations.Add(reservation);
+        IncrementVersion();
 
         if (IsLowStock)
         {
@@ -79,6 +80,11 @@ public class StockEntity : AggregateRoot
         {
             reservation.Release();
         }
+
+        if (reservations.Count > 0)
+        {
+            IncrementVersion();
+        }
     }
 
     public IReadOnlyList<StockReservationEntity> ExpireStaleReservations(DateTime now)
@@ -102,10 +108,19 @@ public class StockEntity : AggregateRoot
             );
         }
 
+        if (expiredReservations.Count > 0)
+        {
+            IncrementVersion();
+        }
+
         return expiredReservations;
     }
 
-    public void UpdateLowStockThreshold(int threshold) => LowStockThreshold = threshold;
+    public void UpdateLowStockThreshold(int threshold)
+    {
+        LowStockThreshold = threshold;
+        IncrementVersion();
+    }
 
     private int CalculateAvailableQuantity()
     {

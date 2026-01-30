@@ -22,4 +22,4 @@ Order:
 ServiceClients:
   TimeoutSeconds: 30
   ProductService:
-    Url: "https+http://product-service"
+    Url: "https://product-service"
