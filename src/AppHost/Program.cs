@@ -1,3 +1,4 @@
+using EShop.AppHost;
 using EShop.ServiceDefaults;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -67,5 +68,18 @@ var gateway = builder
     .WaitFor(productService)
     .WaitFor(orderService)
     .WithExternalHttpEndpoints();
+
+builder.ConfigureDockerComposePublishing(
+    new AppResources(
+        postgres,
+        rabbitmq,
+        migrationService,
+        productService,
+        orderService,
+        notificationService,
+        analyticsService,
+        gateway
+    )
+);
 
 builder.Build().Run();
