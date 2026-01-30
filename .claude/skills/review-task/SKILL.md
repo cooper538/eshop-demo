@@ -103,7 +103,7 @@ Use `WebSearch` and `WebFetch` to verify implementation against official docs an
 | Rate Limiting | .NET 8+ built-in patterns |
 
 **Search queries to use:**
-- `{technology} best practices 2024 site:learn.microsoft.com`
+- `{technology} best practices site:learn.microsoft.com`
 - `{technology} official documentation`
 - `{pattern} .NET implementation guide`
 

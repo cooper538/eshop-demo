@@ -18,7 +18,7 @@ Display current status of tasks with visual indicators, blocking information, an
 
 ## Current Status
 
-!bash .claude/scripts/task-status.sh
+!.claude/scripts/task-status.sh
 
 ## Process
 

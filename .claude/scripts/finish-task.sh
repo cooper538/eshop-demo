@@ -67,17 +67,55 @@ output_result() {
     fi
 }
 
-# Get current branch info
+# Detect mode: MAIN, FEATURE_BRANCH, or WORKTREE
 CURRENT_BRANCH=$(get_current_branch)
-PHASE_TASK=$(get_phase_task_from_branch "$CURRENT_BRANCH")
+MAIN_BRANCH=$(get_main_branch)
+IS_WORKTREE=false
+MODE="MAIN"
 
-if [[ -z "$PHASE_TASK" ]]; then
-    output_result "error" "Not on a task branch. Expected format: phase-XX/task-YY-description"
-    exit 1
+# Check if we're in a worktree
+if [[ -f "$(get_repo_root)/.git" ]]; then
+    IS_WORKTREE=true
+    MODE="WORKTREE"
+elif [[ "$CURRENT_BRANCH" != "$MAIN_BRANCH" ]]; then
+    MODE="FEATURE_BRANCH"
 fi
 
-PHASE_NUM=$(echo "$PHASE_TASK" | cut -d' ' -f1)
-TASK_NUM=$(echo "$PHASE_TASK" | cut -d' ' -f2)
+# Extract phase/task from branch name (for FEATURE_BRANCH/WORKTREE)
+PHASE_TASK=$(get_phase_task_from_branch "$CURRENT_BRANCH")
+PHASE_NUM=""
+TASK_NUM=""
+
+if [[ -n "$PHASE_TASK" ]]; then
+    PHASE_NUM=$(echo "$PHASE_TASK" | cut -d' ' -f1)
+    TASK_NUM=$(echo "$PHASE_TASK" | cut -d' ' -f2)
+fi
+
+# For MAIN mode, find task from in_progress status
+if [[ "$MODE" == "MAIN" && -z "$PHASE_NUM" ]]; then
+    # Find in_progress task
+    PROJECT_DIR="$(get_repo_root)/specification"
+    for phase_path in "$PROJECT_DIR"/phase-*/; do
+        if [[ ! -d "$phase_path/tasks" ]]; then
+            continue
+        fi
+        for task_file in "$phase_path/tasks"/task-*.md; do
+            [[ ! -f "$task_file" ]] && continue
+            local_meta=$(parse_task_metadata "$task_file")
+            local_status=$(echo "$local_meta" | jq -r '.status_type')
+            if [[ "$local_status" == "in_progress" ]]; then
+                PHASE_NUM=$(echo "$task_file" | grep -o 'phase-[0-9]\+' | grep -o '[0-9]\+')
+                TASK_NUM=$(basename "$task_file" .md | grep -o '[0-9]\+' | head -1)
+                break 2
+            fi
+        done
+    done
+fi
+
+if [[ -z "$PHASE_NUM" || -z "$TASK_NUM" ]]; then
+    output_result "error" "Could not determine current task. Either be on a task branch or have a task with 🔵 in_progress status."
+    exit 1
+fi
 
 # Find task file
 TASK_FILE=$(get_task_file_path "$PHASE_NUM" "$TASK_NUM")
@@ -96,6 +134,7 @@ TASK_STATUS=$(echo "$TASK_METADATA" | jq -r '.status_type')
 if ! $JSON_OUTPUT; then
     echo ""
     print_color blue "Finishing task: $TASK_ID - $TASK_NAME"
+    echo "Mode: $MODE"
     echo "Branch: $CURRENT_BRANCH"
     echo ""
 fi
@@ -204,40 +243,83 @@ if all_phase_tasks_completed "$PHASE_NUM"; then
     fi
 fi
 
-# Merge to main (unless --no-merge)
-MAIN_BRANCH=$(get_main_branch)
+# Mode-specific completion actions
+case "$MODE" in
+    MAIN)
+        # MAIN mode: Just update status, no merge needed
+        if ! $JSON_OUTPUT; then
+            print_color green "Task status updated to completed (MAIN mode - no merge needed)"
+        fi
+        ;;
 
-if ! $NO_MERGE; then
-    if ! $JSON_OUTPUT; then
-        print_color blue "Merging to $MAIN_BRANCH..."
-    fi
+    FEATURE_BRANCH)
+        # FEATURE_BRANCH mode: Merge to main (unless --no-merge)
+        if ! $NO_MERGE; then
+            if ! $JSON_OUTPUT; then
+                print_color blue "Merging to $MAIN_BRANCH..."
+            fi
 
-    # Checkout main
-    git checkout "$MAIN_BRANCH" >/dev/null 2>&1
+            # Checkout main
+            git checkout "$MAIN_BRANCH" >/dev/null 2>&1
 
-    # Merge the task branch
-    if ! git merge "$CURRENT_BRANCH" --no-ff -m "Merge branch '$CURRENT_BRANCH'" 2>&1; then
-        output_result "error" "Merge failed. Resolve conflicts manually"
-        exit 1
-    fi
+            # Merge the task branch (squash merge for cleaner history)
+            if ! git merge --squash "$CURRENT_BRANCH" 2>&1; then
+                output_result "error" "Merge failed. Resolve conflicts manually"
+                exit 1
+            fi
 
-    if ! $JSON_OUTPUT; then
-        print_color green "Merged $CURRENT_BRANCH into $MAIN_BRANCH"
-    fi
+            # Commit the squash merge
+            git commit -m "[$PHASE_NUM-$TASK_NUM] feat: $TASK_NAME" --no-verify 2>/dev/null || true
 
-    # Delete the task branch
-    git branch -d "$CURRENT_BRANCH" >/dev/null 2>&1 || true
+            if ! $JSON_OUTPUT; then
+                print_color green "Squash merged $CURRENT_BRANCH into $MAIN_BRANCH"
+            fi
 
-    if ! $JSON_OUTPUT; then
-        print_color green "Deleted branch: $CURRENT_BRANCH"
-    fi
-else
-    if ! $JSON_OUTPUT; then
-        print_color yellow "Skipping merge (--no-merge specified)"
-        echo "To merge manually:"
-        echo "  git checkout $MAIN_BRANCH && git merge $CURRENT_BRANCH"
-    fi
-fi
+            # Delete the task branch
+            git branch -D "$CURRENT_BRANCH" >/dev/null 2>&1 || true
+
+            if ! $JSON_OUTPUT; then
+                print_color green "Deleted branch: $CURRENT_BRANCH"
+            fi
+        else
+            if ! $JSON_OUTPUT; then
+                print_color yellow "Skipping merge (--no-merge specified)"
+                echo "To merge manually:"
+                echo "  git checkout $MAIN_BRANCH && git merge --squash $CURRENT_BRANCH"
+            fi
+        fi
+        ;;
+
+    WORKTREE)
+        # WORKTREE mode: Squash merge to main in the main repository
+        if ! $NO_MERGE; then
+            if ! $JSON_OUTPUT; then
+                print_color blue "Squash merging to $MAIN_BRANCH (in main repo)..."
+            fi
+
+            # Get main repo path from worktree .git file
+            MAIN_REPO=$(cat "$(get_repo_root)/.git" | sed 's/gitdir: //' | xargs dirname | xargs dirname)
+
+            # In main repo: squash merge
+            if ! git -C "$MAIN_REPO" merge --squash "$CURRENT_BRANCH" 2>&1; then
+                output_result "error" "Merge failed in main repo. Resolve conflicts manually"
+                exit 1
+            fi
+
+            git -C "$MAIN_REPO" commit -m "[$PHASE_NUM-$TASK_NUM] feat: $TASK_NAME" --no-verify 2>/dev/null || true
+
+            if ! $JSON_OUTPUT; then
+                print_color green "Squash merged $CURRENT_BRANCH into $MAIN_BRANCH (main repo)"
+                echo ""
+                print_color yellow "Worktree directory can be removed with: git worktree remove $(get_repo_root)"
+            fi
+        else
+            if ! $JSON_OUTPUT; then
+                print_color yellow "Skipping merge (--no-merge specified)"
+            fi
+        fi
+        ;;
+esac
 
 # Final output
 if $JSON_OUTPUT; then
@@ -246,9 +328,10 @@ if $JSON_OUTPUT; then
         --arg message "Task $TASK_ID completed successfully" \
         --arg task_id "$TASK_ID" \
         --arg task_name "$TASK_NAME" \
+        --arg mode "$MODE" \
         --arg branch "$CURRENT_BRANCH" \
-        --argjson merged "$(if $NO_MERGE; then echo false; else echo true; fi)" \
-        '{status: $status, message: $message, task_id: $task_id, task_name: $task_name, branch: $branch, merged: $merged}'
+        --argjson merged "$(if $NO_MERGE || [[ "$MODE" == "MAIN" ]]; then echo false; else echo true; fi)" \
+        '{status: $status, message: $message, task_id: $task_id, task_name: $task_name, mode: $mode, branch: $branch, merged: $merged}'
 else
     echo ""
     print_color green "Task $TASK_ID completed successfully!"
