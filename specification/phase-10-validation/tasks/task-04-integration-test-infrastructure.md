@@ -4,32 +4,32 @@
 | Key | Value |
 |-----|-------|
 | ID | task-04 |
-| Status | ⚪ pending |
+| Status | ✅ completed |
 | Dependencies | task-01 |
 
 ## Summary
 Setup shared integration testing infrastructure with Testcontainers, Respawn, and WebApplicationFactory.
 
 ## Scope
-- [ ] Create `tests/Common.IntegrationTests/` project
-- [ ] Add NuGet packages:
-  - [ ] Testcontainers, Testcontainers.PostgreSql, Testcontainers.RabbitMq
-  - [ ] Respawn
-  - [ ] Microsoft.AspNetCore.Mvc.Testing
-- [ ] Create `PostgresContainerFixture` class
-  - [ ] Spin up PostgreSQL container
-  - [ ] Provide connection string
-  - [ ] Implement IAsyncLifetime
-- [ ] Create `RabbitMqContainerFixture` class
-  - [ ] Spin up RabbitMQ container
-  - [ ] Provide connection string
-- [ ] Create `DatabaseFixture` with Respawn
-  - [ ] Reset database between tests
-  - [ ] Ignore __EFMigrationsHistory table
-- [ ] Create `IntegrationTestBase` class
-  - [ ] Common setup/teardown
-  - [ ] Database reset helper
-- [ ] Update `EShopDemo.sln`
+- [x] Create `tests/Common.IntegrationTests/` project
+- [x] Add NuGet packages:
+  - [x] Testcontainers, Testcontainers.PostgreSql, Testcontainers.RabbitMq
+  - [x] Respawn
+  - [x] Microsoft.AspNetCore.Mvc.Testing
+- [x] Create `PostgresContainerFixture` class
+  - [x] Spin up PostgreSQL container
+  - [x] Provide connection string
+  - [x] Implement IAsyncLifetime
+- [x] Create `RabbitMqContainerFixture` class
+  - [x] Spin up RabbitMQ container
+  - [x] Provide connection string
+- [x] Create `DatabaseFixture` with Respawn
+  - [x] Reset database between tests
+  - [x] Ignore __EFMigrationsHistory table
+- [x] Create `IntegrationTestBase` class
+  - [x] Common setup/teardown
+  - [x] Database reset helper
+- [x] Update `EShopDemo.sln`
 
 ## Related Specs
 - → [functional-testing.md](../../high-level-specs/functional-testing.md) (Section: Integration Testing)
