@@ -129,7 +129,7 @@ public static class ServiceDefaultsExtensions
         const string otelServiceNameKey = "OTEL_SERVICE_NAME";
         const string timestampFormat = "yyyyMMdd-HHmmss";
         const string devOutputTemplate =
-            "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {SourceContext}{NewLine}{Exception}";
+            "[{Timestamp:HH:mm:ss} {Level:u3}] [{CorrelationId}] {Message:lj}{NewLine}{Exception}";
 
         var serviceName =
             builder.Configuration[otelServiceNameKey] ?? builder.Environment.ApplicationName;

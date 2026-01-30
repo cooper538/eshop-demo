@@ -6,6 +6,7 @@ using Products.Infrastructure.Data;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+builder.AddSerilog();
 builder.AddServiceDefaults();
 
 builder.AddNpgsqlDbContext<OrderDbContext>(ResourceNames.Databases.Order);
