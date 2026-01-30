@@ -109,6 +109,8 @@
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.4.0" />
     <PackageVersion Include="Testcontainers.RabbitMq" Version="4.4.0" />
     <PackageVersion Include="Respawn" Version="6.2.1" />
+    <PackageVersion Include="Aspire.Hosting.Testing" Version="13.1.0" />
+    <PackageVersion Include="WireMock.Net" Version="1.6.12" />
   </ItemGroup>
 
   <ItemGroup Label="Roslyn Analyzers">
