@@ -37,9 +37,12 @@ Overview of all implementation phases for the EShop microservices demo.
 - Create solution file `EShopDemo.sln`
 - Create `Directory.Build.props` and `Directory.Packages.props` (central package management)
 - Implement `EShop.SharedKernel` (Entity, AggregateRoot, ValueObject, IDomainEvent, Guard)
-- Implement `EShop.Contracts` (integration events, shared DTOs)
+- Implement `EShop.Contracts` (integration events, service client interfaces)
 - Implement `EShop.Grpc` (proto definitions for Product Service)
-- Implement `EShop.Common` (middleware, behaviors, exception handling)
+- Implement `EShop.Common.*` - layered approach:
+  - `EShop.Common.Application` - exceptions, behaviors, correlation, CQRS
+  - `EShop.Common.Api` - HTTP middleware, gRPC server interceptors
+  - `EShop.Common.Infrastructure` - MassTransit filters, EF configurations
 - Implement `EShop.ServiceClients` (gRPC client abstraction for internal API)
 
 → [Details](./phase-01-foundation/phase.md)
@@ -52,8 +55,10 @@ Overview of all implementation phases for the EShop microservices demo.
 
 - Create `EShop.AppHost` (Aspire orchestrator)
 - Create `EShop.ServiceDefaults` (shared configuration, health checks, OpenTelemetry)
-- Configure PostgreSQL and RabbitMQ resources
-- Set up service discovery
+- Configure PostgreSQL (3 databases) and RabbitMQ resources
+- Set up service discovery and resilience
+- Configure Serilog with CorrelationId support
+- Add Docker Compose publishing support
 
 → [Details](./phase-02-aspire/phase.md)
 
@@ -61,15 +66,16 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ## Phase 03: Product Core ✅
 
-**Product Service domain model and external REST API**
+**Product Service with domain model, REST API, and gRPC API**
 
 - Create Clean Architecture structure (API, Application, Domain, Infrastructure)
-- Implement domain entities (Product, Category)
+- Implement Product aggregate (Name, Description, Price)
+- Implement Stock aggregate (separate from Product for DDD alignment)
 - Implement CQRS handlers (CreateProduct, GetProducts, GetProductById, UpdateProduct)
 - Configure EF Core with PostgreSQL
 - Create external REST API endpoints
+- Create internal gRPC API (GetStock, ReserveStock, ReleaseStock)
 - Add FluentValidation validators
-- Configure YAML-based settings with schema validation
 
 → [Details](./phase-03-product-core/phase.md)
 
@@ -90,14 +96,16 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ## Phase 05: Order Core ✅
 
-**Order Service domain with lifecycle management**
+**Order Service domain with lifecycle management and Product integration**
 
 - Create Clean Architecture structure
-- Implement Order entity with status transitions (Created → Confirmed/Rejected → Cancelled)
-- Implement OrderItem value object
-- Create CQRS handlers (CreateOrder, GetOrder, CancelOrder)
+- Implement Order aggregate with status transitions (Created → Confirmed/Rejected → Cancelled)
+- Implement OrderItem as owned entity
+- Create CQRS handlers (CreateOrder, GetOrder, ConfirmOrder, CancelOrder)
 - Configure EF Core with PostgreSQL
 - Create external REST API endpoints
+- Integrate with Product Service via gRPC (stock reservation)
+- Configure MassTransit for messaging
 
 → [Details](./phase-05-order-core/phase.md)
 
@@ -108,9 +116,9 @@ Overview of all implementation phases for the EShop microservices demo.
 **gRPC communication with Product Service**
 
 - Configure gRPC client in ServiceClients for Order Service
-- Configure Polly resilience policies (retry, circuit breaker)
+- Configure resilience policies (gRPC built-in retry with exponential backoff)
 - Integrate stock reservation into CreateOrder flow
-- Add CorrelationId propagation (middleware + interceptors)
+- Add CorrelationId propagation (HTTP middleware + gRPC interceptors)
 
 → [Details](./phase-06-order-integration/phase.md)
 
@@ -121,10 +129,10 @@ Overview of all implementation phases for the EShop microservices demo.
 **Event-driven communication with RabbitMQ**
 
 - Configure MassTransit with RabbitMQ
-- Implement Outbox pattern in Order Service
-- Implement Inbox pattern in EShop.Common
-- Create OutboxProcessor background service
-- Add integration event publishing (OrderConfirmed, OrderRejected, OrderCancelled)
+- Configure MassTransit Bus Outbox (transactional outbox pattern)
+- Implement Inbox pattern in EShop.Common for idempotent consumers
+- Add integration event publishing (OrderConfirmed, OrderRejected, OrderCancelled, StockLowAlert)
+- Publish domain events through MassTransit
 
 → [Details](./phase-07-messaging/phase.md)
 
