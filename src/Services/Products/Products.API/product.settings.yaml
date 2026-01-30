@@ -23,7 +23,7 @@ Product:
     ExpirationMin: 60
 
   StockReservation:
-    DefaultDurationMinutes: 15
+    DefaultDurationMinutes: 5
     Expiration:
       CheckIntervalMinutes: 1
-      BatchSize: 100
+      BatchSize: 50
