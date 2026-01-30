@@ -15,13 +15,31 @@ Implement batch product query for internal API - returns product info for multip
 - [x] Create GetProductsBatchResult record with list of ProductInfoDto
 - [x] Create ProductInfoDto (ProductId, Name, Description, Price, StockQuantity)
 - [x] Implement GetProductsBatchQueryHandler
-- [x] Return ProductInfo only for existing products
-- [x] Query handler returns only found products (caller validates completeness)
+- [x] Join Products with Stocks to get stock quantity
+- [x] Return only products that exist (caller validates completeness)
 
-## Note
-**ATOMIC validation happens in gRPC/HTTP layer, not in query handler.**
-Query handler simply returns what exists. The gRPC service or controller
-compares requested vs returned IDs and throws NOT_FOUND if any missing.
+## Implementation Details
+
+**Files**:
+- `Products.Application/Queries/GetProductsBatch/GetProductsBatchQuery.cs`
+- `Products.Application/Queries/GetProductsBatch/GetProductsBatchQueryHandler.cs`
+- `Products.Application/Queries/GetProductsBatch/GetProductsBatchResult.cs`
+- `Products.Application/Dtos/ProductInfoDto.cs`
+
+**Query Signature**:
+```csharp
+GetProductsBatchQuery(IReadOnlyList<Guid> ProductIds) : IQuery<GetProductsBatchResult>
+```
+
+**DTO**:
+```csharp
+ProductInfoDto(Guid ProductId, string Name, string Description, decimal Price, int StockQuantity)
+```
+
+**Design Decision**:
+- Query handler returns only found products (partial result)
+- ATOMIC validation happens in gRPC/HTTP layer (compares requested vs returned IDs)
+- Uses JOIN to get total stock quantity from Stock table
 
 ## Related Specs
 - [product-service-interface.md](../../high-level-specs/product-service-interface.md) (Section 3.1: GetProducts, Section 3.5: ServiceClients Models)

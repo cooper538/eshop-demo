@@ -11,16 +11,22 @@
 Create AggregateRoot base class with domain events collection support in EShop.SharedKernel.
 
 ## Scope
-- [ ] Create `IDomainEvent` marker interface (extends MediatR's `INotification`)
-- [ ] Create `AggregateRoot` base class extending `Entity`
-- [ ] Add private `_domainEvents` list with public readonly accessor
-- [ ] Add `AddDomainEvent(IDomainEvent)` protected method
-- [ ] Add `ClearDomainEvents()` public method
-- [ ] Verify solution builds successfully
+- [x] Create `IDomainEvent` marker interface (simple marker, NOT extending MediatR's `INotification`)
+- [x] Create `DomainEventBase` abstract record with `OccurredOn` property
+- [x] Create `AggregateRoot` base class extending `Entity`
+- [x] Add private `_domainEvents` list with public readonly accessor
+- [x] Add `AddDomainEvent(IDomainEvent)` protected method
+- [x] Add `ClearDomainEvents()` public method
+- [x] Add `Version` property for optimistic locking
+- [x] Add `IncrementVersion()` protected method
+- [x] Verify solution builds successfully
 
 ## Related Specs
 - → [messaging-communication.md](../../high-level-specs/messaging-communication.md) (Section 5: Outbox Pattern)
 
 ---
 ## Notes
-(Updated during implementation)
+- Location: `src/Common/EShop.SharedKernel/`
+- `IDomainEvent` is a simple marker interface (not extending MediatR)
+- `DomainEventBase` provides base implementation with `OccurredOn` timestamp
+- `AggregateRoot` also includes `Version` for concurrency control

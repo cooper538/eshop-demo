@@ -21,23 +21,24 @@ Create Order.UnitTests project with comprehensive tests for Order domain entitie
 
 ### Domain Tests (Critical - State Machine)
 - [ ] Test `OrderEntity` state transitions
-  - [ ] Create() - valid order creation with items
-  - [ ] Confirm() - Created → Confirmed (happy path)
-  - [ ] Reject() - Created → Rejected with reason
-  - [ ] Cancel() - Confirmed → Cancelled with reason
+  - [ ] Create() - valid order creation with items, raises `OrderCreatedDomainEvent`
+  - [ ] Confirm() - Created → Confirmed, raises `OrderConfirmedDomainEvent`
+  - [ ] Reject() - Created → Rejected with reason, raises `OrderRejectedDomainEvent`
+  - [ ] Cancel() - Confirmed → Cancelled with reason, raises `OrderCancelledDomainEvent`
   - [ ] Invalid transitions throw `InvalidOrderStateException`
-- [ ] Test `OrderItem` value object
+- [ ] Test `OrderItem` (owned entity, not ValueObject)
   - [ ] Creation with valid parameters
   - [ ] LineTotal calculation (quantity × unitPrice)
+  - [ ] Note: No equality tests needed - OrderItem is IOwnedEntity
 
 ### Command Handler Tests
 - [ ] Test `CreateOrderCommandHandler`
-  - [ ] Stock available → Order confirmed
-  - [ ] Stock unavailable → Order rejected
-  - [ ] Product service failure → proper error handling
+  - [ ] Stock available → Order created and confirmed
+  - [ ] Stock unavailable → throws `InvalidOperationException` (reservation fails)
+  - [ ] Product service failure → exception propagates
 - [ ] Test `CancelOrderCommandHandler`
-  - [ ] Confirmed order → Cancelled + stock released
-  - [ ] Already cancelled order → error
+  - [ ] Confirmed order → Cancelled + stock release attempted
+  - [ ] Non-Confirmed order → returns error Result (Success: false)
   - [ ] Non-existent order → NotFoundException
 
 ### Validator Tests (Representative)
@@ -57,3 +58,4 @@ Create Order.UnitTests project with comprehensive tests for Order domain entitie
 - Use InMemory EF Core DbContext for handler tests
 - Follow naming: `MethodName_Scenario_ExpectedResult`
 - Order state machine is critical business logic - cover all paths
+- **Implementation note**: CreateOrderCommandHandler throws on stock failure (doesn't create rejected order)

@@ -1,7 +1,9 @@
 # Phase 11: Improvements & Refactoring
 
-## Status
-- [x] In progress
+## Metadata
+| Key | Value |
+|-----|-------|
+| Status | 🔵 in progress |
 
 ## Overview
 
@@ -14,18 +16,21 @@ These are enhancements that improve code quality, domain model alignment, or arc
 |---|------|-------------|--------|
 | 01 | [Product Domain Refactoring](tasks/task-01-product-domain-refactoring.md) | Separate Product catalog from Stock inventory into distinct aggregates | ✅ Completed |
 | 02 | [Architecture Tests](tasks/task-02-architecture-tests.md) | NetArchTest.Rules tests for Clean Architecture and DDD compliance | ✅ Completed |
-| 03 | [UnitOfWork Behavior](tasks/task-03-unitofwork-behavior.md) | Refactor domain event dispatch to run before SaveChangesAsync | ⚪ Not started |
+| 03 | [UnitOfWork Behavior](tasks/task-03-unitofwork-behavior.md) | Refactor domain event dispatch to run before SaveChangesAsync | ✅ Completed |
 | 04 | [IDateTimeProvider](tasks/task-04-datetime-provider.md) | Introduce IDateTimeProvider abstraction for testability | ✅ Completed |
-| 05 | [Analytics Service](tasks/task-05-analytics-service.md) | New microservice demonstrating pub-sub pattern with OrderConfirmed consumer | ⚪ Not started |
-| 06 | [E2E Happy Flow Validation](tasks/task-06-e2e-happy-flow-validation.md) | Complete E2E validation of all Order flows, Stock Low Alert, and Correlation ID propagation | ⚪ Not started |
+| 05 | [Analytics Service](tasks/task-05-analytics-service.md) | New microservice demonstrating pub-sub pattern with OrderConfirmed consumer | ✅ Completed |
+| 06 | [E2E Happy Flow Validation](tasks/task-06-e2e-happy-flow-validation.md) | Complete E2E validation of all Order flows, Stock Low Alert, and Correlation ID propagation | ⚪ Pending |
+| 07 | [E2E Error Flow Validation](tasks/task-07-e2e-error-flow-validation.md) | Complete E2E validation of error flows (404, 400, service unavailable) | ⚪ Pending |
 
 ## Goals
 
 - Address technical debt and design issues discovered during implementation
 - Improve DDD alignment with proper aggregate boundaries and bounded context separation
 - Prepare domain model for future scalability (Inventory as separate microservice)
+- Complete E2E validation to ensure system reliability
 
 ## Notes
 
-- Tasks in this phase are optional but recommended for production readiness
-- New improvements can be added as development progresses
+- Tasks 01-05 are completed implementation improvements
+- Tasks 06-07 are validation tasks (non-development) using `/e2e-test` skill
+- E2E test tooling is ready in `tools/e2e-test/`

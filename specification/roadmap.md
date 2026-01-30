@@ -5,7 +5,7 @@ Overview of all implementation phases for the EShop microservices demo.
 ## Progress
 
 ```
-[###-------] 3/11 phases completed (27%)
+[#########-] 9/11 phases completed (82%)
 ```
 
 ## Phases
@@ -15,14 +15,14 @@ Overview of all implementation phases for the EShop microservices demo.
 | 01 | [Foundation](#phase-01-foundation-) | ✅ Done |
 | 02 | [Aspire](#phase-02-aspire-) | ✅ Done |
 | 03 | [Product Core](#phase-03-product-core-) | ✅ Done |
-| 04 | [Product Internal](#phase-04-product-internal-) | ⚪ In Progress |
-| 05 | [Order Core](#phase-05-order-core-) | ⚪ Pending |
-| 06 | [Order Integration](#phase-06-order-integration-) | ⚪ Pending |
-| 07 | [Messaging](#phase-07-messaging-) | ⚪ Pending |
-| 08 | [Notification](#phase-08-notification-) | ⚪ Pending |
-| 09 | [Gateway](#phase-09-gateway-) | ⚪ Pending |
+| 04 | [Product Internal](#phase-04-product-internal-) | ✅ Done |
+| 05 | [Order Core](#phase-05-order-core-) | ✅ Done |
+| 06 | [Order Integration](#phase-06-order-integration-) | ✅ Done |
+| 07 | [Messaging](#phase-07-messaging-) | ✅ Done |
+| 08 | [Notification](#phase-08-notification-) | ✅ Done |
+| 09 | [Gateway](#phase-09-gateway-) | ✅ Done |
 | 10 | [Testing & Validation](#phase-10-testing--validation-) | ⚪ Pending |
-| 11 | [Improvements & Refactoring](#phase-11-improvements--refactoring-) | ⚪ Pending |
+| 11 | [Improvements & Refactoring](#phase-11-improvements--refactoring-) | 🔵 In Progress |
 
 ---
 
@@ -75,7 +75,7 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ---
 
-## Phase 04: Product Internal ⚪
+## Phase 04: Product Internal ✅
 
 **Internal gRPC API and stock management**
 
@@ -88,7 +88,7 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ---
 
-## Phase 05: Order Core ⚪
+## Phase 05: Order Core ✅
 
 **Order Service domain with lifecycle management**
 
@@ -103,7 +103,7 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ---
 
-## Phase 06: Order Integration ⚪
+## Phase 06: Order Integration ✅
 
 **gRPC communication with Product Service**
 
@@ -116,7 +116,7 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ---
 
-## Phase 07: Messaging ⚪
+## Phase 07: Messaging ✅
 
 **Event-driven communication with RabbitMQ**
 
@@ -130,7 +130,7 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ---
 
-## Phase 08: Notification ⚪
+## Phase 08: Notification ✅
 
 **Worker service for notification processing**
 
@@ -143,7 +143,7 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ---
 
-## Phase 09: Gateway ⚪
+## Phase 09: Gateway ✅
 
 **YARP reverse proxy as single entry point**
 
@@ -184,14 +184,22 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ---
 
-## Phase 11: Improvements & Refactoring ⚪
+## Phase 11: Improvements & Refactoring 🔵
 
 **Technical debt, refactoring, and domain model improvements**
 
-This phase contains improvements and refactoring that emerged during development. These enhancements improve code quality and DDD alignment..
+This phase contains improvements and refactoring that emerged during development. These enhancements improve code quality and DDD alignment.
 
-### Tasks
-- **Task 01: Stock Separation** - Separate Product catalog from Stock (inventory) into distinct aggregates. `ProductEntity` becomes catalog-only, new `StockEntity` aggregate root manages inventory and reservations.
+### Completed Tasks
+- **Task 01: Product Domain Refactoring** - Separate Product catalog from Stock inventory into distinct aggregates
+- **Task 02: Architecture Tests** - NetArchTest.Rules tests for Clean Architecture and DDD compliance
+- **Task 03: UnitOfWork Behavior** - Refactor domain event dispatch to run before SaveChangesAsync
+- **Task 04: IDateTimeProvider** - Introduce IDateTimeProvider abstraction for testability
+- **Task 05: Analytics Service** - New microservice demonstrating pub-sub pattern
+
+### Pending Tasks
+- **Task 06: E2E Happy Flow Validation** - Complete E2E validation of all Order flows
+- **Task 07: E2E Error Flow Validation** - Complete E2E validation of error flows
 
 → [Details](./phase-11-improvements/phase.md)
 

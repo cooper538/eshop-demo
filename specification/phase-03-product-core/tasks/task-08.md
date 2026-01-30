@@ -8,37 +8,72 @@
 | Dependencies | task-01 |
 
 ## Summary
-Implement YAML-based configuration with Options pattern and runtime validation via ValidateOnStart().
+Implement YAML-based configuration with Options pattern, DataAnnotations validation, and stock reservation settings.
 
 ## Scope
-- [ ] Add NuGet package to Product.API (NetEscapades.Configuration.Yaml)
-- [ ] Create ProductSettings.cs with Options pattern and DataAnnotations
-- [ ] Create product.settings.yaml (base configuration)
-- [ ] Create product.settings.Development.yaml (development overrides)
-- [ ] Create product.settings.Production.yaml (production overrides)
-- [ ] Configure Program.cs to load YAML config with ValidateOnStart()
-- [ ] Add YAML schema reference comment for IDE intellisense
-- [ ] Verify application fails fast on invalid config
-
-## Configuration Structure
-```yaml
-# product.settings.yaml
-Product:
-  Service:
-    Name: "Product"
-    Version: "1.0.0"
-  Database:
-    CommandTimeout: 30
-    EnableRetry: true
-  Cache:
-    ExpirationMinutes: 60
-  Logging:
-    Level: "Information"
-```
+- [x] Use AddYamlConfiguration() extension from EShop.Common.Api
+- [x] Create ProductSettings.cs with Options pattern and DataAnnotations
+- [x] Create StockReservationOptions.cs implementing IStockReservationOptions
+- [x] Create product.settings.yaml (base configuration)
+- [x] Create product.settings.Development.yaml (development overrides)
+- [x] Create product.settings.Production.yaml (production overrides)
+- [x] Configure Program.cs to load YAML config with ValidateOnStart()
+- [x] Add YAML schema reference comment for IDE intellisense
+- [x] Verify application fails fast on invalid config
 
 ## Related Specs
 - → [configuration-management.md](../../high-level-specs/configuration-management.md)
 
 ---
 ## Notes
-(Updated during implementation)
+**Actual configuration structure** (product.settings.yaml):
+```yaml
+# yaml-language-server: $schema=./Configuration/product.settings.schema.json
+
+AllowedHosts: "*"
+
+Logging:
+  LogLevel:
+    Default: "Information"
+    Microsoft.AspNetCore: "Warning"
+
+Product:
+  Service:
+    Name: "Products"
+
+  Database:
+    CommandTimeoutSec: 30
+    EnableRetry: true
+    MaxRetryCount: 3
+
+  Cache:
+    Enabled: true
+    ExpirationMin: 60
+
+  StockReservation:
+    DefaultDurationMinutes: 5
+    Expiration:
+      CheckIntervalMinutes: 1
+      BatchSize: 50
+```
+
+**Options classes**:
+- `ProductSettings` - main configuration bound to "Product" section
+- `StockReservationOptions` - implements `IStockReservationOptions` interface for background job
+
+**Registration**:
+```csharp
+builder.AddYamlConfiguration("product");  // loads product.settings.{Environment}.yaml
+
+builder.Services.AddOptions<ProductSettings>()
+    .BindConfiguration(ProductSettings.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+builder.Services.AddSingleton<IStockReservationOptions, StockReservationOptions>();
+```
+
+**Stock reservation options** used by `StockReservationExpirationJob`:
+- `DefaultDuration` - how long reservations are valid
+- `Expiration.CheckInterval` - how often to check for expired reservations
+- `Expiration.BatchSize` - how many reservations to process per batch

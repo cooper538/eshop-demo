@@ -31,4 +31,8 @@ Configure YARP as single entry point
 
 ---
 ## Notes
-(Updated during implementation)
+- Project named `Gateway.API` (not EShop.Gateway.Api as originally planned)
+- YAML configuration (`gateway.settings.yaml`) instead of appsettings.json
+- Output caching added for GET requests (products list 5min, detail 2min, swagger 24h)
+- Health checks for downstream services via Aspire service discovery
+- Rate limiting with ProblemDetails response (not X-RateLimit-* headers)

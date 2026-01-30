@@ -11,11 +11,11 @@
 Integrate existing CorrelationIdMiddleware for request tracking on external requests.
 
 ## Scope
-- [ ] Add CorrelationIdMiddleware from EShop.Common to pipeline
-- [ ] Ensure CorrelationId is generated for requests without one (external requests)
-- [ ] Ensure CorrelationId is forwarded to downstream services
-- [ ] Verify CorrelationId appears in response headers
-- [ ] Test CorrelationId propagation through gateway to services
+- [x] Add CorrelationId services and middleware from EShop.Common.Api
+- [x] Ensure CorrelationId is generated for requests without one (external requests)
+- [x] Ensure CorrelationId is forwarded to downstream services via YARP
+- [x] Verify CorrelationId appears in response headers
+- [x] Test CorrelationId propagation through gateway to services
 
 ## Related Specs
 - → [correlation-id-flow.md](../../high-level-specs/correlation-id-flow.md)

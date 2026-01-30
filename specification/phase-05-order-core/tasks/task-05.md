@@ -91,4 +91,17 @@ See `CreateProductCommand` in Products.Application
 
 ---
 ## Notes
-(Updated during implementation)
+**ACTUAL IMPLEMENTATION DIFFERS FROM ORIGINAL PLAN:**
+
+The actual implementation includes Product Service integration (originally planned for Phase 6):
+- `CreateOrderCommandHandler` calls `IProductServiceClient.ReserveStockAsync()` to reserve stock
+- On successful reservation, order is automatically confirmed (not left in "Created" state)
+- On failed reservation, throws `InvalidOperationException`
+- Publishes `OrderConfirmedDomainEvent` which triggers `OrderConfirmedEvent` integration event via MassTransit
+
+**Files:**
+- `Order.Application/Commands/CreateOrder/CreateOrderCommand.cs`
+- `Order.Application/Commands/CreateOrder/CreateOrderCommandHandler.cs`
+- `Order.Application/Commands/CreateOrder/CreateOrderCommandValidator.cs`
+- `Order.Application/Commands/CreateOrder/CreateOrderItemDtoValidator.cs`
+- `Order.Application/Commands/CreateOrder/CreateOrderResult.cs`

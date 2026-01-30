@@ -10,6 +10,8 @@
 ## Summary
 Setup end-to-end test infrastructure for multi-service integration testing with Aspire.
 
+**Note**: Shell-based E2E tooling already exists in `/tools/e2e-test/` for manual testing. This task adds programmatic .NET test project for CI integration.
+
 ## Scope
 - [ ] Create `tests/E2E.Tests/` project
 - [ ] Add NuGet packages:

@@ -10,27 +10,26 @@
 ## Summary
 Document how to run and test the EShop Demo project for new developers and reviewers.
 
+**Note**: Basic documentation already exists in root `README.md` (tech stack, architecture, getting started, patterns). This task expands testing documentation and adds troubleshooting.
+
 ## Scope
-- [ ] Create/update `docs/getting-started.md`
-  - [ ] Prerequisites (Docker, .NET 10, etc.)
-  - [ ] Clone and setup instructions
-  - [ ] Running with Aspire
-  - [ ] Accessing services and dashboard
-- [ ] Document testing
-  - [ ] Running unit tests
-  - [ ] Running integration tests
-  - [ ] Running E2E tests
+- [ ] Create `docs/testing.md`
+  - [ ] Running unit tests (`dotnet test`)
+  - [ ] Running integration tests (Testcontainers requirements)
+  - [ ] Running E2E tests (manual with `/tools/e2e-test/` scripts)
   - [ ] Test coverage reporting (if applicable)
-- [ ] Document development workflow
-  - [ ] Making changes
-  - [ ] Adding new tests
-  - [ ] Debugging tips
-- [ ] Document architecture overview
-  - [ ] Service communication diagram
+- [ ] Create `docs/troubleshooting.md`
+  - [ ] Common Docker issues
+  - [ ] Aspire startup problems
+  - [ ] Database migration issues
+  - [ ] Service communication failures
+- [ ] Enhance `docs/getting-started.md` (or README)
+  - [ ] Verify prerequisites section is complete
+  - [ ] Add development workflow tips
+  - [ ] Add debugging tips (Aspire dashboard, logs)
+- [ ] Optional: Add diagrams
+  - [ ] Service communication diagram (Mermaid)
   - [ ] Data flow for order creation
-- [ ] Update root README.md
-  - [ ] Quick start section
-  - [ ] Link to detailed docs
 
 ## Related Specs
 - → [aspire-orchestration.md](../../high-level-specs/aspire-orchestration.md)

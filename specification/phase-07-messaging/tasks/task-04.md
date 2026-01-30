@@ -8,15 +8,24 @@
 | Dependencies | task-01 |
 
 ## Summary
-Enable domain event dispatching in Order service via existing MediatR pipeline behavior.
+Domain event dispatching via MediatR pipeline behavior with `DomainEventNotification<T>` wrapper.
 
 ## Scope
-- [x] Register `AddDomainEvents()` in Order.API to enable `IDomainEventDispatcher`
-- [x] Verify solution builds successfully
+- [x] Create `IDomainEventDispatcher` interface
+- [x] Create `MediatRDomainEventDispatcher` implementation
+- [x] Create `DomainEventNotification<T>` wrapper for MediatR
+- [x] Create `DomainEventDispatchHelper` for collecting events from tracked entities
+- [x] Integrate dispatching into `UnitOfWorkExecutor` (dispatches before SaveChanges)
+- [x] Domain events auto-registered via `AddApplicationServices()` in each service
 
 ## Related Specs
 - → [messaging-communication.md](../../high-level-specs/messaging-communication.md) (Section 5.4: Publishing Flow)
 
 ---
 ## Notes
-Domain event dispatching was already implemented in EShop.Common as MediatR pipeline behavior (`DomainEventDispatchBehavior`). Only needed to add `AddDomainEvents()` registration to Order.API/Program.cs.
+- Location: `src/Common/EShop.Common.Application/`
+- `MediatRDomainEventDispatcher` wraps domain events in `DomainEventNotification<T>` and publishes via MediatR
+- `DomainEventDispatchHelper` collects events from tracked `AggregateRoot` entities and clears them
+- `UnitOfWorkExecutor` handles dispatch loop (max 10 iterations to prevent infinite loops)
+- Events are cleared BEFORE dispatch to prevent duplicates on retry
+- Handlers must be IDEMPOTENT for retry scenarios

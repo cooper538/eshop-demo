@@ -95,4 +95,15 @@ See lifecycle methods in `OrderEntity` (task-02) and `UpdateProductCommandHandle
 
 ---
 ## Notes
-(Updated during implementation)
+**ACTUAL IMPLEMENTATION DIFFERS FROM ORIGINAL PLAN:**
+
+The actual implementation includes Product Service integration (originally planned for Phase 6):
+- `CancelOrderCommandHandler` calls `IProductServiceClient.ReleaseStockAsync()` after successful cancellation
+- Stock release is best-effort: failure is logged but doesn't fail the cancellation
+- Publishes `OrderCancelledDomainEvent` which triggers `OrderCancelledEvent` integration event via MassTransit
+
+**Files:**
+- `Order.Application/Commands/CancelOrder/CancelOrderCommand.cs`
+- `Order.Application/Commands/CancelOrder/CancelOrderCommandHandler.cs`
+- `Order.Application/Commands/CancelOrder/CancelOrderCommandValidator.cs`
+- `Order.Application/Commands/CancelOrder/CancelOrderResult.cs`

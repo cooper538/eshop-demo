@@ -11,16 +11,21 @@
 Integrate domain event raising into Order entity state transition methods.
 
 ## Scope
-- [ ] Change `Order` to extend `AggregateRoot` instead of `Entity`
-- [ ] Add `AddDomainEvent(new OrderConfirmedDomainEvent(...))` in `Order.Confirm()`
-- [ ] Add `AddDomainEvent(new OrderRejectedDomainEvent(...))` in `Order.Reject()`
-- [ ] Add `AddDomainEvent(new OrderCancelledDomainEvent(...))` in `Order.Cancel()`
-- [ ] Ensure all required data is passed to domain events
-- [ ] Verify solution builds successfully
+- [x] Change `OrderEntity` to extend `AggregateRoot` instead of `Entity`
+- [x] Add `AddDomainEvent(new OrderConfirmedDomainEvent(...))` in `OrderEntity.Confirm()`
+- [x] Add `AddDomainEvent(new OrderRejectedDomainEvent(...))` in `OrderEntity.Reject()`
+- [x] Add `AddDomainEvent(new OrderCancelledDomainEvent(...))` in `OrderEntity.Cancel()`
+- [x] Call `IncrementVersion()` in each state transition method
+- [x] Ensure all required data is passed to domain events
+- [x] Verify solution builds successfully
 
 ## Related Specs
 - → [messaging-communication.md](../../high-level-specs/messaging-communication.md) (Section 5.4: Publishing Flow)
 
 ---
 ## Notes
-(Updated during implementation)
+- Location: `src/Services/Order/Order.Domain/Entities/OrderEntity.cs`
+- `Confirm()` creates `OrderConfirmedDomainEvent` with items mapped to `OrderItemInfo`
+- `Reject(reason)` creates `OrderRejectedDomainEvent` with reason
+- `Cancel(reason)` creates `OrderCancelledDomainEvent` with reason
+- All methods set `OccurredOn` from the passed timestamp parameter

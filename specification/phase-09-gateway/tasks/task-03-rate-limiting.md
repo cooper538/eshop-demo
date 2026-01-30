@@ -11,11 +11,11 @@
 Add rate limiting middleware with configurable policies.
 
 ## Scope
-- [ ] Add rate limiting middleware using ASP.NET Core built-in rate limiter
-- [ ] Configure fixed window rate limiting policy
-- [ ] Set up different limits for different route patterns if needed
-- [ ] Add rate limit headers to responses (X-RateLimit-*)
-- [ ] Configure rejection response (429 Too Many Requests)
+- [x] Add rate limiting middleware using ASP.NET Core built-in rate limiter
+- [x] Configure fixed window rate limiting policy (100 requests/60s)
+- [x] Apply rate limiting policy to all API routes
+- [x] Add Retry-After header to rate limit responses
+- [x] Configure rejection response (429 Too Many Requests with ProblemDetails)
 
 ## Related Specs
 - → [internal-api-communication.md](../../high-level-specs/internal-api-communication.md)

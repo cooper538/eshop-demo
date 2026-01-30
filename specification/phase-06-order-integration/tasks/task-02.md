@@ -1,4 +1,4 @@
-# Task 02: Circuit Breaker Policy
+# Task 02: Resilience Configuration
 
 ## Metadata
 | Key | Value |
@@ -8,22 +8,52 @@
 | Dependencies | task-01 |
 
 ## Summary
-Add circuit breaker resilience policy to ResilienceInterceptor for gRPC calls.
+Configure resilience policies for gRPC client calls using gRPC built-in retry mechanism.
 
 ## Scope
-- [ ] Add Polly circuit breaker policy to ResilienceInterceptor
-- [ ] Configure failure threshold (e.g., 5 failures)
-- [ ] Configure break duration (e.g., 30 seconds)
-- [ ] Configure sampling duration for failure counting
-- [ ] Log circuit state changes (Closed -> Open -> HalfOpen)
-- [ ] Combine with existing retry policy using PolicyWrap
+- [x] Configure gRPC built-in retry policy with exponential backoff
+- [x] Set retryable status codes (Unavailable, DeadlineExceeded, Aborted)
+- [x] Configure retry parameters (max attempts, backoff, jitter)
+- [x] Add logging interceptor for gRPC call tracking
 
-## Reference Implementation
-See `src/Common/EShop.ServiceClients/Interceptors/ResilienceInterceptor.cs` for existing retry logic.
+## Implementation
+
+### Retry Policy Configuration
+```csharp
+// ServiceCollectionExtensions.cs - CreateServiceConfig()
+var retryPolicy = new RetryPolicy
+{
+    MaxAttempts = retryOptions.MaxRetryCount + 1,  // includes initial attempt
+    InitialBackoff = TimeSpan.FromMilliseconds(retryOptions.BaseDelayMs),
+    MaxBackoff = TimeSpan.FromMilliseconds(retryOptions.MaxBackoffMs),
+    BackoffMultiplier = retryOptions.BackoffMultiplier,
+    RetryableStatusCodes = { Unavailable, DeadlineExceeded, Aborted }
+};
+```
+
+### Default Configuration (ResilienceOptions)
+| Parameter | Default Value |
+|-----------|---------------|
+| MaxRetryCount | 3 |
+| BaseDelayMs | 100 |
+| MaxBackoffMs | 5000 |
+| BackoffMultiplier | 2 |
+
+### Key Files
+- `src/Common/EShop.ServiceClients/Extensions/ServiceCollectionExtensions.cs`
+- `src/Common/EShop.ServiceClients/Configuration/ResilienceOptions.cs`
+- `src/Common/EShop.ServiceClients/Infrastructure/Grpc/LoggingInterceptor.cs`
+
+## Design Decision
+Used gRPC built-in retry instead of Polly circuit breaker:
+- Simpler configuration (no additional library)
+- Native integration with gRPC channel
+- Sufficient for current use case (single downstream service)
+- Automatic jitter included
 
 ## Related Specs
 - [grpc-communication.md](../../high-level-specs/grpc-communication.md) (Section: Resilience Policies)
 
 ---
 ## Notes
-(Updated during implementation)
+Circuit breaker pattern can be added later via Polly if needed for more complex scenarios.

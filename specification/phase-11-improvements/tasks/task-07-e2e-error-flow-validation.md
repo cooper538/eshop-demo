@@ -6,33 +6,43 @@
 | ID | task-07 |
 | Status | ⚪ pending |
 | Dependencies | task-06 |
-| Type | Validation (non-dev) |
+| Type | Validation (non-development) |
 
 ## Summary
-Complete E2E validation of basic error flows across the microservices system. This is a verification task, not implementation.
+Complete E2E validation of error handling flows across the microservices system. This is a verification task using `/e2e-test` skill.
 
 ## Scope
 
 ### HTTP Error Flows
-- [ ] Validate 404 Not Found (non-existent product in order)
-- [ ] Validate 404 Not Found (non-existent order lookup)
-- [ ] Validate 400 Bad Request (missing required fields)
-- [ ] Validate 400 Bad Request (invalid data types/formats)
+- [ ] 404 Not Found (non-existent product in order)
+- [ ] 404 Not Found (non-existent order lookup)
+- [ ] 400 Bad Request (missing required fields)
+- [ ] 400 Bad Request (invalid data types/formats)
 
 ### Business Rule Violations
-- [ ] Validate duplicate order cancellation (already cancelled)
-- [ ] Validate cancellation of rejected order
-- [ ] Validate zero/negative quantity in order
+- [ ] Duplicate order cancellation (already cancelled)
+- [ ] Cancellation of rejected order
+- [ ] Zero/negative quantity in order
 
 ### Service Communication Errors
-- [ ] Validate error handling when Product Service is unavailable (gRPC)
-- [ ] Validate timeout behavior for long-running operations
+- [ ] Product Service unavailable (gRPC error handling)
 
 ### Documentation
-- [ ] Document test results and any issues found
+- [ ] Document test results in this file's Notes section
+
+## How to Execute
+
+1. Start services: `dotnet run --project src/AppHost`
+2. Run validation: `/e2e-test unhappy`
+3. For manual tests: Follow steps in spec file
 
 ## Related Specs
-- → [task-07-e2e-error-flow-validation-spec.md](./task-07-e2e-error-flow-validation-spec.md) (Test scenarios and verification steps)
+- [task-07-e2e-error-flow-validation-spec.md](./task-07-e2e-error-flow-validation-spec.md) (Detailed test scenarios)
+
+## Tools
+- `/e2e-test` skill - automated test runner
+- `tools/e2e-test/` - shell scripts for manual testing
+- Aspire Dashboard - logs and error traces
 
 ---
 ## Notes

@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-04 |
-| Status | :white_check_mark: completed |
+| Status | ✅ completed |
 | Dependencies | task-03 |
 
 ## Summary

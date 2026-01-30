@@ -3,7 +3,7 @@
 ## Metadata
 | Key | Value |
 |-----|-------|
-| Status | :white_check_mark: completed |
+| Status | ✅ completed |
 
 ## Objective
 Implement Order Service with domain model, lifecycle management, external REST API, and Product Service integration.
@@ -23,14 +23,14 @@ Implement Order Service with domain model, lifecycle management, external REST A
 
 | # | Task | Status | Dependencies |
 |---|------|--------|--------------|
-| 01 | [Clean Architecture Projects](./tasks/task-01.md) | :white_check_mark: | - |
-| 02 | [Domain Layer](./tasks/task-02.md) | :white_check_mark: | 01 |
-| 03 | [DbContext & EF Core](./tasks/task-03.md) | :white_check_mark: | 01, 02 |
-| 04 | [CQRS Queries](./tasks/task-04.md) | :white_check_mark: | 03 |
-| 05 | [CreateOrder Command](./tasks/task-05.md) | :white_check_mark: | 02, 03 |
-| 06 | [CancelOrder Command](./tasks/task-06.md) | :white_check_mark: | 02, 03 |
-| 07 | [External REST API](./tasks/task-07.md) | :white_check_mark: | 04, 05, 06 |
-| 08 | [YAML Configuration](./tasks/task-08.md) | :white_check_mark: | 01 |
+| 01 | [Clean Architecture Projects](./tasks/task-01.md) | ✅ | - |
+| 02 | [Domain Layer](./tasks/task-02.md) | ✅ | 01 |
+| 03 | [DbContext & EF Core](./tasks/task-03.md) | ✅ | 01, 02 |
+| 04 | [CQRS Queries](./tasks/task-04.md) | ✅ | 03 |
+| 05 | [CreateOrder Command](./tasks/task-05.md) | ✅ | 02, 03 |
+| 06 | [CancelOrder Command](./tasks/task-06.md) | ✅ | 02, 03 |
+| 07 | [External REST API](./tasks/task-07.md) | ✅ | 04, 05, 06 |
+| 08 | [YAML Configuration](./tasks/task-08.md) | ✅ | 01 |
 
 ## Task Dependency Graph
 

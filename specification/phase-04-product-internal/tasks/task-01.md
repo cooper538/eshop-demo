@@ -1,4 +1,4 @@
-# Task 01: Update product.proto with GetProducts RPC
+# Task 01: Update product.proto with gRPC Service Definition
 
 ## Metadata
 | Key | Value |
@@ -8,20 +8,36 @@
 | Dependencies | - |
 
 ## Summary
-Add GetProducts RPC method to the existing product.proto file for batch product queries via gRPC.
+Define complete gRPC service for Product internal API with batch queries and stock operations.
 
 ## Scope
-- [x] Add GetProducts RPC to ProductService in product.proto
-- [x] Create GetProductsRequest message with repeated product_ids field
-- [x] Create GetProductsResponse message with repeated ProductInfo
-- [x] Create ProductInfo message (product_id, name, description, price, stock_quantity)
-- [x] Verify project builds with generated gRPC code
+- [x] Create ProductService with GetProducts, ReserveStock, ReleaseStock RPCs
+- [x] Define GetProductsRequest with repeated product_ids (string format)
+- [x] Define GetProductsResponse with repeated ProductInfo
+- [x] Define ProductInfo message (product_id, name, description, price as string, stock_quantity)
+- [x] Define ReserveStockRequest with order_id and repeated OrderItem
+- [x] Define OrderItem message (product_id, quantity)
+- [x] Define ReserveStockResponse with success and optional failure_reason
+- [x] Define ReleaseStockRequest with order_id
+- [x] Define ReleaseStockResponse with success and optional failure_reason
 
-## Design Decision
-**ATOMIC behavior per [Google AIP-231](https://google.aip.dev/231):**
-- No `exists`/`is_available` fields in ProductInfo
-- If any product is missing, RPC fails with `NOT_FOUND` status
-- Server validates all products exist before returning response
+## Implementation Details
+
+**File**: `src/Common/EShop.Grpc/Protos/product.proto`
+
+**Namespace**: `EShop.Grpc.Product`
+
+**RPC Methods**:
+| Method | Behavior |
+|--------|----------|
+| GetProducts | ATOMIC: fails with NOT_FOUND if any product missing |
+| ReserveStock | All-or-nothing: fails if any item has insufficient stock |
+| ReleaseStock | Idempotent: succeeds even if already released |
+
+**Design Decision**:
+- Price serialized as string (preserves decimal precision)
+- GUID IDs serialized as string (standard gRPC practice)
+- ATOMIC behavior per [Google AIP-231](https://google.aip.dev/231)
 
 ## Related Specs
 - [product-service-interface.md](../../high-level-specs/product-service-interface.md) (Section 3.1: gRPC Service Definition)

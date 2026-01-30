@@ -11,12 +11,12 @@
 Configure YARP reverse proxy routes for Product and Order services.
 
 ## Scope
-- [ ] Configure YARP routes in `appsettings.json`
-- [ ] Set up route for Product API (`/api/products/**` → ProductService)
-- [ ] Set up route for Order API (`/api/orders/**` → OrderService)
-- [ ] Configure cluster endpoints using Aspire service discovery
-- [ ] Add health check endpoint for gateway
-- [ ] Test routing to both services
+- [x] Configure YARP routes in `gateway.settings.yaml`
+- [x] Set up routes for Product API (`/api/products/**` → product-cluster)
+- [x] Set up routes for Order API (`/api/orders/**` → order-cluster)
+- [x] Configure cluster endpoints using Aspire service discovery
+- [x] Add health checks for downstream services (products-api, order-api)
+- [x] Add output caching for GET requests (ProductsCache, ProductDetailCache, SwaggerCache)
 
 ## Related Specs
 - → [internal-api-communication.md](../../high-level-specs/internal-api-communication.md)

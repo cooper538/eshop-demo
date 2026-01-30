@@ -1,10 +1,14 @@
 # Task 01: Product Domain Refactoring
 
-## Summary
-Refactor Product domain to properly separate catalog concerns (Product) from inventory concerns (Stock). StockEntity becomes an independent Aggregate Root that owns StockReservationEntity as child entities. This aligns with DDD principles and prepares the domain for future scalability.
+## Metadata
+| Key | Value |
+|-----|-------|
+| ID | task-01 |
+| Status | ✅ completed |
+| Dependencies | - |
 
-## Status
-- [x] Completed
+## Summary
+Refactored Product domain to properly separate catalog concerns (Product) from inventory concerns (Stock). StockEntity is now an independent Aggregate Root that owns StockReservationEntity as child entities.
 
 ## Motivation
 

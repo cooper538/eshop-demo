@@ -11,17 +11,29 @@
 Configure EShop.ServiceClients in Order.API to enable gRPC communication with Product Service.
 
 ## Scope
-- [ ] Add project reference to EShop.ServiceClients in Order.API.csproj
-- [ ] Register ServiceClients in Order.API Program.cs using AddServiceClients()
-- [ ] Configure ProductServiceClient with proper service discovery URI
-- [ ] Verify IProductServiceClient is injectable in handlers
+- [x] Add project reference to EShop.ServiceClients in Order.API.csproj
+- [x] Register ServiceClients in Order.API DependencyInjection using AddServiceClients()
+- [x] Configure ProductServiceClient with Aspire service discovery
+- [x] Verify IProductServiceClient is injectable in command handlers
 
-## Reference Implementation
-See `src/Services/Products/Products.API/Program.cs` for service registration patterns.
+## Implementation
+
+### Registration
+```csharp
+// Order.API/DependencyInjection.cs
+builder.Services.AddServiceClients(builder.Configuration, builder.Environment);
+```
+
+### Service Discovery
+Uses Aspire's `AddServiceDiscovery()` with `https+http://products-api` endpoint configured via ServiceClientOptions.
+
+### Key Files
+- `src/Services/Order/Order.API/DependencyInjection.cs` (line 17)
+- `src/Common/EShop.ServiceClients/Extensions/ServiceCollectionExtensions.cs`
 
 ## Related Specs
 - [grpc-communication.md](../../high-level-specs/grpc-communication.md) (Section: Client Configuration)
 
 ---
 ## Notes
-(Updated during implementation)
+ServiceClients are registered in AddPresentation() which is called from Program.cs.
