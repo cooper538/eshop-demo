@@ -42,7 +42,7 @@ PHASE_NUM=$(printf "%02d" "$PHASE_NUM")
 Find the phase specification file:
 
 ```bash
-PHASE_DIR=$(find .claude/project -maxdepth 1 -type d -name "phase-${PHASE_NUM}-*" | head -1)
+PHASE_DIR=$(find specification -maxdepth 1 -type d -name "phase-${PHASE_NUM}-*" | head -1)
 ```
 
 If not found, show available phases and exit.
@@ -147,7 +147,7 @@ Offer to open the file:
 ```
 User: /finish-phase 01
 
-Claude: 📂 Found phase: .claude/project/phase-01-foundation/phase.md
+Claude: 📂 Found phase: specification/phase-01-foundation/phase.md
 
 Checking tasks...
 - task-01: ✅ completed

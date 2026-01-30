@@ -67,7 +67,7 @@ get_phase_task_from_branch() {
 #######################################
 get_phase_directory() {
     local phase_num="$1"
-    local project_dir="$(get_repo_root)/.claude/project"
+    local project_dir="$(get_repo_root)/specification"
 
     # Find directory matching phase-XX-*
     local phase_dir=$(find "$project_dir" -maxdepth 1 -type d -name "phase-${phase_num}-*" 2>/dev/null | head -1)
@@ -103,7 +103,7 @@ get_current_phase() {
 #   Phase number (e.g., "03") or "01" if all completed
 #######################################
 get_active_phase_num() {
-    local project_dir="$(get_repo_root)/.claude/project"
+    local project_dir="$(get_repo_root)/specification"
     local phases=$(find "$project_dir" -maxdepth 1 -type d -name "phase-*" 2>/dev/null | sort)
 
     while IFS= read -r phase_path; do
@@ -162,7 +162,7 @@ get_active_phase_num() {
 get_task_file_path() {
     local phase_num="$1"
     local task_num="$2"
-    local project_dir="$(get_repo_root)/.claude/project"
+    local project_dir="$(get_repo_root)/specification"
     local phase_dir=$(get_phase_directory "$phase_num")
 
     if [[ -z "$phase_dir" ]]; then
@@ -388,7 +388,7 @@ generate_branch_name() {
 #######################################
 list_phase_tasks() {
     local phase_dir="$1"
-    local project_dir="$(get_repo_root)/.claude/project"
+    local project_dir="$(get_repo_root)/specification"
 
     find "$project_dir/$phase_dir/tasks" -maxdepth 1 -type f -name "task-*.md" 2>/dev/null | sort
 }
@@ -448,7 +448,7 @@ print_color() {
 #######################################
 all_phase_tasks_completed() {
     local phase_num="$1"
-    local project_dir="$(get_repo_root)/.claude/project"
+    local project_dir="$(get_repo_root)/specification"
     local phase_dir=$(get_phase_directory "$phase_num")
 
     if [[ -z "$phase_dir" ]]; then

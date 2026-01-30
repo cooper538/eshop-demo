@@ -39,7 +39,7 @@ for arg in "$@"; do
 done
 
 REPO_ROOT=$(get_repo_root)
-PROJECT_DIR="$REPO_ROOT/.claude/project"
+PROJECT_DIR="$REPO_ROOT/specification"
 
 #######################################
 # Output result in appropriate format

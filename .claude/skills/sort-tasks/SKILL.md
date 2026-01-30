@@ -19,7 +19,7 @@ Sort task files by their dependencies to determine optimal execution order. Dete
 
 ## Arguments
 
-- `$1` - Path to phase folder (default: `.claude/project`)
+- `$1` - Path to phase folder (default: `specification`)
 - `--json` - Output as JSON
 - `--markdown` - Output as Markdown table
 

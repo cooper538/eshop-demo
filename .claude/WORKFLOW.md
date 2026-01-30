@@ -143,7 +143,7 @@ git branch --show-current
 ```
 
 ### 3. From project structure
-Tasks live in `.claude/project/phase-XX-name/tasks/`
+Tasks live in `specification/phase-XX-name/tasks/`
 
 ## Parallel Work (Worktrees)
 
