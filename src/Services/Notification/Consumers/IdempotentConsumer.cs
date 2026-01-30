@@ -46,45 +46,50 @@ public abstract class IdempotentConsumer<TMessage> : IConsumer<TMessage>
             return;
         }
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(
-            context.CancellationToken
-        );
+        var strategy = _dbContext.Database.CreateExecutionStrategy();
 
-        try
+        await strategy.ExecuteAsync(async () =>
         {
-            await ProcessMessage(context);
-
-            _dbContext.ProcessedMessages.Add(
-                new ProcessedMessage
-                {
-                    MessageId = messageId,
-                    ConsumerType = ConsumerTypeName,
-                    ProcessedAt = _dateTimeProvider.UtcNow,
-                }
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(
+                context.CancellationToken
             );
 
-            await _dbContext.SaveChangesAsync(context.CancellationToken);
-            await transaction.CommitAsync(context.CancellationToken);
+            try
+            {
+                await ProcessMessage(context);
 
-            _logger.LogInformation(
-                "Message processed successfully. MessageId: {MessageId}, Consumer: {ConsumerType}",
-                messageId,
-                ConsumerTypeName
-            );
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync(context.CancellationToken);
+                _dbContext.ProcessedMessages.Add(
+                    new ProcessedMessage
+                    {
+                        MessageId = messageId,
+                        ConsumerType = ConsumerTypeName,
+                        ProcessedAt = _dateTimeProvider.UtcNow,
+                    }
+                );
 
-            _logger.LogError(
-                ex,
-                "Error processing message. MessageId: {MessageId}, Consumer: {ConsumerType}",
-                messageId,
-                ConsumerTypeName
-            );
+                await _dbContext.SaveChangesAsync(context.CancellationToken);
+                await transaction.CommitAsync(context.CancellationToken);
 
-            throw;
-        }
+                _logger.LogInformation(
+                    "Message processed successfully. MessageId: {MessageId}, Consumer: {ConsumerType}",
+                    messageId,
+                    ConsumerTypeName
+                );
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(context.CancellationToken);
+
+                _logger.LogError(
+                    ex,
+                    "Error processing message. MessageId: {MessageId}, Consumer: {ConsumerType}",
+                    messageId,
+                    ConsumerTypeName
+                );
+
+                throw;
+            }
+        });
     }
 
     protected abstract Task ProcessMessage(ConsumeContext<TMessage> context);
