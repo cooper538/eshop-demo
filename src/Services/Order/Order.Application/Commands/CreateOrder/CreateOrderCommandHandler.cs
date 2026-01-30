@@ -48,6 +48,7 @@ public sealed class CreateOrderCommandHandler
             );
         }
 
+        order.Confirm(_dateTimeProvider.UtcNow);
         _dbContext.Orders.Add(order);
 
         return new CreateOrderResult(order.Id, order.Status.ToString());

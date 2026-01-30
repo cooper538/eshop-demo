@@ -12,10 +12,17 @@ public abstract class AggregateRoot : Entity, IAggregateRoot
         _domainEvents.Add(domainEvent);
     }
 
-    public void ClearDomainEvents()
-    {
-        _domainEvents.Clear();
-    }
+    public void ClearDomainEvents() => _domainEvents.Clear();
 
-    public uint Version { get; protected set; }
+    /// <summary>
+    /// Concurrency version for optimistic locking.
+    /// Incremented whenever aggregate state changes.
+    /// </summary>
+    public int Version { get; private set; }
+
+    /// <summary>
+    /// Increments the version to mark aggregate as modified.
+    /// Call this in any method that changes aggregate state (including child entity changes).
+    /// </summary>
+    protected void IncrementVersion() => Version++;
 }

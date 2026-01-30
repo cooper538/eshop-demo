@@ -59,6 +59,7 @@ public class ProductEntity : AggregateRoot
         Price = price;
         Category = category;
         UpdatedAt = updatedAt;
+        IncrementVersion();
 
         AddDomainEvent(
             new ProductUpdatedDomainEvent(Id, lowStockThreshold) { OccurredOn = updatedAt }

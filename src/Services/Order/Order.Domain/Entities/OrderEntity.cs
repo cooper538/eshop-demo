@@ -55,6 +55,7 @@ public class OrderEntity : AggregateRoot
 
         Status = EOrderStatus.Confirmed;
         UpdatedAt = occurredAt;
+        IncrementVersion();
 
         AddDomainEvent(
             new OrderConfirmedDomainEvent(
@@ -87,6 +88,7 @@ public class OrderEntity : AggregateRoot
         Status = EOrderStatus.Rejected;
         RejectionReason = reason;
         UpdatedAt = occurredAt;
+        IncrementVersion();
 
         AddDomainEvent(
             new OrderRejectedDomainEvent(Id, CustomerId, CustomerEmail, reason)
@@ -106,6 +108,7 @@ public class OrderEntity : AggregateRoot
         Status = EOrderStatus.Cancelled;
         RejectionReason = reason;
         UpdatedAt = occurredAt;
+        IncrementVersion();
 
         AddDomainEvent(
             new OrderCancelledDomainEvent(Id, CustomerId, CustomerEmail, reason)

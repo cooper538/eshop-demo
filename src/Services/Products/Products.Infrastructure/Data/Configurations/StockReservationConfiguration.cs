@@ -4,6 +4,7 @@ using Products.Domain.Entities;
 
 namespace Products.Infrastructure.Data.Configurations;
 
+// Child entities don't need their own concurrency token - they're protected by the aggregate root
 public class StockReservationConfiguration : EntityConfiguration<StockReservationEntity>
 {
     protected override void ConfigureEntity(EntityTypeBuilder<StockReservationEntity> builder)
@@ -21,8 +22,6 @@ public class StockReservationConfiguration : EntityConfiguration<StockReservatio
         builder.Property(e => e.ExpiresAt).IsRequired();
 
         builder.Property(e => e.Status).IsRequired();
-
-        builder.Property(e => e.RowVersion).IsRowVersion();
 
         builder.HasIndex(e => e.StockId);
 
