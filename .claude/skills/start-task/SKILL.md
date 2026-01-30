@@ -39,7 +39,7 @@ The script accepts multiple formats:
 ### Step 2: Validate Dependencies
 
 Before starting, check:
-1. Task file exists in `.claude/project/phase-XX-*/tasks/`
+1. Task file exists in `specification/phase-XX-*/tasks/`
 2. Task is not already in_progress or completed
 3. All dependencies are completed (status: ✅)
 
@@ -154,7 +154,7 @@ On success (MAIN mode):
 ```
 Started task task-02: Shared Kernel
 Mode: MAIN (commits go directly to main)
-Task file: .claude/project/phase-01-foundation/tasks/task-02-shared-kernel.md
+Task file: specification/phase-01-foundation/tasks/task-02-shared-kernel.md
 
 Task scope:
 - [ ] Implement Entity base class
@@ -166,7 +166,7 @@ On success (BRANCH mode):
 Started task task-02: Shared Kernel
 Mode: FEATURE_BRANCH
 Branch: phase-01/task-02-shared-kernel
-Task file: .claude/project/phase-01-foundation/tasks/task-02-shared-kernel.md
+Task file: specification/phase-01-foundation/tasks/task-02-shared-kernel.md
 
 Task scope:
 - [ ] Implement Entity base class

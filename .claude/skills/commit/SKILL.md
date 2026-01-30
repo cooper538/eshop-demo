@@ -60,7 +60,7 @@ If nothing is staged:
 
 Otherwise, try to auto-detect from (in order):
 1. **Branch name** (if not on main): Look for patterns like `phase-01/task-02`, `01-02`
-2. **Task files**: Find task with `🔵 in_progress` status in `.claude/project/phase-*/tasks/`
+2. **Task files**: Find task with `🔵 in_progress` status in `specification/phase-*/tasks/`
 3. **Recent commits**: Check if recent commits follow the `[XX-YY]` format and extract the latest
 
 If detection fails, use AskUserQuestion:

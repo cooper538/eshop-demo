@@ -34,7 +34,7 @@ Manage git worktrees for parallel feature development.
 Create a new worktree in a sibling directory.
 
 **Task-Aware Naming**: When name matches `task-XX`:
-1. Detect current phase from `.claude/project/`
+1. Detect current phase from `specification/`
 2. Generate branch: `phase-XX/task-YY-description`
 3. Ask for description if not provided
 

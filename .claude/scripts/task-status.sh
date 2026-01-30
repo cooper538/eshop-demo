@@ -41,7 +41,7 @@ for arg in "$@"; do
 done
 
 REPO_ROOT=$(get_repo_root)
-PROJECT_DIR="$REPO_ROOT/.claude/project"
+PROJECT_DIR="$REPO_ROOT/specification"
 
 # Get current branch info for "YOU ARE HERE" marker
 CURRENT_BRANCH=$(get_current_branch)

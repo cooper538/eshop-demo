@@ -74,7 +74,7 @@ After presenting a decision:
 ## Reference Implementations
 
 Consult `.inspiration/` for reference implementations and patterns.
-Consult `.claude/project/high-level-specs/` for project-specific patterns.
+Consult `specification/high-level-specs/` for project-specific patterns.
 
 ## Anti-Patterns to Avoid
 

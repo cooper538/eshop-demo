@@ -39,7 +39,7 @@ if [[ -z "$TASK_INPUT" ]]; then
 fi
 
 REPO_ROOT=$(get_repo_root)
-PROJECT_DIR="$REPO_ROOT/.claude/project"
+PROJECT_DIR="$REPO_ROOT/specification"
 
 #######################################
 # Output result in appropriate format

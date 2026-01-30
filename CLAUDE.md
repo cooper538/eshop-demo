@@ -17,7 +17,10 @@
 All customizations in `.claude/` directory:
 - `agents/` - Custom agents
 - `skills/` - Custom slash commands
-- `project/` - Tasks, notes, specs
+
+Project specifications are in `specification/` (root level):
+- `phase-XX-*/` - Phase definitions and tasks
+- `high-level-specs/` - Architecture and design documents
 
 ## Task Workflow
 
@@ -99,7 +102,7 @@ When user says "pokračuj" or "continue":
 
 ### Implementation Notes
 
-File `.claude/project/implementation-notes.md` is used for brief task notes.
+File `specification/implementation-notes.md` is used for brief task notes.
 
 **Format**: `[XX-YY] task name - note`
 - `XX` = phase number

@@ -17,7 +17,7 @@ import { join, basename, relative } from 'path';
 const args = process.argv.slice(2);
 const jsonOutput = args.includes('--json');
 const markdownOutput = args.includes('--markdown');
-const searchPath = args.find(arg => !arg.startsWith('--')) || '.claude/project';
+const searchPath = args.find(arg => !arg.startsWith('--')) || 'specification';
 
 /**
  * Recursively find all task-*.md files

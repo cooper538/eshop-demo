@@ -94,7 +94,7 @@ dotnet csharpier format .
 
 ## Documentation
 
-Detailed specs available in `.claude/project/high-level-specs/`:
+Detailed specs available in `specification/high-level-specs/`:
 - Architecture overview
 - Service interfaces
 - Communication patterns

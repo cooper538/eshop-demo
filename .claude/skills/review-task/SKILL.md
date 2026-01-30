@@ -39,7 +39,7 @@ Changed files vs main:
 **Locate task file:**
 ```bash
 # Find current phase from branch or recent work
-PHASE_DIR=$(ls -d .claude/project/phase-*/ | tail -1)
+PHASE_DIR=$(ls -d specification/phase-*/ | tail -1)
 TASK_FILE=$(ls "$PHASE_DIR/tasks/task-${TASK_NUM}"*.md 2>/dev/null | head -1)
 ```
 

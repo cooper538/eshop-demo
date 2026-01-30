@@ -56,7 +56,7 @@ Present phases in this format:
 
 ## File Output (After Approval)
 
-1. Create folder: `.claude/project/phase-XX-name/`
+1. Create folder: `specification/phase-XX-name/`
 2. Create `phase.md` inside with this template:
 
 ```markdown

@@ -67,7 +67,7 @@ Present tasks in this format:
 
 ## File Output (After Approval)
 
-1. Create folder: `.claude/project/phase-XX-name/tasks/`
+1. Create folder: `specification/phase-XX-name/tasks/`
 2. Create task files: `task-XX-name.md`
 
 Template:
@@ -108,7 +108,7 @@ Template:
 
 1. Run `/sort-tasks` skill on the phase folder:
    ```
-   /sort-tasks .claude/project/phase-XX-name/tasks/
+   /sort-tasks specification/phase-XX-name/tasks/
    ```
 
 2. Include the topological sort result in your final summary

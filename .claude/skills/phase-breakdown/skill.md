@@ -36,12 +36,12 @@ Extract phase number and mode from arguments:
 Find the phase specification file:
 
 ```bash
-find .claude/project -type d -name "phase-$PHASE_NUM*" | head -1
+find specification -type d -name "phase-$PHASE_NUM*" | head -1
 ```
 
 Expected structure:
 ```
-.claude/project/phase-03-name/
+specification/phase-03-name/
 ├── phase.md           # Phase specification
 └── tasks/             # Task files (may not exist yet)
 ```
@@ -51,7 +51,7 @@ If phase file not found, report error and exit.
 ### Step 3: Check Existing Tasks
 
 ```bash
-ls .claude/project/phase-$PHASE_NUM-*/tasks/*.md 2>/dev/null
+ls specification/phase-$PHASE_NUM-*/tasks/*.md 2>/dev/null
 ```
 
 - **Default mode**: If `tasks/` exists with files, ERROR and suggest `--refresh`
@@ -130,7 +130,7 @@ After approval, create:
 After creating tasks, run the sort-tasks skill:
 
 ```bash
-node .claude/scripts/sort-tasks.mjs .claude/project/phase-XX-name/tasks/
+node .claude/scripts/sort-tasks.mjs specification/phase-XX-name/tasks/
 ```
 
 Include the execution order in the final report.
@@ -217,7 +217,7 @@ When `--refresh` is passed:
 ```
 User: /phase-breakdown 03
 
-Claude: 📂 Found phase: .claude/project/phase-03-product/phase.md
+Claude: 📂 Found phase: specification/phase-03-product/phase.md
 
 Reading phase specification...
 - Objective: Implement Product service core
@@ -245,7 +245,7 @@ User: Approved
 
 Claude: ✅ Phase 03 breakdown complete!
 
-Created 4 tasks in .claude/project/phase-03-product/tasks/
+Created 4 tasks in specification/phase-03-product/tasks/
 
 Execution order (topological):
 1. task-01 - Domain Model
