@@ -33,7 +33,10 @@ public sealed class DbInitializer<TContext> : BackgroundService
 
         try
         {
-            await context.Database.MigrateAsync(stoppingToken);
+            var strategy = context.Database.CreateExecutionStrategy();
+            await strategy.ExecuteAsync(async () =>
+                await context.Database.MigrateAsync(stoppingToken)
+            );
             _logger.LogInformation(
                 "Migrations applied successfully for {ContextName}",
                 contextName

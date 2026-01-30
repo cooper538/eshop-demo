@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
-    <PackageReference Include="NetEscapades.Configuration.Yaml" />
   </ItemGroup>
 
   <ItemGroup>
