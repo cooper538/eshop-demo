@@ -1,77 +1,141 @@
 # EShop Demo
 
-Demonstration of .NET microservices architecture showcasing gRPC communication, event-driven patterns, and clean architecture principles.
+> 🎯 Demonstrational microservices project
+> 🏗️ Clean Architecture + DDD + CQRS
+> 🤖 Built with Specification-Driven AI Development
+
+## What is this?
+
+Reference implementation of .NET 10 microservices showcasing modern architectural patterns
+and AI-assisted development methodology.
 
 ## Tech Stack
 
 | Category | Technology |
 |----------|------------|
-| Framework | .NET 10 |
-| RPC | gRPC (Grpc.AspNetCore) |
-| Messaging | MassTransit + RabbitMQ |
-| Database | PostgreSQL + EF Core 10 |
-| API Gateway | YARP |
+| Framework | .NET 10, ASP.NET Core |
 | Orchestration | .NET Aspire 9 |
+| Database | PostgreSQL + EF Core 10 |
+| Messaging | MassTransit + RabbitMQ |
+| RPC | gRPC |
+| API Gateway | YARP |
 | Resilience | Polly 8.x |
+
+## Quick Start
+
+```bash
+# Prerequisites: .NET 10 SDK, Docker
+
+dotnet run --project src/AppHost
+# Aspire Dashboard opens automatically with links to all services
+```
 
 ## Architecture
 
 ```
-┌─────────────────┐
-│   API Gateway   │  ← YARP reverse proxy
-└────────┬────────┘
-         │ HTTP/REST
-    ┌────┴────┐
-    ▼         ▼
-┌───────┐     ┌───────┐
-│Product│◄───►│ Order │
-└───┬───┘gRPC └───┬───┘
-    │             │
-    └──────┬──────┘
-           │ Integration Events
-           ▼
-     ┌──────────┐
-     │ RabbitMQ │
-     └────┬─────┘
-          ▼
-    ┌────────────┐
-    │Notification│
-    └────────────┘
+                    ┌─────────────────┐
+                    │   API Gateway   │  ← YARP reverse proxy
+                    └────────┬────────┘
+                             │ HTTP/REST
+                        ┌────┴────┐
+                        ▼         ▼
+                    ┌───────┐   ┌───────┐
+                    │Product│◄─►│ Order │
+                    └───┬───┘   └───┬───┘
+                        │  gRPC     │
+                        └─────┬─────┘
+                              │ Integration Events
+                              ▼
+                        ┌──────────┐
+                        │ RabbitMQ │
+                        └────┬─────┘
+                             ▼
+           ┌────────────┐         ┌───────────┐
+           │Notification│         │ Analytics │
+           └────────────┘         └───────────┘
 ```
+
+### Services
+
+| Service | Responsibility | Communication |
+|---------|---------------|---------------|
+| **Product** | Catalog management, inventory | REST API + gRPC server |
+| **Order** | Order lifecycle, checkout | REST API + gRPC client |
+| **Notification** | Event-driven email notifications | MassTransit consumer |
+| **Analytics** | Business metrics aggregation | MassTransit consumer |
+| **Gateway** | Request routing, rate limiting | YARP reverse proxy |
+
+## Key Patterns Demonstrated
+
+### Architecture
+- **Clean Architecture** - Domain → Application → Infrastructure → API layers
+- **DDD** - Aggregates, entities, value objects, domain events
+- **CQRS** - Separate command/query handlers via MediatR
+
+### Reliability
+- **Outbox Pattern** - Reliable event publishing with transactional guarantees
+- **Inbox Pattern** - Idempotent message consumption, exactly-once processing
+- **Distributed Tracing** - CorrelationId propagation across HTTP, gRPC, messaging
+
+### Communication
+- **Synchronous** - gRPC for Order → Product stock checks
+- **Asynchronous** - MassTransit + RabbitMQ for integration events
 
 ## Project Structure
 
 ```
 src/
+├── AppHost/                      # .NET Aspire orchestration
+├── ServiceDefaults/              # Shared Aspire configuration
 ├── Common/
-│   ├── EShop.SharedKernel/      # DDD building blocks (zero deps)
-│   ├── EShop.Contracts/         # Integration events, shared DTOs
-│   ├── EShop.Grpc/              # Proto definitions
-│   ├── EShop.Common/            # Shared infrastructure
-│   └── EShop.ServiceClients/    # gRPC client abstraction
+│   ├── EShop.SharedKernel/       # DDD building blocks (zero deps)
+│   ├── EShop.Contracts/          # Integration events, shared DTOs
+│   ├── EShop.Grpc/               # Proto definitions
+│   └── EShop.ServiceClients/     # gRPC client abstraction
 └── Services/
-    ├── Gateway/                 # YARP API Gateway
-    ├── Product/                 # Product catalog, inventory
-    ├── Order/                   # Order lifecycle
-    └── Notification/            # Notification worker
+    ├── Gateway/                  # YARP API Gateway
+    ├── Product/                  # Product catalog + inventory
+    ├── Order/                    # Order lifecycle
+    ├── Notification/             # Notification worker
+    └── Analytics/                # Business analytics
 ```
 
-## Getting Started
+## Specification-Driven AI Development
 
-### Prerequisites
+This project demonstrates a novel approach where **AI acts as senior developer
+guided by structured specifications**.
 
-- .NET 10 SDK
-- Docker (for RabbitMQ, PostgreSQL)
-
-### Run with Aspire
-
-```bash
-dotnet run --project src/AppHost
+Instead of ad-hoc coding, each feature follows:
+```
+Specification → AI Implementation → Human Review → Commit
 ```
 
-The Aspire dashboard opens automatically with links to all services.
+**Key benefits:**
+- Consistent architecture across entire codebase
+- Full traceability from specs to code
+- Reproducible development workflow
 
-### Build & Test
+→ [Learn more about this methodology](docs/spec-driven-development.md)
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [Architecture](docs/architecture.md) | Detailed patterns, services, design decisions |
+| [Spec-Driven Development](docs/spec-driven-development.md) | AI-assisted development methodology |
+| [Code Guidelines](docs/code-guidelines.md) | Project-specific C# standards |
+| [Aspire Integration](docs/aspire-integration.md) | Service orchestration guide |
+
+## Intentionally Omitted
+
+This is a demonstration project focused on architectural patterns.
+The following were intentionally left out:
+
+- **Comprehensive tests** - Unit/integration test suites not fully implemented
+- **Production deployment** - No K8s manifests, Terraform, or CI/CD pipelines
+- **Security hardening** - Authentication/authorization simplified
+
+## Commands
 
 ```bash
 # Build
@@ -82,23 +146,10 @@ dotnet test EShopDemo.sln
 
 # Format
 dotnet csharpier format .
+
+# Run all services
+dotnet run --project src/AppHost
 ```
-
-## Key Patterns
-
-- **DDD** - Aggregates, Domain Events, Value Objects
-- **Clean Architecture** - Domain → Application → Infrastructure → API
-- **CQRS** - Separated Commands/Queries with MediatR
-- **Outbox/Inbox** - Reliable event publishing and idempotent consumers
-- **gRPC** - Synchronous inter-service communication
-
-## Documentation
-
-Detailed specs available in `specification/high-level-specs/`:
-- Architecture overview
-- Service interfaces
-- Communication patterns
-- Testing strategies
 
 ## License
 
