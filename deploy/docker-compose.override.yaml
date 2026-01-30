@@ -1,0 +1,35 @@
+# Override file for local development builds
+# This file is automatically merged with docker-compose.yaml when running:
+#   docker compose up
+#   docker compose build
+
+services:
+  migration-service:
+    build:
+      context: ..
+      dockerfile: src/Services/DatabaseMigration/Dockerfile
+
+  product-service:
+    build:
+      context: ..
+      dockerfile: src/Services/Products/Products.API/Dockerfile
+
+  order-service:
+    build:
+      context: ..
+      dockerfile: src/Services/Order/Order.API/Dockerfile
+
+  notification-service:
+    build:
+      context: ..
+      dockerfile: src/Services/Notification/Dockerfile
+
+  analytics-service:
+    build:
+      context: ..
+      dockerfile: src/Services/Analytics/Dockerfile
+
+  gateway:
+    build:
+      context: ..
+      dockerfile: src/Services/Gateway/Gateway.API/Dockerfile

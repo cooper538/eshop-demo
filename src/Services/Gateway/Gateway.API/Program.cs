@@ -7,6 +7,11 @@ builder.AddYamlConfiguration("gateway");
 builder.AddServiceDefaults();
 builder.AddSerilog();
 
+builder
+    .Services.AddHealthChecks()
+    .AddServiceHealthCheck("products-api")
+    .AddServiceHealthCheck("order-api");
+
 var settings =
     builder.Configuration.GetSection(GatewaySettings.SectionName).Get<GatewaySettings>()
     ?? new GatewaySettings();

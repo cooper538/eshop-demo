@@ -6,6 +6,8 @@ builder.AddYamlConfiguration("notification");
 builder.AddServiceDefaults();
 builder.AddSerilog();
 
+builder.Services.AddHealthChecks().AddPostgresHealthCheck("notificationdb");
+
 builder.AddNotificationServices();
 
 var host = builder.Build();

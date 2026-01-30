@@ -106,4 +106,4 @@ MIT
 
 ---
 
-Special Thanks to Max Opus
+*Special thanks to Max Opus*

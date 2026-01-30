@@ -91,16 +91,13 @@ public static class ServiceDefaultsExtensions
 
     /// <summary>
     /// Adds default health checks for liveness and readiness probes.
+    /// Returns IHealthChecksBuilder for fluent chaining of additional checks.
     /// </summary>
-    public static IHostApplicationBuilder AddDefaultHealthChecks(
-        this IHostApplicationBuilder builder
-    )
+    public static IHealthChecksBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder)
     {
-        builder
+        return builder
             .Services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
-
-        return builder;
     }
 
     /// <summary>

@@ -9,6 +9,12 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.AddSerilog();
 builder.AddServiceDefaults();
 
+builder
+    .Services.AddHealthChecks()
+    .AddPostgresHealthCheck(ResourceNames.Databases.Order)
+    .AddPostgresHealthCheck(ResourceNames.Databases.Product)
+    .AddPostgresHealthCheck(ResourceNames.Databases.Notification);
+
 builder.AddNpgsqlDbContext<OrderDbContext>(ResourceNames.Databases.Order);
 builder.AddNpgsqlDbContext<ProductDbContext>(ResourceNames.Databases.Product);
 builder.AddNpgsqlDbContext<NotificationDbContext>(ResourceNames.Databases.Notification);

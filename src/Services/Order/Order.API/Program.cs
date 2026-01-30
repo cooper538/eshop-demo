@@ -9,6 +9,11 @@ builder.AddYamlConfiguration("order");
 builder.AddServiceDefaults();
 builder.AddSerilog();
 
+builder
+    .Services.AddHealthChecks()
+    .AddPostgresHealthCheck("orderdb")
+    .AddServiceHealthCheck("products-api");
+
 builder.Services.AddApplication();
 builder.AddInfrastructure();
 builder.AddPresentation();
