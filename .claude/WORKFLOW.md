@@ -42,27 +42,41 @@ Quick guide for working with tasks using Claude Code skills.
 │                                                                 │
 │  /task-status       → See what's done, what's blocking          │
 │       ↓                                                         │
-│  /start-task XX     → Updates status to 🔵 (stays on main)      │
+│  /start-task XX     → Updates status to 🔵, stays on main       │
 │       ↓                                                         │
 │  [DEVELOPMENT]      → Write code, make changes                  │
 │       ↓                                                         │
 │  /commit            → Commit with [XX-YY] type: format          │
 │       ↓                                                         │
-│  /finish-task       → Updates status to ✅                      │
+│  /finish-task       → Updates status to ✅ (no merge needed)    │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
-│            FEATURE_BRANCH / WORKTREE MODE                       │
+│                 FEATURE_BRANCH MODE                             │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  /start-task XX --branch   OR   /worktree add task-XX           │
+│  /start-task XX --branch   → Creates phase-XX/task-YY branch    │
 │       ↓                                                         │
 │  [DEVELOPMENT]      → Write code, make changes                  │
 │       ↓                                                         │
 │  /commit            → Commit with [XX-YY] type: format          │
 │       ↓                                                         │
 │  /finish-task       → Squash merge to main, delete branch       │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    WORKTREE MODE                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  /worktree add task-XX   → Creates worktree + branch            │
+│       ↓                                                         │
+│  [DEVELOPMENT]      → Write code, make changes                  │
+│       ↓                                                         │
+│  /commit            → Commit with [XX-YY] type: format          │
+│       ↓                                                         │
+│  /finish-task       → Squash merge to main (in main repo)       │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -72,12 +86,14 @@ Quick guide for working with tasks using Claude Code skills.
 | Skill | What it does |
 |-------|-------------|
 | `/task-status` | Shows all tasks with status (✅🔵⚪), blocking info, progress |
-| `/start-task XX` | Updates status to 🔵, stays on main (default) |
-| `/start-task XX --branch` | Creates feature branch, updates status to 🔵 |
-| `/finish-task` | MAIN: updates status to ✅; BRANCH: squash merge + status ✅ |
+| `/start-task XX` | Updates status to 🔵, stays on main (MAIN mode - default) |
+| `/start-task XX --branch` | Creates feature branch `phase-XX/task-YY-desc`, updates status to 🔵 |
+| `/finish-task` | MAIN: updates status to ✅; BRANCH/WORKTREE: squash merge + status ✅ |
 | `/commit` | Smart commit with [XX-YY] type: description format |
 | `/sort-tasks` | Shows topological order and entry points |
-| `/worktree add task-XX` | Creates parallel worktree for another task |
+| `/worktree add task-XX` | Creates parallel worktree with feature branch |
+| `/review-task` | Tech lead review of task implementation |
+| `/finish-phase XX` | Manually complete a phase |
 
 ## Quick Start
 

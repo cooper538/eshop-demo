@@ -1,12 +1,13 @@
 #!/bin/bash
 #
 # Start Task Script
-# Validates dependencies, creates branch, and updates task status
+# Validates dependencies, updates task status, optionally creates branch
 #
 # Usage:
-#   start-task.sh 02                              # Task 02 in current phase
+#   start-task.sh 02                              # Task 02 - stays on main (default)
+#   start-task.sh 02 --branch                     # Task 02 - creates feature branch
 #   start-task.sh task-02                         # Explicit task-02
-#   start-task.sh phase-01/task-02-shared-kernel  # Full branch name
+#   start-task.sh phase-01/task-02-shared-kernel  # Full branch name (implies --branch)
 #   start-task.sh --json                          # JSON output
 #
 
@@ -17,12 +18,16 @@ source "$SCRIPT_DIR/lib/git-utils.sh"
 
 # Parse arguments
 JSON_OUTPUT=false
+CREATE_BRANCH=false
 TASK_INPUT=""
 
 for arg in "$@"; do
     case "$arg" in
         --json)
             JSON_OUTPUT=true
+            ;;
+        --branch)
+            CREATE_BRANCH=true
             ;;
         *)
             if [[ -z "$TASK_INPUT" ]]; then
@@ -82,10 +87,11 @@ TASK_NUM=""
 BRANCH_NAME=""
 
 if [[ "$TASK_INPUT" =~ ^phase-([0-9]+)/task-([0-9]+) ]]; then
-    # Full branch name: phase-01/task-02-shared-kernel
+    # Full branch name: phase-01/task-02-shared-kernel (implies --branch)
     PHASE_NUM="${BASH_REMATCH[1]}"
     TASK_NUM="${BASH_REMATCH[2]}"
     BRANCH_NAME="$TASK_INPUT"
+    CREATE_BRANCH=true
 elif [[ "$TASK_INPUT" =~ ^phase-([0-9]+)/([0-9]+)$ ]]; then
     # Shorthand: phase-02/01
     PHASE_NUM="${BASH_REMATCH[1]}"
@@ -156,11 +162,6 @@ if ! BLOCKING_TASKS=$(check_dependencies_completed "$TASK_FILE" 2>&1); then
     fi
 fi
 
-# Generate branch name if not provided
-if [[ -z "$BRANCH_NAME" ]]; then
-    BRANCH_NAME=$(generate_branch_name "$TASK_FILE")
-fi
-
 # Check for uncommitted changes
 if has_uncommitted_changes; then
     WARNINGS=$(echo "$WARNINGS" | jq '. + ["Uncommitted changes in working directory"]')
@@ -169,20 +170,42 @@ if has_uncommitted_changes; then
     fi
 fi
 
-# Check if branch already exists
+# Determine mode and handle branching
 MAIN_BRANCH=$(get_main_branch)
-if git rev-parse --verify "$BRANCH_NAME" >/dev/null 2>&1; then
-    # Branch exists, just checkout
-    git checkout "$BRANCH_NAME" >/dev/null 2>&1
-    if ! $JSON_OUTPUT; then
-        print_color yellow "Switched to existing branch: $BRANCH_NAME"
+MODE="MAIN"
+
+if $CREATE_BRANCH; then
+    MODE="FEATURE_BRANCH"
+
+    # Generate branch name if not provided
+    if [[ -z "$BRANCH_NAME" ]]; then
+        BRANCH_NAME=$(generate_branch_name "$TASK_FILE")
+    fi
+
+    # Check if branch already exists
+    if git rev-parse --verify "$BRANCH_NAME" >/dev/null 2>&1; then
+        # Branch exists, just checkout
+        git checkout "$BRANCH_NAME" >/dev/null 2>&1
+        if ! $JSON_OUTPUT; then
+            print_color yellow "Switched to existing branch: $BRANCH_NAME"
+        fi
+    else
+        # Create new branch from main
+        git checkout -b "$BRANCH_NAME" "$MAIN_BRANCH" >/dev/null 2>&1
+        if ! $JSON_OUTPUT; then
+            print_color green "Created and switched to branch: $BRANCH_NAME"
+        fi
     fi
 else
-    # Create new branch from main
-    git checkout -b "$BRANCH_NAME" "$MAIN_BRANCH" >/dev/null 2>&1
-    if ! $JSON_OUTPUT; then
-        print_color green "Created and switched to branch: $BRANCH_NAME"
+    # MAIN mode - stay on main branch
+    CURRENT_BRANCH=$(get_current_branch)
+    if [[ "$CURRENT_BRANCH" != "$MAIN_BRANCH" ]]; then
+        git checkout "$MAIN_BRANCH" >/dev/null 2>&1
+        if ! $JSON_OUTPUT; then
+            print_color yellow "Switched to $MAIN_BRANCH branch"
+        fi
     fi
+    BRANCH_NAME="$MAIN_BRANCH"
 fi
 
 # Update task status to in_progress
@@ -193,13 +216,15 @@ if $JSON_OUTPUT; then
     jq -n \
         --arg status "success" \
         --arg message "Started task $TASK_ID: $TASK_NAME" \
+        --arg mode "$MODE" \
         --arg branch "$BRANCH_NAME" \
         --arg task_file "$TASK_FILE" \
         --argjson warnings "$WARNINGS" \
-        '{status: $status, message: $message, branch: $branch, task_file: $task_file, warnings: $warnings}'
+        '{status: $status, message: $message, mode: $mode, branch: $branch, task_file: $task_file, warnings: $warnings}'
 else
     echo ""
     print_color green "Started task $TASK_ID: $TASK_NAME"
+    echo "Mode: $MODE ($(if [[ "$MODE" == "MAIN" ]]; then echo "commits go directly to main"; else echo "commits on feature branch"; fi))"
     echo "Branch: $BRANCH_NAME"
     echo "Task file: $TASK_FILE"
     echo ""
