@@ -83,6 +83,7 @@ When user says "pokračuj" or "continue":
 | `/analyze` | Run code analyzers (packages, quality, security) |
 | `/e2e-test` | Run E2E test scenarios against running services |
 | `/review-task` | Tech lead review of task implementation |
+| `/create-skill` | Create a new Claude Code skill |
 
 ### When to Use Feature Branch or Worktree
 
@@ -137,9 +138,14 @@ src/
 │   ├── EShop.SharedKernel/
 │   ├── EShop.Contracts/
 │   ├── EShop.Grpc/
-│   ├── EShop.Common/
+│   ├── EShop.Common.Api/
+│   ├── EShop.Common.Application/
+│   ├── EShop.Common.Infrastructure/
+│   ├── EShop.RoslynAnalyzers/
 │   └── EShop.ServiceClients/
 ├── Services/
+│   ├── Analytics/
+│   ├── DatabaseMigration/
 │   ├── Gateway/
 │   ├── Product/
 │   ├── Order/
