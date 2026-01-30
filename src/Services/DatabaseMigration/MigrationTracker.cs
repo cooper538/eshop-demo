@@ -1,4 +1,4 @@
-namespace EShop.DatabaseMigration;
+﻿namespace EShop.DatabaseMigration;
 
 public sealed class MigrationTracker
 {

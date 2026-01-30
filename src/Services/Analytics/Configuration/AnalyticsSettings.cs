@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using EShop.Common.Application.Configuration;
 
 namespace EShop.AnalyticsService.Configuration;

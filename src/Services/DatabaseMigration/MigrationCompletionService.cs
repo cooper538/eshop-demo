@@ -1,4 +1,4 @@
-namespace EShop.DatabaseMigration;
+﻿namespace EShop.DatabaseMigration;
 
 /// <summary>
 /// Stops the host after all migrations are complete.

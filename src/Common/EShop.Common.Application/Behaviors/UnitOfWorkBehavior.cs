@@ -1,4 +1,4 @@
-using EShop.Common.Application.Cqrs;
+﻿using EShop.Common.Application.Cqrs;
 using MediatR;
 
 namespace EShop.Common.Application.Behaviors;

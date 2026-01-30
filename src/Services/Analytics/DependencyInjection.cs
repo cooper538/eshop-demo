@@ -1,4 +1,4 @@
-using EShop.AnalyticsService.Configuration;
+﻿using EShop.AnalyticsService.Configuration;
 using EShop.AnalyticsService.Consumers;
 using EShop.Common.Infrastructure.Extensions;
 
