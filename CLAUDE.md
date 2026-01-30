@@ -168,6 +168,18 @@ EShopDemo.sln
 | Run all services | `dotnet run --project src/AppHost` |
 | Dashboard | Opens automatically at https://localhost:port |
 
+## Distributed Tracing
+
+All services use CorrelationId for distributed tracing across HTTP, gRPC, and messaging.
+
+| Action | Command |
+|--------|---------|
+| Trace request | `./tools/e2e-test/trace-correlation.sh <correlation-id>` |
+| Trace all logs | `./tools/e2e-test/trace-correlation.sh <correlation-id> --all-logs` |
+| JSON output | `./tools/e2e-test/trace-correlation.sh <correlation-id> --json` |
+
+**Log format (Serilog):** `[{Timestamp:HH:mm:ss} {Level:u3}] [{CorrelationId}] {Message:lj}`
+
 ## Code Standards
 - See `docs/code-guidelines.md`
 - Use CSharpier for formatting (120 char width, 4 spaces)
