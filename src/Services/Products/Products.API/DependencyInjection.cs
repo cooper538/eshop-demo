@@ -38,7 +38,7 @@ public static class DependencyInjection
 
     public static WebApplication MapProductsEndpoints(this WebApplication app)
     {
-        app.UseOpenApiWithSwagger("Products API");
+        app.UseOpenApiWithSwagger("/api/products", "Products API");
         app.MapControllers();
         app.MapGrpcService<ProductGrpcService>();
         return app;

@@ -25,7 +25,7 @@ public static class DependencyInjection
 
     public static WebApplication MapOrderEndpoints(this WebApplication app)
     {
-        app.UseOpenApiWithSwagger("Orders API");
+        app.UseOpenApiWithSwagger("/api/orders", "Orders API");
         app.MapControllers();
         return app;
     }

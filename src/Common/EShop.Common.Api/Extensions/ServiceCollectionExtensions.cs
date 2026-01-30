@@ -47,12 +47,20 @@ public static class ServiceCollectionExtensions
         return app;
     }
 
-    public static WebApplication UseOpenApiWithSwagger(this WebApplication app, string apiName)
+    public static WebApplication UseOpenApiWithSwagger(
+        this WebApplication app,
+        string apiPrefix,
+        string apiName
+    )
     {
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi();
-            app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", apiName));
+            app.MapOpenApi($"{apiPrefix}/swagger/{{documentName}}.json");
+            app.UseSwaggerUI(options =>
+            {
+                options.RoutePrefix = apiPrefix.TrimStart('/') + "/swagger";
+                options.SwaggerEndpoint($"{apiPrefix}/swagger/v1.json", apiName);
+            });
         }
 
         return app;

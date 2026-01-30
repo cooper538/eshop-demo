@@ -115,6 +115,11 @@ public static class DependencyInjection
                         .SetVaryByRouteValue("catch-all")
                         .Tag("products")
             );
+
+            options.AddPolicy(
+                "SwaggerCache",
+                policy => policy.Expire(settings.OutputCache.SwaggerCacheDuration).Tag("swagger")
+            );
         });
 
         return services;
