@@ -17,6 +17,8 @@ public class GatewaySettings
 
 public class RateLimitingSettings
 {
+    public const string FixedWindowPolicyName = "fixed";
+
     public bool Enabled { get; init; } = true;
 
     [Range(1, 10000)]

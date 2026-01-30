@@ -74,11 +74,27 @@ ReverseProxy:
 
   Clusters:
     product-cluster:
+      HttpRequest:
+        ActivityTimeout: "00:00:30"  # 30s request timeout
+      HealthCheck:
+        Active:
+          Enabled: true
+          Interval: "00:00:10"
+          Timeout: "00:00:05"
+          Path: "/health"
       Destinations:
         product-service:
           Address: "http://product-service"
 
     order-cluster:
+      HttpRequest:
+        ActivityTimeout: "00:00:30"  # 30s request timeout
+      HealthCheck:
+        Active:
+          Enabled: true
+          Interval: "00:00:10"
+          Timeout: "00:00:05"
+          Path: "/health"
       Destinations:
         order-service:
           Address: "http://order-service"
