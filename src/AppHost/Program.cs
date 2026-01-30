@@ -33,7 +33,7 @@ var productService = builder
     .WithHttpsEndpoint()
     .WithReference(productDb)
     .WithReference(rabbitmq)
-    .WaitFor(migrationService)
+    .WaitForCompletion(migrationService)
     .WaitFor(rabbitmq);
 
 var orderService = builder
@@ -43,14 +43,14 @@ var orderService = builder
     .WithReference(orderDb)
     .WithReference(rabbitmq)
     .WithReference(productService)
-    .WaitFor(migrationService)
+    .WaitForCompletion(migrationService)
     .WaitFor(rabbitmq);
 
 var notificationService = builder
     .AddProject<Projects.EShop_NotificationService>("notification-service")
     .WithReference(notificationDb)
     .WithReference(rabbitmq)
-    .WaitFor(migrationService)
+    .WaitForCompletion(migrationService)
     .WaitFor(rabbitmq);
 
 var analyticsService = builder
@@ -64,6 +64,8 @@ var gateway = builder
     .WithHttpsEndpoint()
     .WithReference(productService)
     .WithReference(orderService)
+    .WaitFor(productService)
+    .WaitFor(orderService)
     .WithExternalHttpEndpoints();
 
 builder.Build().Run();
