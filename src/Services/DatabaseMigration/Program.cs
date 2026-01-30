@@ -1,4 +1,4 @@
-using EShop.DatabaseMigration;
+﻿using EShop.DatabaseMigration;
 using EShop.NotificationService.Data;
 using EShop.ServiceDefaults;
 using Order.Infrastructure.Data;

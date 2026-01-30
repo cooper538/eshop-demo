@@ -1,4 +1,4 @@
-using EShop.Contracts.IntegrationEvents.Order;
+﻿using EShop.Contracts.IntegrationEvents.Order;
 using MassTransit;
 
 namespace EShop.AnalyticsService.Consumers;

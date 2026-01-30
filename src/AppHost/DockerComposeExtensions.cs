@@ -1,4 +1,4 @@
-namespace EShop.AppHost;
+﻿namespace EShop.AppHost;
 
 public record AppResources(
     IResourceBuilder<PostgresServerResource> Postgres,

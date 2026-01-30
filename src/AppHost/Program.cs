@@ -1,4 +1,4 @@
-using EShop.AppHost;
+﻿using EShop.AppHost;
 using EShop.ServiceDefaults;
 
 var builder = DistributedApplication.CreateBuilder(args);

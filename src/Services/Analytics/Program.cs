@@ -1,4 +1,4 @@
-using EShop.AnalyticsService;
+﻿using EShop.AnalyticsService;
 
 var builder = Host.CreateApplicationBuilder(args);
 

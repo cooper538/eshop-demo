@@ -1,4 +1,4 @@
-using EShop.Common.Application.Data;
+﻿using EShop.Common.Application.Data;
 using EShop.Common.Application.Events;
 using EShop.Common.Application.Exceptions;
 using MediatR;
