@@ -1,8 +1,8 @@
 # EShop Demo
 
-> 🎯 Demonstrational microservices project
-> 🏗️ Clean Architecture + DDD + CQRS
-> 🤖 Built with Specification-Driven AI Development
+> Demonstrational microservices project
+> Clean Architecture + DDD + CQRS
+> Built with Specification-Driven AI Development
 
 ## What is this?
 
