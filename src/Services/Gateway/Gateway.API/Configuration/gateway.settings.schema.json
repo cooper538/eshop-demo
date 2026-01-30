@@ -99,6 +99,13 @@
               "maximum": 1440,
               "default": 2,
               "description": "Cache duration for product detail endpoint in minutes"
+            },
+            "SwaggerCacheMinutes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1440,
+              "default": 1440,
+              "description": "Cache duration for Swagger/OpenAPI endpoints in minutes (default 24h)"
             }
           }
         }

@@ -23,9 +23,23 @@ Gateway:
   OutputCache:
     ProductsListCacheMinutes: 5
     ProductDetailCacheMinutes: 2
+    SwaggerCacheMinutes: 1440  # 24h
 
 ReverseProxy:
   Routes:
+    # Swagger/OpenAPI routes (cached 24h)
+    products-swagger-route:
+      ClusterId: "product-cluster"
+      OutputCachePolicy: "SwaggerCache"
+      Match:
+        Path: "/api/products/swagger/{**catch-all}"
+
+    orders-swagger-route:
+      ClusterId: "order-cluster"
+      OutputCachePolicy: "SwaggerCache"
+      Match:
+        Path: "/api/orders/swagger/{**catch-all}"
+
     # GET /api/products - cached 5 min
     products-list-route:
       ClusterId: "product-cluster"
