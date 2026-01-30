@@ -16,6 +16,7 @@ Execute end-to-end test scenarios against running microservices with automatic d
 /e2e-test unhappy            # Unhappy path: out of stock, invalid data
 /e2e-test cancel             # Cancel order flow
 /e2e-test debug              # Just show service status and debug info
+/e2e-test trace <corr-id>    # Trace request across services by CorrelationId
 /e2e-test <custom scenario>  # Describe what you want to test
 ```
 
@@ -100,6 +101,26 @@ Based on `$ARGUMENTS`, plan the test scenario:
 4. Show message queue status (RabbitMQ)
 5. Show gRPC connectivity status
 6. Check service discovery configuration
+
+#### `trace <correlation-id>` - Distributed Request Tracing
+1. Run `./tools/e2e-test/trace-correlation.sh <correlation-id>`
+2. Display chronologically sorted logs from all services
+3. Highlight errors and warnings
+4. Show service flow visualization
+
+**Options:**
+- `--all-logs` - Search all log files, not just latest
+- `--json` - Output as JSON for further processing
+
+**Example:**
+```bash
+/e2e-test trace 228617a4-175a-4384-a8e2-ade916a78c3f
+```
+
+**Output shows:**
+- Service-colored log entries (gateway=cyan, order=green, product=yellow, etc.)
+- Chronological order across all services
+- Error highlighting in red, warnings in yellow
 
 ### Phase 3: Execution
 
@@ -402,6 +423,7 @@ DELETE FROM "ProcessedMessage";
 | `./tools/e2e-test/api.sh` | API call helper |
 | `./tools/e2e-test/rabbitmq.sh` | RabbitMQ diagnostics |
 | `./tools/e2e-test/grpc.sh` | gRPC diagnostics |
+| `./tools/e2e-test/trace-correlation.sh` | Distributed tracing by CorrelationId |
 | `./tools/e2e-test/cleanup.sh` | Test cleanup (default: all) |
 | `./tools/reset-db.sh` | Database reset script |
 | `src/Services/*/logs/*.log` | Service log files |

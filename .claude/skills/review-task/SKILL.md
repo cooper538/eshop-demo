@@ -163,6 +163,7 @@ Structure the output as follows:
 - `$ARGUMENTS` - Task number or flags
   - `02` - specific task number
   - `--quick` - skip web research, just code review
+  - `--trace <correlation-id>` - aggregate logs across services by CorrelationId
 
 ## Review Depth Levels
 
@@ -170,6 +171,43 @@ Structure the output as follows:
 |------|---------------|------------|--------------|
 | (default) | Full | Yes | Comprehensive |
 | `--quick` | Full | Yes | Skip |
+
+## Log Trace Mode (--trace)
+
+When debugging issues during review, use the `--trace` flag to aggregate logs across all services by CorrelationId.
+
+**Usage:**
+```bash
+/review-task --trace 228617a4-175a-4384-a8e2-ade916a78c3f
+```
+
+**What it does:**
+1. Searches all service log files (gateway, order, product, notification, analytics)
+2. Finds all entries matching the CorrelationId
+3. Sorts entries chronologically across services
+4. Displays a unified trace of the request flow
+
+**Log format (Serilog):**
+```
+[{Timestamp:HH:mm:ss} {Level:u3}] [{CorrelationId}] {Message:lj}
+```
+
+Example output:
+```
+[08:54:42 INF] [228617a4-...] Proxying to http://localhost/api/orders
+[08:54:42 INF] [228617a4-...] Creating order for customer...
+[08:54:42 INF] [228617a4-...] Reserving stock via gRPC...
+[08:54:43 ERR] [228617a4-...] gRPC error in ReserveStock
+```
+
+**Tool script:**
+```bash
+./tools/e2e-test/trace-correlation.sh <correlation-id> [--all-logs] [--json]
+```
+
+Options:
+- `--all-logs` - Search all log files, not just latest per service
+- `--json` - Output as JSON for programmatic use
 
 ## Output Example
 
