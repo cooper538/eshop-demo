@@ -16,9 +16,38 @@ Implement gRPC server for Product Service internal API, mapping gRPC requests to
 - [x] Implement ReserveStock method (maps to ReserveStockCommand)
 - [x] Implement ReleaseStock method (maps to ReleaseStockCommand)
 - [x] Map gRPC messages to domain types correctly
-- [x] Serialize decimal Price as string for precision
+- [x] Serialize decimal Price as string for precision (InvariantCulture)
+- [x] Implement ATOMIC validation in GetProducts (NOT_FOUND if any missing)
 - [x] Register gRPC service in Program.cs (app.MapGrpcService)
-- [x] Add GrpcExceptionInterceptor for error handling
+
+## Implementation Details
+
+**File**: `Products.API/Grpc/ProductGrpcService.cs`
+
+**Method Mapping**:
+| gRPC Method | MediatR Handler |
+|-------------|-----------------|
+| GetProducts | GetProductsBatchQuery |
+| ReserveStock | ReserveStockCommand |
+| ReleaseStock | ReleaseStockCommand |
+
+**ATOMIC Validation (GetProducts)**:
+```csharp
+var missingIds = requestedIds.Where(id => !foundIds.Contains(id)).ToList();
+if (missingIds.Count > 0)
+{
+    throw new RpcException(new Status(StatusCode.NotFound, $"Products not found: {string.Join(", ", missingIds)}"));
+}
+```
+
+**Request Validators** (GrpcValidationInterceptor):
+- `GetProductsRequestValidator` - validates product_ids format
+- `ReserveStockRequestValidator` - validates order_id and items
+- `ReleaseStockRequestValidator` - validates order_id
+
+**Design Decision**:
+- CA1062 suppressed - gRPC framework guarantees non-null request/context
+- Input validation delegated to GrpcValidationInterceptor
 
 ## Related Specs
 - [product-service-interface.md](../../high-level-specs/product-service-interface.md) (Section 3.6: Server Implementation)

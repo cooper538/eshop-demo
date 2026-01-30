@@ -1,10 +1,14 @@
 # Task 02: Architecture Tests
 
-## Summary
-Implementace architektonických testů pomocí NetArchTest.Rules pro zajištění dodržování Clean Architecture a DDD principů v celém projektu.
+## Metadata
+| Key | Value |
+|-----|-------|
+| ID | task-02 |
+| Status | ✅ completed |
+| Dependencies | - |
 
-## Status
-- [x] Completed
+## Summary
+Architecture tests using NetArchTest.Rules ensuring Clean Architecture and DDD compliance across the entire project.
 
 ## Motivation
 

@@ -11,22 +11,22 @@
 Unit tests for EShop.SharedKernel DDD building blocks (Entity, ValueObject, Guard).
 
 ## Scope
-- [ ] Test `Entity<TId>` base class
+- [ ] Test `Entity` base class (uses `Guid Id`)
   - [ ] Equality based on Id
   - [ ] GetHashCode consistency
-  - [ ] Domain events collection
-- [ ] Test `AggregateRoot<TId>`
-  - [ ] Domain event registration
+- [ ] Test `AggregateRoot` (extends Entity)
+  - [ ] Domain event registration via `AddDomainEvent()`
   - [ ] ClearDomainEvents behavior
+  - [ ] Version property for optimistic locking
 - [ ] Test `ValueObject` base class
-  - [ ] Equality based on components
+  - [ ] Equality based on components (`GetEqualityComponents()`)
   - [ ] GetHashCode consistency
   - [ ] Null handling
 - [ ] Test `Guard` utility class
-  - [ ] Guard.Against.Null
-  - [ ] Guard.Against.NullOrEmpty
-  - [ ] Guard.Against.NegativeOrZero
-  - [ ] Guard.Against.OutOfRange
+  - [ ] Guard.Against.Null<T>
+  - [ ] Guard.Against.NullOrEmpty (string)
+  - [ ] Guard.Against.NegativeOrZero (decimal)
+  - [ ] Guard.Against.Negative (decimal)
 
 ## Related Specs
 - → [unit-testing.md](../../high-level-specs/unit-testing.md) (Section: Test Organization)

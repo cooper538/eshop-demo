@@ -11,14 +11,61 @@
 Integrate IProductServiceClient.ReleaseStockAsync in CancelOrderCommandHandler to release reserved stock when cancelling orders.
 
 ## Scope
-- [ ] Inject IProductServiceClient into CancelOrderCommandHandler
-- [ ] Call ReleaseStockAsync for each order item when order is cancelled
-- [ ] Handle release failures gracefully (log and continue, don't fail cancellation)
-- [ ] Consider idempotency for retry scenarios
-- [ ] Add unit tests for release success/failure scenarios
+- [x] Inject IProductServiceClient into CancelOrderCommandHandler
+- [x] Call ReleaseStockAsync when order is cancelled
+- [x] Handle release failures gracefully (log warning, don't fail cancellation)
+- [x] Implement idempotency (release by orderId, Product Service handles duplicates)
 
-## Reference Implementation
-See `src/Services/Products/Products.Application/Features/Stock/Commands/` for stock command patterns.
+## Implementation
+
+### CancelOrderCommandHandler Flow
+```csharp
+public async Task<CancelOrderResult> Handle(CancelOrderCommand request, CancellationToken ct)
+{
+    var order = await _dbContext.Orders.FirstOrDefaultAsync(o => o.Id == request.OrderId, ct);
+
+    if (order is null)
+        throw NotFoundException.For<OrderEntity>(request.OrderId);
+
+    try
+    {
+        order.Cancel(request.Reason, _dateTimeProvider.UtcNow);
+    }
+    catch (InvalidOrderStateException ex)
+    {
+        return new CancelOrderResult(order.Id, order.Status.ToString(), Success: false, Message: ex.Message);
+    }
+
+    // Release stock - graceful degradation (don't fail cancellation)
+    await ReleaseStockAsync(order.Id, ct);
+
+    return new CancelOrderResult(order.Id, order.Status.ToString(), Success: true);
+}
+
+private async Task ReleaseStockAsync(Guid orderId, CancellationToken ct)
+{
+    try
+    {
+        var result = await _productServiceClient.ReleaseStockAsync(new ReleaseStockRequest(orderId), ct);
+        if (!result.Success)
+            _logger.LogWarning("Failed to release stock for order {OrderId}: {Reason}", orderId, result.FailureReason);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error releasing stock for order {OrderId}", orderId);
+    }
+}
+```
+
+### Key Design Decisions
+- **Graceful degradation**: Stock release failure doesn't fail order cancellation
+- **Idempotency**: Uses orderId for release - Product Service handles duplicate releases
+- **Logging**: Warnings for business failures, errors for exceptions
+
+### Key Files
+- `src/Services/Order/Order.Application/Commands/CancelOrder/CancelOrderCommandHandler.cs`
+- `src/Common/EShop.Contracts/ServiceClients/Product/ReleaseStockRequest.cs`
+- `src/Common/EShop.Contracts/ServiceClients/Product/StockReleaseResult.cs`
 
 ## Related Specs
 - [grpc-communication.md](../../high-level-specs/grpc-communication.md) (Section: Stock Operations)
@@ -26,4 +73,4 @@ See `src/Services/Products/Products.Application/Features/Stock/Commands/` for st
 
 ---
 ## Notes
-(Updated during implementation)
+Stock can also be released via messaging (OrderCancelledEvent) as a backup mechanism.

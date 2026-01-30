@@ -32,6 +32,13 @@ Add internal API layer for gRPC and stock management
 - → [grpc-communication.md](../high-level-specs/grpc-communication.md)
 - → [internal-api-communication.md](../high-level-specs/internal-api-communication.md)
 
+## Implementation Notes
+- StockReservation is managed as child entity of Stock aggregate (not standalone DbSet)
+- Stock operations use IDateTimeProvider for testability
+- Reservation duration is configurable via IStockReservationOptions
+- Expiration job uses MediatR command pattern (ExpireReservationsCommand)
+- LowStockWarningDomainEvent raised when available stock falls below threshold
+
 ---
 ## Notes
 (Updated during implementation)

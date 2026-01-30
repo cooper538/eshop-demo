@@ -8,95 +8,85 @@
 | Dependencies | task-04, task-05, task-06 |
 
 ## Summary
-Create OrdersController with all external API endpoints and configure Program.cs.
+Create OrdersController with all external API endpoints and configure Program.cs with service setup.
 
 ## Scope
 
-### OrdersController
-- [ ] Create `OrdersController` in Order.API/Controllers
-  ```csharp
-  [ApiController]
-  [Route("api/[controller]")]
-  public class OrdersController : ControllerBase
-  ```
+### OrdersController - IMPLEMENTED
+- [x] `OrdersController` in Order.API/Controllers
+  - Route: `api/[controller]`
+  - XML documentation for OpenAPI generation
 
-- [ ] `POST /api/orders` - Create order
+- [x] `GET /api/orders` - List orders with filtering
+  - Query params: customerId (optional), page (default 1), pageSize (default 20)
+  - Returns: `GetOrdersResult`
+
+- [x] `GET /api/orders/{id}` - Get order by ID
+  - Returns 200 OK with `OrderDto` or 404 Not Found
+
+- [x] `POST /api/orders` - Create order
+  - Body: `CreateOrderCommand`
   - Returns 201 Created with Location header
-  - Body: CreateOrderCommand
-  ```csharp
-  [HttpPost]
-  [ProducesResponseType(typeof(CreateOrderResult), StatusCodes.Status201Created)]
-  [ProducesResponseType(StatusCodes.Status400BadRequest)]
-  public async Task<ActionResult<CreateOrderResult>> CreateOrder(CreateOrderCommand command)
-  {
-      var result = await _mediator.Send(command);
-      return CreatedAtAction(nameof(GetOrder), new { id = result.OrderId }, result);
-  }
-  ```
 
-- [ ] `GET /api/orders/{id}` - Get order by ID
-  - Returns 200 OK or 404 Not Found
-  ```csharp
-  [HttpGet("{id:guid}")]
-  [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
-  [ProducesResponseType(StatusCodes.Status404NotFound)]
-  public async Task<ActionResult<OrderDto>> GetOrder(Guid id, CancellationToken ct)
-  ```
+- [x] `POST /api/orders/{id}/cancel` - Cancel order
+  - Body: `CancelOrderRequest` (contains Reason)
+  - Returns 200 OK with `CancelOrderResult`
 
-- [ ] `GET /api/orders` - List orders with filtering
-  - Query params: customerId (optional), page, pageSize
-  ```csharp
-  [HttpGet]
-  [ProducesResponseType(typeof(GetOrdersResult), StatusCodes.Status200OK)]
-  public async Task<ActionResult<GetOrdersResult>> GetOrders(
-      [FromQuery] Guid? customerId,
-      [FromQuery] int page = 1,
-      [FromQuery] int pageSize = 20,
-      CancellationToken ct = default)
-  ```
+### Program.cs Configuration - IMPLEMENTED
+- [x] YAML configuration loading via `AddYamlConfiguration("order")`
+- [x] `AddServiceDefaults()` (Aspire)
+- [x] `AddSerilog()` for logging
+- [x] Health checks (PostgreSQL + Product Service)
+- [x] Application layer registration
+- [x] Infrastructure layer registration
+- [x] Presentation layer registration
+- [x] API defaults middleware
+- [x] Order endpoints mapping
+- [x] Default endpoints mapping
 
-- [ ] `POST /api/orders/{id}/cancel` - Cancel order
-  - Returns 200 OK (with success/failure in body) or 404 Not Found
-  ```csharp
-  [HttpPost("{id:guid}/cancel")]
-  [ProducesResponseType(typeof(CancelOrderResult), StatusCodes.Status200OK)]
-  [ProducesResponseType(StatusCodes.Status404NotFound)]
-  public async Task<ActionResult<CancelOrderResult>> CancelOrder(
-      Guid id,
-      [FromBody] CancelOrderRequest request,
-      CancellationToken ct)
-  {
-      var command = new CancelOrderCommand(id, request.Reason);
-      var result = await _mediator.Send(command, ct);
-      return Ok(result);
-  }
-  ```
+### Presentation Layer DI - IMPLEMENTED
+- [x] `DependencyInjection.cs` with `AddPresentation()` extension
+  - Options validation for `OrderSettings`
+  - **Service clients registration** (Product Service gRPC client)
+  - API defaults, controllers, OpenAPI
 
-### Program.cs Configuration
-- [ ] Configure YAML configuration loading
-- [ ] `builder.AddServiceDefaults()` (Aspire)
-- [ ] `builder.Services.AddControllers()`
-- [ ] `builder.Services.AddOpenApi()` (Swagger)
-- [ ] `builder.Services.AddMediatR()` - scan Application assembly
-- [ ] `builder.Services.AddCommonBehaviors()` (validation, logging, tracking)
-- [ ] `builder.Services.AddValidatorsFromAssemblyContaining<IOrderDbContext>()`
-- [ ] `builder.AddInfrastructure()` (DbContext registration)
-- [ ] `builder.Services.AddErrorHandling()`
-- [ ] `builder.Services.AddCorrelationId()`
-- [ ] Middleware pipeline: UseCorrelationId, UseErrorHandling, MapControllers, MapDefaultEndpoints
+## Actual Implementation Structure
+```
+Order.API/
+├── Configuration/
+│   ├── OrderSettings.cs
+│   └── order.settings.schema.json
+├── Controllers/
+│   └── OrdersController.cs
+├── Properties/
+│   └── launchSettings.json
+├── DependencyInjection.cs
+├── Order.API.csproj
+├── Order.API.json
+├── order.settings.yaml
+├── order.settings.Development.yaml
+├── order.settings.Production.yaml
+└── Program.cs
+```
 
-### AppHost Registration
-- [ ] Add PostgreSQL resource "orderdb" in AppHost (if not exists)
-- [ ] Add "order-api" project reference
-- [ ] Configure service with database reference
+## Key Implementation Details
+
+### Health Checks
+Includes health checks for:
+- PostgreSQL database (`orderdb`)
+- Product Service API (`products-api`)
+
+### Service Clients (beyond original scope)
+- Registers `IProductServiceClient` via `AddServiceClients()`
+- Enables gRPC communication with Product Service
 
 ## Reference Implementation
 See `ProductsController` and `Program.cs` in Products.API
 
 ## Related Specs
-- → [order-service-interface.md](../../high-level-specs/order-service-interface.md) (Section 2: HTTP Endpoints)
-- → [error-handling.md](../../high-level-specs/error-handling.md) (Section 5: Implementation)
+- -> [order-service-interface.md](../../high-level-specs/order-service-interface.md) (Section 2: HTTP Endpoints)
+- -> [error-handling.md](../../high-level-specs/error-handling.md) (Section 5: Implementation)
 
 ---
 ## Notes
-(Updated during implementation)
+Service clients configured for Product Service integration.

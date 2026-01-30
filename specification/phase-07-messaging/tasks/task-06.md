@@ -11,17 +11,23 @@
 Configure MassTransit with Entity Framework Bus Outbox for transactional message publishing in Order Service.
 
 ## Scope
-- [ ] Add `MassTransit.EntityFrameworkCore` package to Order.Infrastructure
-- [ ] Add Outbox entities to `OrderDbContext` (`AddInboxStateEntity`, `AddOutboxMessageEntity`, `AddOutboxStateEntity`)
-- [ ] Create EF migration for Outbox tables
-- [ ] Configure MassTransit in Order.API with `AddEntityFrameworkOutbox<OrderDbContext>` and `UseBusOutbox()`
-- [ ] Configure RabbitMQ connection via Aspire (`GetConnectionString("messaging")`)
-- [ ] Add `UseCorrelationIdFilters()` to MassTransit configuration
-- [ ] Verify AppHost runs and Order Service connects to RabbitMQ
+- [x] Add `MassTransit.EntityFrameworkCore` package to Order.Infrastructure
+- [x] Add Outbox entities to `OrderDbContext` (`AddInboxStateEntity`, `AddOutboxMessageEntity`, `AddOutboxStateEntity`)
+- [x] Create EF migration for Outbox tables
+- [x] Create `MessagingExtensions.AddMessaging<TDbContext>()` helper with Outbox configuration
+- [x] Configure MassTransit in Order.Infrastructure via `AddMessaging<OrderDbContext>()`
+- [x] Configure RabbitMQ connection via Aspire (`GetConnectionString("messaging")`)
+- [x] Add `UseCorrelationIdFilters()` to MassTransit configuration
+- [x] Verify AppHost runs and Order Service connects to RabbitMQ
 
 ## Related Specs
 - → [messaging-communication.md](../../high-level-specs/messaging-communication.md) (Section 5: Outbox Pattern, Section 8.1: Publisher Configuration)
 
 ---
 ## Notes
-(Updated during implementation)
+- Location: `src/Services/Order/Order.Infrastructure/`
+- Outbox configured via reusable `MessagingExtensions.AddMessaging<TDbContext>()` in EShop.Common.Infrastructure
+- Uses PostgreSQL for outbox storage (`o.UsePostgres()`)
+- `UseBusOutbox()` enabled for transactional message publishing
+- Message retry: 1s, 5s, 15s intervals
+- Endpoint prefix: "order" (kebab-case formatter)

@@ -1,11 +1,41 @@
 # Analytics Service - Implementation Specification
 
+> **Note:** This spec describes the original planned implementation with database and inbox pattern.
+> The actual implementation is simplified - see "Actual Implementation" section below.
+
 ## Overview
 
 Analytics service is a Worker service that consumes domain events and logs their processing.
 It follows the same patterns as Notification service but with minimal business logic.
 
 ---
+
+## Actual Implementation (Simplified)
+
+The service was implemented without database/persistence for simplicity:
+
+```
+src/Services/Analytics/
+├── Configuration/
+│   └── AnalyticsSettings.cs
+├── Consumers/
+│   └── OrderConfirmedConsumer.cs    # Simple consumer - logs only
+├── DependencyInjection.cs           # Uses shared AddMessaging extension
+├── Program.cs
+├── analytics.settings.yaml
+├── Dockerfile
+└── EShop.AnalyticsService.csproj
+```
+
+**Key differences from spec:**
+- No database - uses messaging only
+- No Inbox pattern - relies on MassTransit retry
+- Uses `AddMessaging` shared extension from EShop.Common.Infrastructure
+- Consumer just logs the event, no persistence
+
+---
+
+## Original Specification (Below)
 
 ## 1. Project Structure
 

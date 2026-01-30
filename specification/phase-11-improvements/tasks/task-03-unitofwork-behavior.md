@@ -4,11 +4,11 @@
 | Key | Value |
 |-----|-------|
 | ID | task-03 |
-| Status | ⚪ pending |
+| Status | ✅ completed |
 | Dependencies | - |
 
 ## Summary
-Refaktorovat dispatchování domain eventů tak, aby se spouštěly PŘED `SaveChangesAsync`, nikoliv po něm. Tím zajistíme, že všechny změny (z command handleru i domain event handlerů) budou commitnuty v jedné transakci.
+Refactored domain event dispatching to run BEFORE `SaveChangesAsync`. All changes (from command handler and domain event handlers) are committed atomically in one transaction.
 
 ## Motivation
 
@@ -35,39 +35,19 @@ Command Handler
 ## Scope
 
 ### Core Infrastructure
-- [ ] Create `IUnitOfWork` interface
-- [ ] Create `UnitOfWorkBehavior<TRequest, TResponse>` for `ICommand<T>`
-- [ ] Create `UnitOfWorkBehaviorUnit<TRequest, TResponse>` for `ICommand`
-- [ ] Update `DomainEventDispatchHelper` to return bool (for loop detection)
-- [ ] Add inner exception constructor to `ConflictException`
+- [x] Create `UnitOfWorkBehavior<TRequest, TResponse>` for `ICommand<T>`
+- [x] Create `UnitOfWorkBehaviorUnit<TRequest, TResponse>` for `ICommand`
+- [x] Create `UnitOfWorkExecutor` shared executor with loop detection
+- [x] Update `DomainEventDispatchHelper` to support cascading events
 
-### DbContext Changes
-- [ ] Remove `SaveChangesAsync` from `IProductDbContext`
-- [ ] Remove `SaveChangesAsync` from `IOrderDbContext`
-- [ ] Add `IUnitOfWork` interface to `ProductDbContext`
-- [ ] Add `IUnitOfWork` interface to `OrderDbContext`
+### Pipeline Changes
+- [x] Delete `DomainEventDispatchBehavior.cs`
+- [x] Delete `DomainEventDispatchBehaviorUnit.cs`
+- [x] Register UnitOfWork behaviors LAST in pipeline
 
-### Command Handlers (remove SaveChangesAsync)
-- [ ] `CreateProductCommandHandler`
-- [ ] `UpdateProductCommandHandler`
-- [ ] `ReserveStockCommandHandler`
-- [ ] `ReleaseStockCommandHandler`
-- [ ] `ExpireReservationsCommandHandler`
-- [ ] `CreateOrderCommandHandler`
-- [ ] `CancelOrderCommandHandler`
-
-### Event Handlers (remove SaveChangesAsync)
-- [ ] `ProductUpdatedEventHandler`
-
-### Cleanup & Registration
-- [ ] Delete `DomainEventDispatchBehavior.cs`
-- [ ] Delete `DomainEventDispatchBehaviorUnit.cs`
-- [ ] Update `ServiceCollectionExtensions` - register UnitOfWork behaviors
-- [ ] Register `IUnitOfWork` in Products.API/Program.cs
-- [ ] Register `IUnitOfWork` in Order.Infrastructure/DependencyInjection.cs
-
-### Background Job Fix
-- [ ] Add `ConflictException` catch to `StockReservationExpirationJob`
+### Command Handlers (SaveChangesAsync removed)
+- [x] All command handlers no longer call SaveChangesAsync
+- [x] UnitOfWorkExecutor handles atomic commit
 
 ## Key Implementation Details
 
@@ -106,43 +86,22 @@ services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehavior<,>
 services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehaviorUnit<,>));
 ```
 
-## Related Files
+## Implementation
 
-| Action | File |
-|--------|------|
-| CREATE | `EShop.Common/Data/IUnitOfWork.cs` |
-| CREATE | `EShop.Common/Behaviors/UnitOfWorkBehavior.cs` |
-| CREATE | `EShop.Common/Behaviors/UnitOfWorkBehaviorUnit.cs` |
-| DELETE | `EShop.Common/Behaviors/DomainEventDispatchBehavior.cs` |
-| DELETE | `EShop.Common/Behaviors/DomainEventDispatchBehaviorUnit.cs` |
-| MODIFY | `EShop.Common/Behaviors/DomainEventDispatchHelper.cs` |
-| MODIFY | `EShop.Common/Exceptions/ApplicationException.cs` |
-| MODIFY | `EShop.Common/Exceptions/ConflictException.cs` |
-| MODIFY | `EShop.Common/Extensions/ServiceCollectionExtensions.cs` |
-| MODIFY | `Products.Application/Data/IProductDbContext.cs` |
-| MODIFY | `Order.Application/Data/IOrderDbContext.cs` |
-| MODIFY | `Products.Infrastructure/Data/ProductDbContext.cs` |
-| MODIFY | `Order.Infrastructure/Data/OrderDbContext.cs` |
-| MODIFY | All Command Handlers (7 files) |
-| MODIFY | `ProductUpdatedEventHandler.cs` |
-| MODIFY | `Products.API/Program.cs` |
-| MODIFY | `Order.Infrastructure/DependencyInjection.cs` |
-| MODIFY | `StockReservationExpirationJob.cs` |
+### Key Files
+- `src/Common/EShop.Common.Application/Behaviors/UnitOfWorkBehavior.cs`
+- `src/Common/EShop.Common.Application/Behaviors/UnitOfWorkBehaviorUnit.cs`
+- `src/Common/EShop.Common.Application/Behaviors/UnitOfWorkExecutor.cs`
+- `src/Common/EShop.Common.Application/Behaviors/DomainEventDispatchHelper.cs`
 
-## Verification
+### MassTransit Outbox Compatibility
 
-1. `dotnet build EShopDemo.sln` - must pass
-2. `dotnet test EShopDemo.sln` - must pass
-3. Manual test: Create product → verify Stock created via domain event in same transaction
-
-## MassTransit Outbox Compatibility
-
-MassTransit EF Outbox funguje správně i s novým přístupem:
-1. Domain event handler volá `publishEndpoint.Publish(integrationEvent)`
-2. MassTransit zapíše message do OutboxMessage tabulky (v paměti DbContextu)
-3. UnitOfWorkBehavior volá SaveChangesAsync
-4. Entities + OutboxMessages commitnuty atomicky
+MassTransit EF Outbox works correctly with this approach:
+1. Domain event handler calls `publishEndpoint.Publish(integrationEvent)`
+2. MassTransit writes message to OutboxMessage table (in DbContext memory)
+3. UnitOfWorkExecutor calls SaveChangesAsync
+4. Entities + OutboxMessages committed atomically
 
 ---
 ## Notes
-(Updated during implementation)
+Implemented with `UnitOfWorkExecutor` class that handles both ICommand<T> and ICommand behaviors to avoid code duplication.

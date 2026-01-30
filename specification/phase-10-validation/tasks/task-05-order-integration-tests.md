@@ -19,14 +19,14 @@ Integration tests for Order Service API with real PostgreSQL, mocked gRPC, and M
   - [ ] Apply migrations on startup
 - [ ] Test Order API endpoints
   - [ ] POST /orders - create order (stock available → Confirmed)
-  - [ ] POST /orders - create order (stock unavailable → Rejected)
+  - [ ] POST /orders - create order (stock unavailable → 500 error, reservation fails)
   - [ ] GET /orders/{id} - get order
   - [ ] POST /orders/{id}/cancel - cancel order
   - [ ] Validation error responses (400)
   - [ ] Not found responses (404)
 - [ ] Test Order lifecycle
   - [ ] Full lifecycle: Create → Confirm → Cancel
-  - [ ] Rejection flow: Create → Reject
+  - [ ] Note: No separate rejection flow - stock failure throws exception
 - [ ] Test Outbox integration
   - [ ] Verify events published via test harness
   - [ ] OrderConfirmed event on confirmation
@@ -44,3 +44,4 @@ Integration tests for Order Service API with real PostgreSQL, mocked gRPC, and M
 - Mock IProductServiceClient to control stock responses
 - Use MassTransit ITestHarness to verify published events
 - Test Polly retry/circuit breaker behavior if possible
+- **Implementation note**: Stock unavailable = exception thrown (not Order rejection)

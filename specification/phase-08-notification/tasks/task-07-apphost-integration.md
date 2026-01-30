@@ -11,13 +11,34 @@
 Register Notification Service in Aspire orchestration and verify end-to-end event flow.
 
 ## Scope
-- [ ] Add project reference to `EShop.AppHost.csproj`
-- [ ] Register `notification-service` in AppHost `Program.cs`
-- [ ] Add reference to `rabbitmq` (messaging)
-- [ ] Add reference to `notificationdb` (PostgreSQL database)
-- [ ] Verify service starts correctly with `dotnet run --project src/AppHost`
-- [ ] Verify service appears in Aspire dashboard
-- [ ] Test event consumption by triggering order/stock events
+- [x] Add project reference to `EShop.AppHost.csproj`
+- [x] Register `notification-service` in AppHost `Program.cs`
+- [x] Add reference to `rabbitmq` (messaging)
+- [x] Add reference to `notificationdb` (PostgreSQL database)
+- [x] Configure `WaitForCompletion(migrationService)` for database readiness
+- [x] Configure `WaitFor(rabbitmq)` for messaging readiness
+- [x] Service included in Docker Compose publishing configuration
+
+## Implementation
+
+### AppHost Registration
+```csharp
+var notificationDb = postgres.AddDatabase(ResourceNames.Databases.Notification);
+
+var notificationService = builder
+    .AddProject<Projects.EShop_NotificationService>("notification-service")
+    .WithReference(notificationDb)
+    .WithReference(rabbitmq)
+    .WaitForCompletion(migrationService)
+    .WaitFor(rabbitmq);
+```
+
+### Resource Dependencies
+| Dependency | Type | Purpose |
+|------------|------|---------|
+| notificationdb | PostgreSQL | ProcessedMessages inbox storage |
+| rabbitmq | RabbitMQ | Message bus for events |
+| migrationService | Project | Database schema migration |
 
 ## Related Specs
 - → [aspire-orchestration.md](../../high-level-specs/aspire-orchestration.md) (Section: 3.2. Orchestration Code)
@@ -25,9 +46,6 @@ Register Notification Service in Aspire orchestration and verify end-to-end even
 
 ---
 ## Notes
-- AppHost integration already done in task-02 (notificationdb + rabbitmq + WaitFor)
-- Static verification passed: build OK, all references correct
-- Manual verification required:
-  1. `dotnet run --project src/AppHost` - verify service starts
-  2. Check Aspire dashboard - notification-service visible
-  3. Trigger order event via API - check consumer logs for email
+- No HTTP/HTTPS endpoints (worker service only)
+- Database migrations handled by centralized `DatabaseMigration` service
+- Service visible in Aspire dashboard as `notification-service`

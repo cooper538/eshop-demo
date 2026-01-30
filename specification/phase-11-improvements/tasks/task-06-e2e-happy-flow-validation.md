@@ -5,30 +5,42 @@
 |-----|-------|
 | ID | task-06 |
 | Status | ⚪ pending |
-| Dependencies | - |
-| Type | Validation (non-dev) |
+| Dependencies | task-05 |
+| Type | Validation (non-development) |
 
 ## Summary
-Complete E2E validation of all happy flows across the microservices system. This is a verification task, not implementation.
+Complete E2E validation of all happy flows across the microservices system. This is a verification task using `/e2e-test` skill.
 
 ## Scope
 
-### Order Flows (Complete)
-- [ ] Validate Create Order flow (stock reserved → confirmed → notification)
-- [ ] Validate Cancel Order flow (cancelled → stock released → notification)
-- [ ] Validate Order Rejection flow (insufficient stock → rejected → notification)
+### Order Flows
+- [ ] Create Order flow (stock reserved -> confirmed -> notification)
+- [ ] Cancel Order flow (cancelled -> stock released -> notification)
+- [ ] Order Rejection flow (insufficient stock -> rejected -> notification)
 
 ### Stock & Notification Flows
-- [ ] Validate Stock Low Alert flow (stock below threshold → notification)
+- [ ] Stock Low Alert flow (stock below threshold -> notification)
 
 ### Infrastructure Flows
-- [ ] Validate Correlation ID propagation (Gateway → Order → Product → Notification)
+- [ ] Correlation ID propagation (Gateway -> Order -> Product -> Notification)
 
 ### Documentation
-- [ ] Document test results and any issues found
+- [ ] Document test results in this file's Notes section
+
+## How to Execute
+
+1. Start services: `dotnet run --project src/AppHost`
+2. Run validation: `/e2e-test happy`
+3. For specific flows: `/e2e-test cancel`, `/e2e-test trace <correlation-id>`
+4. For manual tests: Follow steps in spec file
 
 ## Related Specs
-- → [task-06-e2e-happy-flow-validation-spec.md](./task-06-e2e-happy-flow-validation-spec.md) (Test scenarios and verification steps)
+- [task-06-e2e-happy-flow-validation-spec.md](./task-06-e2e-happy-flow-validation-spec.md) (Detailed test scenarios)
+
+## Tools
+- `/e2e-test` skill - automated test runner
+- `tools/e2e-test/` - shell scripts for manual testing
+- Aspire Dashboard - logs and traces
 
 ---
 ## Notes
