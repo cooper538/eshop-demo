@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-04 |
-| Status | pending |
+| Status | done |
 | Dependencies | - |
 
 ## Summary
@@ -66,3 +66,4 @@ builder.AddMessaging<ProductDbContext>("product");
 - Built-in `IsDevelopment()` and `IsProduction()` are sufficient
 - Set `ASPNETCORE_ENVIRONMENT=Production` in Container Apps environment variables
 - Optional: `CONTAINER_APP_NAME` env var is set automatically by Container Apps if specific detection needed
+- **DONE**: No code needed - using built-in .NET environment detection methods
