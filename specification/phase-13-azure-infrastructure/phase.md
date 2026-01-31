@@ -12,8 +12,9 @@ Create Infrastructure as Code (Bicep) and CI/CD pipelines for deploying the ESho
 - [ ] Set up `infra/` folder structure with Bicep modules
 - [ ] Create identity.bicep (User-Assigned Managed Identity + RBAC)
 - [ ] Create monitoring.bicep (Log Analytics Workspace)
+- [ ] Create storage.bicep (Storage Account + File Share for RabbitMQ)
 - [ ] Create postgres.bicep (Flexible Server B1ms + databases)
-- [ ] Create service-bus.bicep (Basic tier namespace + queues)
+- [ ] Create rabbitmq.bicep (RabbitMQ on Azure Container Instance)
 - [ ] Create key-vault.bicep (Standard tier + connection string secrets)
 - [ ] Create acr.bicep (Basic tier Container Registry)
 - [ ] Create container-apps.bicep (Environment + 6 Container Apps)
@@ -36,11 +37,12 @@ Create Infrastructure as Code (Bicep) and CI/CD pipelines for deploying the ESho
 
 ## Related Specs
 - -> [azure-infrastructure.md](../high-level-specs/azure-infrastructure.md) (primary reference)
-- -> [messaging-communication.md](../high-level-specs/messaging-communication.md) (Service Bus queue names)
+- -> [messaging-communication.md](../high-level-specs/messaging-communication.md) (RabbitMQ topology)
 
 ---
 ## Notes
-- Target monthly cost: ~$9-17 (active usage), ~$9 (hibernated with PG stopped)
+- Target monthly cost: ~$9-27 (hibernated to active usage)
 - All Container Apps use scale-to-zero (min replicas: 0)
-- PostgreSQL Flexible Server supports stop/start for additional cost savings
+- PostgreSQL and RabbitMQ support stop/start for additional cost savings
 - GitHub Actions uses OIDC (Workload Identity Federation) - no stored secrets
+- **RabbitMQ on ACI** instead of Service Bus - same config as local dev, full MassTransit support

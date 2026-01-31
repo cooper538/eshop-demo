@@ -1,9 +1,9 @@
-# Task 05: gRPC Service Discovery
+# Task 03: gRPC Service Discovery
 
 ## Metadata
 | Key | Value |
 |-----|-------|
-| ID | task-05 |
+| ID | task-03 |
 | Status | pending |
 | Dependencies | - |
 

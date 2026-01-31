@@ -1,14 +1,14 @@
-# Task 07: Service Configuration Updates
+# Task 05: Service Configuration Updates
 
 ## Metadata
 | Key | Value |
 |-----|-------|
-| ID | task-07 |
+| ID | task-05 |
 | Status | pending |
-| Dependencies | task-01, task-02, task-03, task-04, task-05, task-06 |
+| Dependencies | task-01, task-02, task-03, task-04 |
 
 ## Summary
-Update all services to use environment-aware configuration that switches between local (Aspire/RabbitMQ) and Azure (Service Bus/Key Vault) based on environment detection.
+Update all services to use environment-aware configuration that switches between local (Aspire) and Azure (Key Vault/PostgreSQL SSL) based on environment detection. Messaging (RabbitMQ) requires no changes - same config works in both environments.
 
 ## Scope
 - [ ] Update `Product.API/Program.cs` with environment-aware configuration
@@ -34,14 +34,15 @@ if (builder.Environment.IsAzure())
 {
     builder.AddKeyVaultConfiguration();
     builder.AddDatabaseAzure<ProductDbContext>("productdb");
-    builder.AddMessagingAzure<ProductDbContext>("product");
 }
 else
 {
     // Local development with Aspire
     builder.AddNpgsqlDbContext<ProductDbContext>("productdb");
-    builder.AddMessaging<ProductDbContext>("product");
 }
+
+// Messaging works the same in both environments (RabbitMQ)
+builder.AddMessaging<ProductDbContext>("product");
 
 builder.Services.AddProductServices();
 ```

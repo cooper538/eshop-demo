@@ -7,7 +7,7 @@
 | Scope | Azure cloud deployment infrastructure |
 | Target | Scale-to-zero, cost-optimized for demo/portfolio |
 | Region | West Europe |
-| Monthly Cost | ~$9-17 (active usage) |
+| Monthly Cost | ~$9-27 (hibernated to active usage) |
 
 ---
 
@@ -70,13 +70,13 @@ This document describes the Azure infrastructure for deploying the EShop demo mi
                     │                                         │
                     ▼                                         ▼
     ┌───────────────────────────┐              ┌───────────────────────────┐
-    │   PostgreSQL Flexible     │              │    Service Bus (Basic)    │
-    │   Server (B1ms)           │              │    ┌─────────────────┐    │
-    │   ┌─────────┐ ┌─────────┐ │              │    │ order-confirmed │    │
-    │   │productdb│ │ orderdb │ │              │    │ order-rejected  │    │
-    │   └─────────┘ └─────────┘ │              │    │ stock-low       │    │
-    │   ┌─────────┐ ┌─────────┐ │              │    │ ...             │    │
-    │   │notifydb │ │catalogdb│ │              │    └─────────────────┘    │
+    │   PostgreSQL Flexible     │              │   RabbitMQ on ACI         │
+    │   Server (B1ms)           │              │   ┌─────────────────┐     │
+    │   ┌─────────┐ ┌─────────┐ │              │   │ AMQP: 5672      │     │
+    │   │productdb│ │ orderdb │ │              │   │ Mgmt: 15672     │     │
+    │   └─────────┘ └─────────┘ │              │   └─────────────────┘     │
+    │   ┌─────────┐ ┌─────────┐ │              │   Storage: Azure Files    │
+    │   │notifydb │ │catalogdb│ │              │                           │
     │   └─────────┘ └─────────┘ │              └───────────────────────────┘
     └───────────────────────────┘
                     │
@@ -193,35 +193,51 @@ az postgres flexible-server start \
 
 ## 4. Messaging Resources
 
-### 4.1 Service Bus Namespace
+### 4.1 RabbitMQ on Azure Container Instance
+
+> **Decision:** Azure Service Bus Basic tier is not supported by MassTransit (requires topics for pub/sub).
+> Standard tier costs ~$10/month. RabbitMQ on ACI provides full MassTransit compatibility at similar cost
+> while keeping the same configuration as local development.
 
 | Setting | Value | Rationale |
 |---------|-------|-----------|
-| Tier | Basic | Cheapest, queues only |
-| Messaging Units | 1 | Minimum for Basic tier |
-| Max Message Size | 256 KB | Basic tier limit |
+| Container Image | rabbitmq:3-management-alpine | Official image with management UI |
+| vCPU | 0.5 | Minimum for stable operation |
+| Memory | 1 GB | Sufficient for demo workload |
+| Storage | Azure File Share (1 GB) | Persistent queue data |
+| Restart Policy | Always | Auto-restart on failure |
 
-### 4.2 Service Bus Queues
+### 4.2 RabbitMQ Configuration
 
-| Queue | Publisher | Consumer | Purpose |
-|-------|-----------|----------|---------|
-| order-confirmed | Order Service | Notification Service | Order confirmation emails |
-| order-rejected | Order Service | Notification Service | Order rejection emails |
-| order-cancelled | Order Service | Notification Service | Cancellation notifications |
-| stock-low | Product Service | Notification Service | Stock alerts |
-| stock-reservation-expired | Product Service | Order Service | TTL cleanup |
+| Setting | Value |
+|---------|-------|
+| Management Port | 15672 (internal only) |
+| AMQP Port | 5672 |
+| Default User | Stored in Key Vault |
+| Default Password | Stored in Key Vault |
+| Virtual Host | / |
 
-### 4.3 Basic Tier Limitations
+### 4.3 MassTransit Exchanges and Queues
 
-| Feature | Basic Tier | Standard Tier |
-|---------|------------|---------------|
-| Queues | Yes | Yes |
-| Topics/Subscriptions | No | Yes |
-| Sessions | No | Yes |
-| Duplicate Detection | No | Yes |
-| Price | ~$0.05/month | ~$10/month |
+MassTransit automatically creates topology:
 
-**MassTransit Workaround:** Basic tier supports only queues (not topics). MassTransit uses endpoint conventions to route messages to specific queues, achieving pub/sub semantics.
+| Exchange | Type | Bound Queues |
+|----------|------|--------------|
+| EShop.Contracts:OrderConfirmed | fanout | notification-order-confirmed |
+| EShop.Contracts:OrderRejected | fanout | notification-order-rejected |
+| EShop.Contracts:OrderCancelled | fanout | notification-order-cancelled |
+| EShop.Contracts:StockLow | fanout | notification-stock-low |
+| EShop.Contracts:StockReservationExpired | fanout | order-stock-reservation-expired |
+
+### 4.4 Cost Comparison
+
+| Option | Monthly Cost | MassTransit Support |
+|--------|--------------|---------------------|
+| Service Bus Basic | ~$0.05 | Not supported |
+| Service Bus Standard | ~$10 | Full support |
+| **RabbitMQ on ACI** | **~$8-12** | **Full support** |
+
+**Chosen:** RabbitMQ on ACI - same configuration as local dev, full MassTransit support.
 
 ---
 
@@ -238,14 +254,14 @@ Single managed identity shared by all Container Apps:
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │   ┌──────────────┐    ┌──────────────┐    ┌──────────────┐  │
-│   │ Key Vault    │    │ PostgreSQL   │    │ Service Bus  │  │
-│   │ Secrets User │    │ Contributor  │    │ Data Owner   │  │
+│   │ Key Vault    │    │ PostgreSQL   │    │ Storage File │  │
+│   │ Secrets User │    │ Contributor  │    │ Data Contrib │  │
 │   └──────────────┘    └──────────────┘    └──────────────┘  │
 │                                                             │
-│   ┌──────────────┐    ┌──────────────┐                      │
-│   │ ACR Pull     │    │ Storage Blob │                      │
-│   │              │    │ Data Reader  │                      │
-│   └──────────────┘    └──────────────┘                      │
+│   ┌──────────────┐                                          │
+│   │ ACR Pull     │                                          │
+│   │              │                                          │
+│   └──────────────┘                                          │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -264,7 +280,9 @@ Single managed identity shared by all Container Apps:
 | Secret | Description |
 |--------|-------------|
 | PostgresConnectionString | Database connection string |
-| ServiceBusConnectionString | Messaging connection string |
+| RabbitMQConnectionString | Messaging connection string (amqp://user:pass@host:5672) |
+| RabbitMQUser | RabbitMQ default username |
+| RabbitMQPassword | RabbitMQ default password |
 | SendGridApiKey | Email service API key (optional) |
 | EntraClientSecret | OAuth client secret |
 
@@ -398,8 +416,8 @@ Internet
             │                  │                   │
             ▼                  ▼                   ▼
     ┌───────────────┐  ┌───────────────┐  ┌───────────────┐
-    │  PostgreSQL   │  │  Service Bus  │  │  Key Vault    │
-    │  (Private EP) │  │  (Private EP) │  │  (Private EP) │
+    │  PostgreSQL   │  │  RabbitMQ ACI │  │  Key Vault    │
+    │  (Private EP) │  │  (VNet)       │  │  (Private EP) │
     └───────────────┘  └───────────────┘  └───────────────┘
 ```
 
@@ -421,8 +439,9 @@ For enhanced security, Azure resources can use private endpoints:
 | Resource | Private Endpoint | Cost Impact |
 |----------|------------------|-------------|
 | PostgreSQL | Optional | +$7/month |
-| Service Bus | Optional | +$7/month |
 | Key Vault | Optional | +$7/month |
+
+> **Note:** RabbitMQ on ACI can be deployed in a VNet for private access at no additional cost.
 
 **Recommendation:** Skip private endpoints for demo to minimize cost. Use for production.
 
@@ -440,7 +459,8 @@ infra/
 ├── modules/
 │   ├── container-apps.bicep   # Container Apps Environment + Apps
 │   ├── postgres.bicep         # PostgreSQL Flexible Server
-│   ├── service-bus.bicep      # Service Bus Namespace + Queues
+│   ├── rabbitmq.bicep         # RabbitMQ on Azure Container Instance
+│   ├── storage.bicep          # Storage Account + File Share (for RabbitMQ)
 │   ├── key-vault.bicep        # Key Vault + Secrets
 │   ├── acr.bicep              # Container Registry
 │   ├── identity.bicep         # Managed Identity + Role Assignments
@@ -528,9 +548,10 @@ jobs:
    └── Resource Group
    └── Managed Identity
    └── Log Analytics
+   └── Storage Account (for RabbitMQ)
    └── Key Vault
    └── PostgreSQL
-   └── Service Bus
+   └── RabbitMQ (ACI)
    └── Container Registry
    └── Container Apps Environment
 
@@ -552,7 +573,8 @@ jobs:
 |----------|------|---------|---------|
 | Container Apps (5x) | Consumption | ~$0* | ~$0 |
 | PostgreSQL | B1ms | ~$12 | ~$3.68 |
-| Service Bus | Basic | ~$0.05 | ~$0.05 |
+| RabbitMQ (ACI) | 0.5 vCPU, 1GB | ~$10 | ~$0 |
+| Storage (RabbitMQ) | Standard LRS | ~$0.10 | ~$0.10 |
 | Key Vault | Standard | ~$0.03 | ~$0.03 |
 | Container Registry | Basic | ~$5 | ~$5 |
 | Log Analytics | Pay-as-you-go | ~$0** | ~$0 |
@@ -564,9 +586,9 @@ jobs:
 
 | Scenario | Cost |
 |----------|------|
-| **Active Development** | ~$17/month |
-| **Demo/Showcase** | ~$9/month (stop PG when idle) |
-| **Hibernated** | ~$9/month (PG stopped) |
+| **Active Development** | ~$27/month |
+| **Demo/Showcase** | ~$15/month (stop PG + RabbitMQ when idle) |
+| **Hibernated** | ~$9/month (PG + RabbitMQ stopped) |
 
 ### 10.3 Further Cost Optimization
 
@@ -587,9 +609,12 @@ jobs:
 | Aspect | Local (Aspire) | Azure |
 |--------|----------------|-------|
 | PostgreSQL | Docker container | Flexible Server |
-| RabbitMQ | Docker container | Service Bus |
+| RabbitMQ | Docker container | RabbitMQ on ACI |
 | Container Registry | Local images | ACR |
 | Service Discovery | Aspire built-in | Container Apps built-in |
+
+> **Advantage:** Using RabbitMQ on Azure (instead of Service Bus) means **zero code changes** for messaging.
+> The same MassTransit configuration works in both environments.
 
 ### 11.2 Configuration Strategy
 
