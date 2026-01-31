@@ -1,4 +1,5 @@
-﻿using EShop.Contracts.ServiceClients.Product;
+﻿using EShop.Contracts.ServiceClients;
+using EShop.Contracts.ServiceClients.Product;
 using EShop.Order.Application.Data;
 using EShop.SharedKernel.Services;
 using MediatR;
@@ -36,15 +37,34 @@ public sealed class CreateOrderCommandHandler
 
         var reservationRequest = new ReserveStockRequest(order.Id, orderItems);
 
-        var reservationResult = await _productServiceClient.ReserveStockAsync(
-            reservationRequest,
-            cancellationToken
-        );
+        StockReservationResult reservationResult;
+        try
+        {
+            reservationResult = await _productServiceClient.ReserveStockAsync(
+                reservationRequest,
+                cancellationToken
+            );
+        }
+        catch (ServiceClientException ex)
+        {
+            // Technical failure (service unavailable, timeout) - save as Created for retry
+            _dbContext.Orders.Add(order);
+            return new CreateOrderResult(order.Id, order.Status.ToString(), ex.Message);
+        }
 
         if (!reservationResult.Success)
         {
-            throw new InvalidOperationException(
-                $"Stock reservation failed: {reservationResult.FailureReason}"
+            // Business rejection (insufficient stock) - reject order
+            order.Reject(
+                reservationResult.FailureReason ?? "Stock reservation failed",
+                _dateTimeProvider.UtcNow
+            );
+            _dbContext.Orders.Add(order);
+
+            return new CreateOrderResult(
+                order.Id,
+                order.Status.ToString(),
+                reservationResult.FailureReason
             );
         }
 

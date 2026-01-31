@@ -1,5 +1,6 @@
 ﻿using EShop.Gateway.API;
 using EShop.Gateway.API.Configuration;
+using EShop.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +10,8 @@ builder.AddSerilog();
 
 builder
     .Services.AddHealthChecks()
-    .AddServiceHealthCheck("products-api")
-    .AddServiceHealthCheck("order-api");
+    .AddServiceHealthCheck(ResourceNames.Services.Product)
+    .AddServiceHealthCheck(ResourceNames.Services.Order);
 
 var settings =
     builder.Configuration.GetSection(GatewaySettings.SectionName).Get<GatewaySettings>()

@@ -2,6 +2,7 @@
 using EShop.Order.API;
 using EShop.Order.Application;
 using EShop.Order.Infrastructure;
+using EShop.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +12,8 @@ builder.AddSerilog();
 
 builder
     .Services.AddHealthChecks()
-    .AddPostgresHealthCheck("orderdb")
-    .AddServiceHealthCheck("products-api");
+    .AddPostgresHealthCheck(ResourceNames.Databases.Order)
+    .AddServiceHealthCheck(ResourceNames.Services.Product);
 
 builder.Services.AddApplication();
 builder.AddInfrastructure();

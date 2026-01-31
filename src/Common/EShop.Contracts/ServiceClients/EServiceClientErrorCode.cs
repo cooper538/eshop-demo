@@ -1,4 +1,4 @@
-﻿namespace EShop.ServiceClients.Exceptions;
+﻿namespace EShop.Contracts.ServiceClients;
 
 public enum EServiceClientErrorCode
 {
