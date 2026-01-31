@@ -19,10 +19,11 @@ echo -e "${BLUE}  E-SHOP SERVICE DISCOVERY${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
 echo ""
 
-# Find services by process name
+# Find services by process name (supports multiple patterns)
 find_service_port() {
-    local service_name="$1"
-    local port=$(lsof -i -P -n 2>/dev/null | grep LISTEN | grep "$service_name" | grep -v "Rider\|ReSharper" | head -1 | awk '{print $9}' | sed 's/.*://' | head -1)
+    local service_pattern="$1"
+    # Try to find port matching any of the patterns (pipe-separated)
+    local port=$(lsof -i -P -n 2>/dev/null | grep LISTEN | grep -E "$service_pattern" | grep -v "Rider\|ReSharper" | head -1 | awk '{print $9}' | sed 's/.*://' | head -1)
     echo "$port"
 }
 
@@ -47,29 +48,33 @@ check_health() {
 echo -e "${YELLOW}SERVICES${NC}"
 echo "─────────────────────────────────────────────────────────"
 
-# Gateway
-GATEWAY_PORT=$(find_service_port "Gateway.A")
+# Gateway (old: Gateway.A, new: EShop.Gat)
+GATEWAY_PORT=$(find_service_port "Gateway\.A|EShop\.Gat")
 if [ -n "$GATEWAY_PORT" ]; then
     echo -e "Gateway:      ${GREEN}http://localhost:$GATEWAY_PORT${NC} $(check_health "http://localhost:$GATEWAY_PORT")"
     echo "GATEWAY_URL=http://localhost:$GATEWAY_PORT" > "$SCRIPT_DIR/.env"
+    echo "GATEWAY_PORT=$GATEWAY_PORT" >> "$SCRIPT_DIR/.env"
 else
     echo -e "Gateway:      ${RED}Not running${NC}"
+    echo "# Gateway not found" > "$SCRIPT_DIR/.env"
 fi
 
-# Order API
-ORDER_PORT=$(find_service_port "Order.API")
+# Order API (old: Order.API, new: EShop.Ord)
+ORDER_PORT=$(find_service_port "Order\.API|EShop\.Ord")
 if [ -n "$ORDER_PORT" ]; then
     echo -e "Order API:    ${GREEN}http://localhost:$ORDER_PORT${NC} $(check_health "http://localhost:$ORDER_PORT")"
     echo "ORDER_URL=http://localhost:$ORDER_PORT" >> "$SCRIPT_DIR/.env"
+    echo "ORDER_PORT=$ORDER_PORT" >> "$SCRIPT_DIR/.env"
 else
     echo -e "Order API:    ${RED}Not running${NC}"
 fi
 
-# Product API
-PRODUCT_PORT=$(find_service_port "Products.")
+# Product API (old: Products., new: EShop.Pro)
+PRODUCT_PORT=$(find_service_port "Products\.|EShop\.Pro")
 if [ -n "$PRODUCT_PORT" ]; then
     echo -e "Product API:  ${GREEN}http://localhost:$PRODUCT_PORT${NC} $(check_health "http://localhost:$PRODUCT_PORT")"
     echo "PRODUCT_URL=http://localhost:$PRODUCT_PORT" >> "$SCRIPT_DIR/.env"
+    echo "PRODUCT_PORT=$PRODUCT_PORT" >> "$SCRIPT_DIR/.env"
 else
     echo -e "Product API:  ${RED}Not running${NC}"
 fi
