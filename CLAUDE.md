@@ -196,10 +196,12 @@ All services use CorrelationId for distributed tracing across HTTP, gRPC, and me
 
 ## Comments
 
-**Remove:** section comments in Program.cs, XML docs on internal classes, comments describing WHAT
+**NEVER add XML comments** (`/// <summary>`) - except on controller actions (generates OpenAPI docs)
+
+**Remove:** section comments in Program.cs, comments describing WHAT
 
 **Keep:**
-- XML docs on controllers (generates OpenAPI)
+- XML docs on controllers only (generates OpenAPI)
 - `// EF Core constructor` - explains private constructor
 - Business rules explaining WHY
 - One-liner for patterns: `// Inbox Pattern - ensures exactly-once processing`

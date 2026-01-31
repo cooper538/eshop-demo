@@ -7,7 +7,8 @@
 #   queues      - Purge all RabbitMQ queues
 #   logs        - Clean old log files (older than 7 days)
 #   env         - Remove generated .env file
-#   all         - All of the above
+#   services    - Kill all running EShop services
+#   all         - All of the above (except services)
 #   status      - Show what would be cleaned
 
 set -e
@@ -164,6 +165,17 @@ cmd_env() {
     fi
 }
 
+cmd_services() {
+    echo -e "${YELLOW}Killing EShop services...${NC}"
+
+    if [ -f "$SCRIPT_DIR/kill-services.sh" ]; then
+        "$SCRIPT_DIR/kill-services.sh" --force kill
+    else
+        echo -e "${RED}kill-services.sh not found${NC}"
+        return 1
+    fi
+}
+
 cmd_all() {
     echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
     echo -e "${BLUE}  FULL CLEANUP${NC}"
@@ -195,12 +207,14 @@ cmd_help() {
     echo "  queues    - Purge all RabbitMQ queues"
     echo "  logs      - Clean old log files (older than 7 days)"
     echo "  env       - Remove generated .env file"
-    echo "  all       - All of the above"
+    echo "  services  - Kill all running EShop services"
+    echo "  all       - All of the above (except services)"
     echo ""
     echo "Examples:"
     echo "  $0 status    # See what needs cleaning"
     echo "  $0 data      # Clear test orders"
-    echo "  $0 all       # Full cleanup"
+    echo "  $0 services  # Kill all EShop processes"
+    echo "  $0 all       # Full cleanup (data, queues, logs, env)"
 }
 
 # Main
@@ -212,6 +226,7 @@ case "$COMMAND" in
     queues)   cmd_queues ;;
     logs)     cmd_logs ;;
     env)      cmd_env ;;
+    services) cmd_services ;;
     all)      cmd_all ;;
     help|--help|-h) cmd_help ;;
     *)
