@@ -1,4 +1,4 @@
-﻿namespace Products.Domain.Enums;
+﻿namespace EShop.Products.Domain.Enums;
 
 public enum EReservationStatus
 {

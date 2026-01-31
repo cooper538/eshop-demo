@@ -1,6 +1,6 @@
-﻿using Products.Domain.Entities;
+﻿using EShop.Products.Domain.Entities;
 
-namespace Products.Application.Dtos;
+namespace EShop.Products.Application.Dtos;
 
 public sealed record ProductDto(
     Guid Id,

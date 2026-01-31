@@ -1,12 +1,12 @@
 ﻿using EShop.Common.Application.Events;
 using EShop.Common.Application.Exceptions;
+using EShop.Products.Application.Data;
+using EShop.Products.Domain.Entities;
+using EShop.Products.Domain.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Products.Application.Data;
-using Products.Domain.Entities;
-using Products.Domain.Events;
 
-namespace Products.Application.EventHandlers;
+namespace EShop.Products.Application.EventHandlers;
 
 public sealed class ProductUpdatedEventHandler
     : INotificationHandler<DomainEventNotification<ProductUpdatedDomainEvent>>

@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <RootNamespace>Order.API</RootNamespace>
+    <RootNamespace>EShop.Products.API</RootNamespace>
     <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)</OpenApiDocumentsDirectory>
     <OpenApiGenerateDocumentsOnBuild>true</OpenApiGenerateDocumentsOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Grpc.AspNetCore" />
     <PackageReference Include="MassTransit.RabbitMQ" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
@@ -23,14 +24,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Order.Infrastructure/Order.Infrastructure.csproj" />
+    <ProjectReference Include="../Products.Infrastructure/EShop.Products.Infrastructure.csproj" />
     <ProjectReference Include="../../../ServiceDefaults/EShop.ServiceDefaults.csproj" />
     <ProjectReference Include="../../../Common/EShop.Common.Api/EShop.Common.Api.csproj" />
-    <ProjectReference Include="../../../Common/EShop.ServiceClients/EShop.ServiceClients.csproj" />
+    <ProjectReference Include="../../../Common/EShop.Grpc/EShop.Grpc.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="order.settings*.yaml" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="product.settings*.yaml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

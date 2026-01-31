@@ -1,8 +1,8 @@
-﻿using EShop.SharedKernel.Domain;
-using Products.Domain.Enums;
-using Products.Domain.Events;
+﻿using EShop.Products.Domain.Enums;
+using EShop.Products.Domain.Events;
+using EShop.SharedKernel.Domain;
 
-namespace Products.Domain.Entities;
+namespace EShop.Products.Domain.Entities;
 
 public class StockEntity : AggregateRoot
 {

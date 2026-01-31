@@ -1,7 +1,7 @@
 ﻿using EShop.Grpc.Product;
 using FluentValidation;
 
-namespace Products.API.Grpc.Validators;
+namespace EShop.Products.API.Grpc.Validators;
 
 public sealed class ReserveStockRequestValidator : AbstractValidator<ReserveStockRequest>
 {

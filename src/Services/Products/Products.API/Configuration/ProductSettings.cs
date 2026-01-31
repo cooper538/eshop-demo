@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using EShop.Common.Application.Configuration;
 
-namespace Products.API.Configuration;
+namespace EShop.Products.API.Configuration;
 
 public class ProductSettings
 {

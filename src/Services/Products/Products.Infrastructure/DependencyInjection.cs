@@ -1,13 +1,13 @@
 ﻿using EShop.Common.Application.Data;
 using EShop.Common.Infrastructure.Extensions;
+using EShop.Products.Application.Data;
+using EShop.Products.Infrastructure.BackgroundJobs;
+using EShop.Products.Infrastructure.Data;
 using EShop.ServiceDefaults;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Products.Application.Data;
-using Products.Infrastructure.BackgroundJobs;
-using Products.Infrastructure.Data;
 
-namespace Products.Infrastructure;
+namespace EShop.Products.Infrastructure;
 
 public static class DependencyInjection
 {

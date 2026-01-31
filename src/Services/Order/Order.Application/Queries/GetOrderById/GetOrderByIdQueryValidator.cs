@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Order.Application.Queries.GetOrderById;
+namespace EShop.Order.Application.Queries.GetOrderById;
 
 public sealed class GetOrderByIdQueryValidator : AbstractValidator<GetOrderByIdQuery>
 {

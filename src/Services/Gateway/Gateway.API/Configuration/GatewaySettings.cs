@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using EShop.Common.Application.Configuration;
 
-namespace Gateway.API.Configuration;
+namespace EShop.Gateway.API.Configuration;
 
 public class GatewaySettings
 {

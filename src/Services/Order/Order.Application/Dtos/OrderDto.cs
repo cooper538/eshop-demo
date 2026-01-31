@@ -1,6 +1,6 @@
-﻿using Order.Domain.Entities;
+﻿using EShop.Order.Domain.Entities;
 
-namespace Order.Application.Dtos;
+namespace EShop.Order.Application.Dtos;
 
 public sealed record OrderDto(
     Guid Id,

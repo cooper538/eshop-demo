@@ -1,11 +1,11 @@
 ﻿using EShop.Common.Application.Exceptions;
+using EShop.Order.Application.Data;
+using EShop.Order.Application.Dtos;
+using EShop.Order.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Order.Application.Data;
-using Order.Application.Dtos;
-using Order.Domain.Entities;
 
-namespace Order.Application.Queries.GetOrderById;
+namespace EShop.Order.Application.Queries.GetOrderById;
 
 public sealed class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, OrderDto>
 {

@@ -1,9 +1,9 @@
-﻿using MediatR;
+﻿using EShop.Order.Application.Data;
+using EShop.Order.Application.Dtos;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Order.Application.Data;
-using Order.Application.Dtos;
 
-namespace Order.Application.Queries.GetOrders;
+namespace EShop.Order.Application.Queries.GetOrders;
 
 public sealed class GetOrdersQueryHandler : IRequestHandler<GetOrdersQuery, GetOrdersResult>
 {

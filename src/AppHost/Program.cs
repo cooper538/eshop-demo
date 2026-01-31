@@ -29,7 +29,7 @@ var migrationService = builder
 
 // All services wait for migrations to complete
 var productService = builder
-    .AddProject<Projects.Products_API>("product-service")
+    .AddProject<Projects.EShop_Products_API>("product-service")
     .WithHttpEndpoint()
     .WithHttpsEndpoint()
     .WithReference(productDb)
@@ -38,7 +38,7 @@ var productService = builder
     .WaitFor(rabbitmq);
 
 var orderService = builder
-    .AddProject<Projects.Order_API>("order-service")
+    .AddProject<Projects.EShop_Order_API>("order-service")
     .WithHttpEndpoint()
     .WithHttpsEndpoint()
     .WithReference(orderDb)
@@ -60,7 +60,7 @@ var analyticsService = builder
     .WaitFor(rabbitmq);
 
 var gateway = builder
-    .AddProject<Projects.Gateway_API>("gateway")
+    .AddProject<Projects.EShop_Gateway_API>("gateway")
     .WithHttpEndpoint()
     .WithHttpsEndpoint()
     .WithReference(productService)

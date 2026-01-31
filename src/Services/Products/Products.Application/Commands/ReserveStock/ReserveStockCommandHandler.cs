@@ -1,13 +1,13 @@
-﻿using EShop.SharedKernel.Services;
+﻿using EShop.Products.Application.Configuration;
+using EShop.Products.Application.Data;
+using EShop.Products.Application.Dtos;
+using EShop.Products.Domain.Entities;
+using EShop.Products.Domain.Enums;
+using EShop.SharedKernel.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Products.Application.Configuration;
-using Products.Application.Data;
-using Products.Application.Dtos;
-using Products.Domain.Entities;
-using Products.Domain.Enums;
 
-namespace Products.Application.Commands.ReserveStock;
+namespace EShop.Products.Application.Commands.ReserveStock;
 
 public sealed class ReserveStockCommandHandler
     : IRequestHandler<ReserveStockCommand, StockReservationResult>

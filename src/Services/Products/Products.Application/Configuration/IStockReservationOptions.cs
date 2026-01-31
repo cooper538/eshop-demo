@@ -1,4 +1,4 @@
-﻿namespace Products.Application.Configuration;
+﻿namespace EShop.Products.Application.Configuration;
 
 public interface IStockReservationOptions
 {

@@ -1,7 +1,7 @@
 ﻿using EShop.Common.Application.Cqrs;
-using Order.Domain.Entities;
+using EShop.Order.Domain.Entities;
 
-namespace Order.Application.Commands.CreateOrder;
+namespace EShop.Order.Application.Commands.CreateOrder;
 
 public sealed record CreateOrderCommand(
     Guid CustomerId,

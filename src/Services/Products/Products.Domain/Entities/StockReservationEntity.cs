@@ -1,7 +1,7 @@
-﻿using EShop.SharedKernel.Domain;
-using Products.Domain.Enums;
+﻿using EShop.Products.Domain.Enums;
+using EShop.SharedKernel.Domain;
 
-namespace Products.Domain.Entities;
+namespace EShop.Products.Domain.Entities;
 
 public class StockReservationEntity : Entity
 {

@@ -1,14 +1,14 @@
 ﻿using EShop.Common.Application.Events;
 using EShop.Contracts.IntegrationEvents.Product;
+using EShop.Products.Application.Data;
+using EShop.Products.Domain.Events;
 using EShop.SharedKernel.Services;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Products.Application.Data;
-using Products.Domain.Events;
 
-namespace Products.Application.EventHandlers;
+namespace EShop.Products.Application.EventHandlers;
 
 public sealed class LowStockWarningEventHandler(
     IProductDbContext dbContext,

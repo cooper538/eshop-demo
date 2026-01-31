@@ -1,6 +1,6 @@
-﻿using Order.Domain.Enums;
+﻿using EShop.Order.Domain.Enums;
 
-namespace Order.Domain.Exceptions;
+namespace EShop.Order.Domain.Exceptions;
 
 public class InvalidOrderStateException : Exception
 {

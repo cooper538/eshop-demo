@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Options;
-using Products.Application.Configuration;
+﻿using EShop.Products.Application.Configuration;
+using Microsoft.Extensions.Options;
 
-namespace Products.API.Configuration;
+namespace EShop.Products.API.Configuration;
 
 public sealed class StockReservationOptions : IStockReservationOptions
 {

@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Products.Infrastructure.Data;
+using EShop.Products.Infrastructure.Data;
 
 #nullable disable
 
-namespace Products.Infrastructure.Data.Migrations
+namespace EShop.Products.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ProductDbContext))]
     [Migration("20260129212006_InitialCreate")]

@@ -1,4 +1,4 @@
-﻿namespace Products.Domain.Exceptions;
+﻿namespace EShop.Products.Domain.Exceptions;
 
 public class InsufficientStockException : Exception
 {

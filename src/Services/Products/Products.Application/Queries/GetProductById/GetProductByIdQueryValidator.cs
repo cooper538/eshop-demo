@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Products.Application.Queries.GetProductById;
+namespace EShop.Products.Application.Queries.GetProductById;
 
 public sealed class GetProductByIdQueryValidator : AbstractValidator<GetProductByIdQuery>
 {

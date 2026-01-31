@@ -13,8 +13,8 @@
 
   <ItemGroup>
     <ProjectReference Include="../../ServiceDefaults/EShop.ServiceDefaults.csproj" />
-    <ProjectReference Include="../Order/Order.Infrastructure/Order.Infrastructure.csproj" />
-    <ProjectReference Include="../Products/Products.Infrastructure/Products.Infrastructure.csproj" />
+    <ProjectReference Include="../Order/Order.Infrastructure/EShop.Order.Infrastructure.csproj" />
+    <ProjectReference Include="../Products/Products.Infrastructure/EShop.Products.Infrastructure.csproj" />
     <ProjectReference Include="../Notification/EShop.NotificationService.csproj" />
   </ItemGroup>
 

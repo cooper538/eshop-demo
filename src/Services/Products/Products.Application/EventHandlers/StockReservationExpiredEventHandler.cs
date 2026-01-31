@@ -1,9 +1,9 @@
 ﻿using EShop.Common.Application.Events;
+using EShop.Products.Domain.Events;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Products.Domain.Events;
 
-namespace Products.Application.EventHandlers;
+namespace EShop.Products.Application.EventHandlers;
 
 public sealed class StockReservationExpiredEventHandler
     : INotificationHandler<DomainEventNotification<StockReservationExpiredDomainEvent>>

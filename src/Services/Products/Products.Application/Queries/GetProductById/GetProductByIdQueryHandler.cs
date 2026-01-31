@@ -1,11 +1,11 @@
 ﻿using EShop.Common.Application.Exceptions;
+using EShop.Products.Application.Data;
+using EShop.Products.Application.Dtos;
+using EShop.Products.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Products.Application.Data;
-using Products.Application.Dtos;
-using Products.Domain.Entities;
 
-namespace Products.Application.Queries.GetProductById;
+namespace EShop.Products.Application.Queries.GetProductById;
 
 public sealed class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, ProductDto>
 {

@@ -1,6 +1,6 @@
-﻿using Order.Application.Dtos;
+﻿using EShop.Order.Application.Dtos;
 
-namespace Order.Application.Queries.GetOrders;
+namespace EShop.Order.Application.Queries.GetOrders;
 
 public sealed record GetOrdersResult(
     IReadOnlyList<OrderDto> Items,

@@ -1,4 +1,4 @@
-﻿namespace Order.Domain.Events;
+﻿namespace EShop.Order.Domain.Events;
 
 public sealed record OrderItemInfo(
     Guid ProductId,

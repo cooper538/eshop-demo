@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Products.Application.Commands.UpdateProduct;
+namespace EShop.Products.Application.Commands.UpdateProduct;
 
 public sealed class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommand>
 {

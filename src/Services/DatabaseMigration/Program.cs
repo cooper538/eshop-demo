@@ -1,8 +1,8 @@
 ﻿using EShop.DatabaseMigration;
 using EShop.NotificationService.Data;
+using EShop.Order.Infrastructure.Data;
+using EShop.Products.Infrastructure.Data;
 using EShop.ServiceDefaults;
-using Order.Infrastructure.Data;
-using Products.Infrastructure.Data;
 
 var builder = Host.CreateApplicationBuilder(args);
 

@@ -1,6 +1,6 @@
 ﻿using EShop.Common.Application.Cqrs;
-using Products.Application.Dtos;
+using EShop.Products.Application.Dtos;
 
-namespace Products.Application.Commands.ReleaseStock;
+namespace EShop.Products.Application.Commands.ReleaseStock;
 
 public sealed record ReleaseStockCommand(Guid OrderId) : ICommand<StockReleaseResult>;

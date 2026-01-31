@@ -1,8 +1,8 @@
 ﻿using EShop.Common.Api.Extensions;
+using EShop.Order.API.Configuration;
 using EShop.ServiceClients.Extensions;
-using Order.API.Configuration;
 
-namespace Order.API;
+namespace EShop.Order.API;
 
 public static class DependencyInjection
 {

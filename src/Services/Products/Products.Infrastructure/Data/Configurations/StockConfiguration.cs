@@ -1,9 +1,9 @@
 ﻿using EShop.Common.Infrastructure.Data;
+using EShop.Products.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Products.Domain.Entities;
 
-namespace Products.Infrastructure.Data.Configurations;
+namespace EShop.Products.Infrastructure.Data.Configurations;
 
 public class StockConfiguration : AggregateRootConfiguration<StockEntity>
 {

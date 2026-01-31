@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Products.Infrastructure.Data;
+using EShop.Products.Infrastructure.Data;
 
 #nullable disable
 
-namespace Products.Infrastructure.Data.Migrations
+namespace EShop.Products.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ProductDbContext))]
     partial class ProductDbContextModelSnapshot : ModelSnapshot

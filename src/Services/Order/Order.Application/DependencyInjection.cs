@@ -1,7 +1,7 @@
 ﻿using EShop.Common.Application.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Order.Application;
+namespace EShop.Order.Application;
 
 public static class DependencyInjection
 {

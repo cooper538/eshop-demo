@@ -1,8 +1,8 @@
 ﻿using EShop.Common.Application.Cqrs;
-using Products.Application.Dtos;
-using Products.Domain.Entities;
+using EShop.Products.Application.Dtos;
+using EShop.Products.Domain.Entities;
 
-namespace Products.Application.Commands.UpdateProduct;
+namespace EShop.Products.Application.Commands.UpdateProduct;
 
 public sealed record UpdateProductCommand(
     Guid Id,

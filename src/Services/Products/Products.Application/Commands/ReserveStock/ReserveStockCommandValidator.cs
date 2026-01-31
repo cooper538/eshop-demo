@@ -1,7 +1,7 @@
-﻿using FluentValidation;
-using Products.Application.Dtos;
+﻿using EShop.Products.Application.Dtos;
+using FluentValidation;
 
-namespace Products.Application.Commands.ReserveStock;
+namespace EShop.Products.Application.Commands.ReserveStock;
 
 public sealed class ReserveStockCommandValidator : AbstractValidator<ReserveStockCommand>
 {

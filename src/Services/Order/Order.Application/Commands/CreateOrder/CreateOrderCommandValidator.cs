@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Order.Application.Commands.CreateOrder;
+namespace EShop.Order.Application.Commands.CreateOrder;
 
 public sealed class CreateOrderCommandValidator : AbstractValidator<CreateOrderCommand>
 {

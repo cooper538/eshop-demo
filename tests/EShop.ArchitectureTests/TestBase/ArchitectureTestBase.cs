@@ -11,29 +11,29 @@ public abstract class ArchitectureTestBase
 {
     // Order Service assemblies
     protected static readonly Assembly OrderDomainAssembly =
-        typeof(Order.Domain.Entities.OrderEntity).Assembly;
+        typeof(EShop.Order.Domain.Entities.OrderEntity).Assembly;
 
     protected static readonly Assembly OrderApplicationAssembly =
-        typeof(Order.Application.Commands.CreateOrder.CreateOrderCommand).Assembly;
+        typeof(EShop.Order.Application.Commands.CreateOrder.CreateOrderCommand).Assembly;
 
     protected static readonly Assembly OrderInfrastructureAssembly =
-        typeof(Order.Infrastructure.Data.OrderDbContext).Assembly;
+        typeof(EShop.Order.Infrastructure.Data.OrderDbContext).Assembly;
 
     protected static readonly Assembly OrderApiAssembly =
-        typeof(Order.API.Controllers.OrdersController).Assembly;
+        typeof(EShop.Order.API.Controllers.OrdersController).Assembly;
 
     // Products Service assemblies
     protected static readonly Assembly ProductsDomainAssembly =
-        typeof(Products.Domain.Entities.ProductEntity).Assembly;
+        typeof(EShop.Products.Domain.Entities.ProductEntity).Assembly;
 
     protected static readonly Assembly ProductsApplicationAssembly =
-        typeof(Products.Application.Commands.CreateProduct.CreateProductCommand).Assembly;
+        typeof(EShop.Products.Application.Commands.CreateProduct.CreateProductCommand).Assembly;
 
     protected static readonly Assembly ProductsInfrastructureAssembly =
-        typeof(Products.Infrastructure.Data.ProductDbContext).Assembly;
+        typeof(EShop.Products.Infrastructure.Data.ProductDbContext).Assembly;
 
     protected static readonly Assembly ProductsApiAssembly =
-        typeof(Products.API.Controllers.ProductsController).Assembly;
+        typeof(EShop.Products.API.Controllers.ProductsController).Assembly;
 
     // Shared libraries
     protected static readonly Assembly SharedKernelAssembly =
@@ -50,7 +50,7 @@ public abstract class ArchitectureTestBase
 
     // Infrastructure services (no Clean Architecture layers)
     protected static readonly Assembly GatewayApiAssembly =
-        typeof(Gateway.API.Configuration.GatewaySettings).Assembly;
+        typeof(EShop.Gateway.API.Configuration.GatewaySettings).Assembly;
 
     protected static readonly Assembly NotificationAssembly =
         typeof(EShop.NotificationService.Consumers.OrderConfirmedConsumer).Assembly;

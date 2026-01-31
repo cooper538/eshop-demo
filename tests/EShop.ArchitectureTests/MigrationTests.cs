@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 using EShop.NotificationService.Data;
+using EShop.Order.Infrastructure.Data;
+using EShop.Products.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Design.Internal;
 using Microsoft.EntityFrameworkCore.Migrations.Design;
 using Microsoft.Extensions.DependencyInjection;
-using Order.Infrastructure.Data;
-using Products.Infrastructure.Data;
 
 namespace EShop.ArchitectureTests;
 

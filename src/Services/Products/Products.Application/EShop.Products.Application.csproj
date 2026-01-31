@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>Products.Application</RootNamespace>
+    <RootNamespace>EShop.Products.Application</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Products.Domain/Products.Domain.csproj" />
+    <ProjectReference Include="../Products.Domain/EShop.Products.Domain.csproj" />
     <ProjectReference Include="../../../Common/EShop.SharedKernel/EShop.SharedKernel.csproj" />
     <ProjectReference Include="../../../Common/EShop.Common.Application/EShop.Common.Application.csproj" />
     <ProjectReference Include="../../../Common/EShop.Contracts/EShop.Contracts.csproj" />

@@ -1,12 +1,12 @@
 ﻿using EShop.Common.Application.Data;
 using EShop.Common.Infrastructure.Data;
+using EShop.Order.Application.Data;
+using EShop.Order.Domain.Entities;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Order.Application.Data;
-using Order.Domain.Entities;
 
-namespace Order.Infrastructure.Data;
+namespace EShop.Order.Infrastructure.Data;
 
 public class OrderDbContext : DbContext, IOrderDbContext, IChangeTrackerAccessor, IUnitOfWork
 {

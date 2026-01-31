@@ -29,23 +29,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{98
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Products", "Products", "{374CED38-7421-B0F7-DFE2-3AF3B9F49E7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Products.Domain", "src\Services\Products\Products.Domain\Products.Domain.csproj", "{BED58913-D17A-43FA-8A34-E62EEF922AEC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.Products.Domain", "src\Services\Products\Products.Domain\EShop.Products.Domain.csproj", "{BED58913-D17A-43FA-8A34-E62EEF922AEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Products.Application", "src\Services\Products\Products.Application\Products.Application.csproj", "{4051F2B8-18ED-40C3-A1B6-DA3CA922CA9D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.Products.Application", "src\Services\Products\Products.Application\EShop.Products.Application.csproj", "{4051F2B8-18ED-40C3-A1B6-DA3CA922CA9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Products.Infrastructure", "src\Services\Products\Products.Infrastructure\Products.Infrastructure.csproj", "{AE6146DB-BFE6-40DF-8F02-6C670890BFB0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.Products.Infrastructure", "src\Services\Products\Products.Infrastructure\EShop.Products.Infrastructure.csproj", "{AE6146DB-BFE6-40DF-8F02-6C670890BFB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Products.API", "src\Services\Products\Products.API\Products.API.csproj", "{6544F0D3-F51B-4495-BC51-DF41B64F0E67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.Products.API", "src\Services\Products\Products.API\EShop.Products.API.csproj", "{6544F0D3-F51B-4495-BC51-DF41B64F0E67}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Order", "Order", "{B851199A-4979-E597-3D50-97AC5992BBAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Order.Domain", "src\Services\Order\Order.Domain\Order.Domain.csproj", "{15639439-E461-4B34-BA25-8CBC1318DD8E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.Order.Domain", "src\Services\Order\Order.Domain\EShop.Order.Domain.csproj", "{15639439-E461-4B34-BA25-8CBC1318DD8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Order.Application", "src\Services\Order\Order.Application\Order.Application.csproj", "{12CE68F4-3E47-4619-A3C6-57CB1110B284}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.Order.Application", "src\Services\Order\Order.Application\EShop.Order.Application.csproj", "{12CE68F4-3E47-4619-A3C6-57CB1110B284}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Order.Infrastructure", "src\Services\Order\Order.Infrastructure\Order.Infrastructure.csproj", "{84057EF9-82BD-4A0E-BEBD-580B068B1846}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.Order.Infrastructure", "src\Services\Order\Order.Infrastructure\EShop.Order.Infrastructure.csproj", "{84057EF9-82BD-4A0E-BEBD-580B068B1846}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Order.API", "src\Services\Order\Order.API\Order.API.csproj", "{C18BA9B0-B7CF-4901-B148-0B4F999EC0E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.Order.API", "src\Services\Order\Order.API\EShop.Order.API.csproj", "{C18BA9B0-B7CF-4901-B148-0B4F999EC0E6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
 EndProject
@@ -57,7 +57,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.NotificationService",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gateway", "Gateway", "{96888889-FC81-1FD9-7DA3-65FF32B7E052}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway.API", "src\Services\Gateway\Gateway.API\Gateway.API.csproj", "{66D76677-4333-41EA-B854-477FC0DA2938}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.Gateway.API", "src\Services\Gateway\Gateway.API\EShop.Gateway.API.csproj", "{66D76677-4333-41EA-B854-477FC0DA2938}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.UnitTests", "tests\Common.UnitTests\Common.UnitTests.csproj", "{D0D90F59-E643-4D58-A221-34B7D641BB2A}"
 EndProject

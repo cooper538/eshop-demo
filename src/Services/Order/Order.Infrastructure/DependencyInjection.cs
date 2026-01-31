@@ -1,12 +1,12 @@
 ﻿using EShop.Common.Application.Data;
 using EShop.Common.Infrastructure.Extensions;
+using EShop.Order.Application.Data;
+using EShop.Order.Infrastructure.Data;
 using EShop.ServiceDefaults;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Order.Application.Data;
-using Order.Infrastructure.Data;
 
-namespace Order.Infrastructure;
+namespace EShop.Order.Infrastructure;
 
 public static class DependencyInjection
 {
