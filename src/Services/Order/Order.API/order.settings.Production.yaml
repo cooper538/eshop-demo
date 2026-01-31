@@ -1,13 +1,23 @@
-# Order Service - Production Configuration
-# Overrides base order.settings.yaml for production environment
+# Order Service - Production Configuration (Azure)
+# Overrides base order.settings.yaml for Azure Container Apps deployment
 
 Logging:
   LogLevel:
     Default: "Warning"
     Microsoft.AspNetCore: "Warning"
 
+# Key Vault configuration - URI injected via environment variable
+KeyVault:
+  Uri: "" # Set via KEYVAULT__URI environment variable in Container Apps
+
 Order:
   Database:
     CommandTimeoutSec: 30
     EnableRetry: true
     MaxRetryCount: 5
+
+# Service Clients - Azure Container Apps internal FQDN
+# Format: https://{service-name}.internal.{env-name}.{region}.azurecontainerapps.io
+ServiceClients:
+  ProductService:
+    Url: "https://product-service.internal.eshop-env.westeurope.azurecontainerapps.io"

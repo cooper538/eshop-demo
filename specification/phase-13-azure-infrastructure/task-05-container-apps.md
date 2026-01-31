@@ -138,7 +138,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = [for app in app
             memory: '0.5Gi'
           }
           env: [
-            { name: 'ASPNETCORE_ENVIRONMENT', value: 'Azure' }
+            { name: 'ASPNETCORE_ENVIRONMENT', value: 'Production' }
             { name: 'KeyVault__Uri', value: keyVaultUri }
           ]
         }

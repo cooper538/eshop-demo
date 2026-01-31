@@ -7,6 +7,7 @@ using Grpc.Net.Client.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ProductServiceClient = EShop.Grpc.Product.ProductService.ProductServiceClient;
 
 namespace EShop.ServiceClients.Extensions;
 
@@ -18,6 +19,8 @@ public static class ServiceCollectionExtensions
         IHostEnvironment environment
     )
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         var options =
             configuration.GetSection(ServiceClientOptions.SectionName).Get<ServiceClientOptions>()
             ?? new ServiceClientOptions();
@@ -43,27 +46,39 @@ public static class ServiceCollectionExtensions
         services.AddTransient<LoggingInterceptor>();
         services.AddTransient<CorrelationIdClientInterceptor>();
 
-        services
-            .AddGrpcClient<EShop.Grpc.Product.ProductService.ProductServiceClient>(o =>
-            {
-                o.Address = new Uri(options.ProductService.Url);
-            })
-            .AddServiceDiscovery()
-            .ConfigureChannel(o =>
-            {
-                o.ServiceConfig = serviceConfig;
-            })
-            .ConfigurePrimaryHttpMessageHandler(() =>
-            {
-                var handler = new HttpClientHandler();
-                if (environment.IsDevelopment())
-                {
-                    handler.ServerCertificateCustomValidationCallback =
-                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-                }
+        var grpcClientBuilder = services.AddGrpcClient<ProductServiceClient>(o =>
+        {
+            o.Address = new Uri(options.ProductService.Url);
+        });
 
-                return handler;
-            })
+        grpcClientBuilder.ConfigureChannel(o =>
+        {
+            o.ServiceConfig = serviceConfig;
+        });
+
+        // Environment-aware configuration:
+        // - Development (Aspire): Use service discovery + dev certificate validation
+        // - Production (Azure): Use SocketsHttpHandler with HTTP/2 multiplexing
+        if (environment.IsDevelopment())
+        {
+            grpcClientBuilder.AddServiceDiscovery();
+            grpcClientBuilder.ConfigurePrimaryHttpMessageHandler(() =>
+                new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback =
+                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+                }
+            );
+        }
+        else
+        {
+            // Production: SocketsHttpHandler for better HTTP/2 connection pooling
+            grpcClientBuilder.ConfigurePrimaryHttpMessageHandler(() =>
+                new SocketsHttpHandler { EnableMultipleHttp2Connections = true }
+            );
+        }
+
+        grpcClientBuilder
             .AddInterceptor<CorrelationIdClientInterceptor>()
             .AddInterceptor<LoggingInterceptor>();
 
