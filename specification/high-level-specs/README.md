@@ -98,6 +98,7 @@ Architecture details are organized into focused specification documents:
 | [CorrelationId Flow](./correlation-id-flow.md) | Distributed tracing across HTTP, gRPC, and messaging |
 | [Aspire Orchestration](./aspire-orchestration.md) | Local dev orchestration, service discovery, Docker Compose |
 | [Aspire Hybrid Configuration](./aspire-hybrid-configuration.md) | Environment-specific configuration management |
+| [Azure Infrastructure](./azure-infrastructure.md) | Azure deployment, Container Apps, cost optimization |
 
 ### Testing
 
