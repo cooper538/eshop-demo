@@ -8,13 +8,13 @@
 | Dependencies | task-03 |
 
 ## Summary
-Create Bicep module for Azure Key Vault with connection string secrets for PostgreSQL and Service Bus.
+Create Bicep module for Azure Key Vault with connection string secrets for PostgreSQL and RabbitMQ.
 
 ## Scope
 - [ ] Create `key-vault.bicep` module with Standard SKU
 - [ ] Configure RBAC authorization mode (not access policies)
 - [ ] Store PostgreSQL connection strings for all databases
-- [ ] Store Service Bus connection string
+- [ ] Store RabbitMQ connection string
 - [ ] Grant Key Vault Secrets User role to managed identity
 - [ ] Enable soft delete with 7-day retention
 - [ ] Disable purge protection for demo cleanup capability
@@ -33,8 +33,12 @@ param postgresAdminLogin string
 @secure()
 param postgresAdminPassword string
 
-// Service Bus parameters
-param serviceBusNamespace string
+// RabbitMQ parameters
+param rabbitMqIp string
+@secure()
+param rabbitMqUser string
+@secure()
+param rabbitMqPassword string
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: '${prefix}-kv'
@@ -76,12 +80,29 @@ resource postgresSecrets 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = [for d
   }
 }]
 
-// Service Bus connection string
-resource serviceBusSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+// RabbitMQ connection string
+resource rabbitMqSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   parent: keyVault
-  name: 'ConnectionStrings--servicebus'
+  name: 'ConnectionStrings--messaging'
   properties: {
-    value: 'Endpoint=sb://${serviceBusNamespace}.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=${listKeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', serviceBusNamespace, 'RootManageSharedAccessKey'), '2024-01-01').primaryKey}'
+    value: 'amqp://${rabbitMqUser}:${rabbitMqPassword}@${rabbitMqIp}:5672/'
+  }
+}
+
+// RabbitMQ credentials (separate secrets for management)
+resource rabbitMqUserSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  parent: keyVault
+  name: 'RabbitMQ--User'
+  properties: {
+    value: rabbitMqUser
+  }
+}
+
+resource rabbitMqPasswordSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  parent: keyVault
+  name: 'RabbitMQ--Password'
+  properties: {
+    value: rabbitMqPassword
   }
 }
 
@@ -97,12 +118,15 @@ output vaultName string = keyVault.name
 | ConnectionStrings--orderdb | Order database connection string |
 | ConnectionStrings--notificationdb | Notification database connection string |
 | ConnectionStrings--catalogdb | Catalog database connection string |
-| ConnectionStrings--servicebus | Service Bus connection string |
+| ConnectionStrings--messaging | RabbitMQ AMQP connection string |
+| RabbitMQ--User | RabbitMQ admin username |
+| RabbitMQ--Password | RabbitMQ admin password |
 
 ## Secret Name Convention
 
 Key Vault secret names use `--` as separator (translated to `:` by configuration provider):
 - `ConnectionStrings--productdb` -> `ConnectionStrings:productdb`
+- `ConnectionStrings--messaging` -> `ConnectionStrings:messaging`
 
 ## Files to Create
 
@@ -119,3 +143,4 @@ Key Vault secret names use `--` as separator (translated to `:` by configuration
 - RBAC authorization is preferred over access policies
 - Soft delete enabled but purge protection disabled for easy cleanup
 - Secret names follow configuration key convention with `--` separator
+- RabbitMQ connection string uses same `messaging` key as local Aspire setup

@@ -1,9 +1,9 @@
-# Task 03: PostgreSQL SSL Configuration
+# Task 01: PostgreSQL SSL Configuration
 
 ## Metadata
 | Key | Value |
 |-----|-------|
-| ID | task-03 |
+| ID | task-01 |
 | Status | pending |
 | Dependencies | - |
 

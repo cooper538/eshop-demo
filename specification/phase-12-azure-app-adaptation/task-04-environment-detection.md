@@ -1,9 +1,9 @@
-# Task 06: Environment Detection
+# Task 04: Environment Detection
 
 ## Metadata
 | Key | Value |
 |-----|-------|
-| ID | task-06 |
+| ID | task-04 |
 | Status | pending |
 | Dependencies | - |
 
@@ -90,14 +90,15 @@ public static class AzureEnvironmentNames
 if (builder.Environment.IsAzure())
 {
     builder.AddKeyVaultConfiguration();
-    builder.AddMessagingAzure<OrderDbContext>("order");
     builder.AddDatabaseAzure<OrderDbContext>("orderdb");
 }
 else
 {
-    builder.AddMessaging<OrderDbContext>("order");
-    builder.AddDatabase<OrderDbContext>("orderdb");
+    builder.AddNpgsqlDbContext<OrderDbContext>("orderdb");
 }
+
+// Messaging works the same in both environments (RabbitMQ on ACI in Azure)
+builder.AddMessaging<OrderDbContext>("order");
 ```
 
 ## Files to Create/Modify

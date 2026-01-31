@@ -1,9 +1,9 @@
-# Task 04: Key Vault Integration
+# Task 02: Key Vault Integration
 
 ## Metadata
 | Key | Value |
 |-----|-------|
-| ID | task-04 |
+| ID | task-02 |
 | Status | pending |
 | Dependencies | - |
 
@@ -65,7 +65,7 @@ public class EShopSecretManager : KeyVaultSecretManager
 | ConnectionStrings--orderdb | ConnectionStrings:orderdb |
 | ConnectionStrings--notificationdb | ConnectionStrings:notificationdb |
 | ConnectionStrings--catalogdb | ConnectionStrings:catalogdb |
-| ConnectionStrings--servicebus | ConnectionStrings:servicebus |
+| ConnectionStrings--messaging | ConnectionStrings:messaging |
 | SendGrid--ApiKey | SendGrid:ApiKey |
 
 ## Files to Create/Modify
