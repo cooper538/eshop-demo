@@ -40,7 +40,9 @@ curl -X POST http://localhost:5000/api/orders \
     "items": [
       {
         "productId": "<PRODUCT_ID>",
-        "quantity": 2
+        "productName": "Test Product",
+        "quantity": 2,
+        "unitPrice": 149.99
       }
     ]
   }'
@@ -50,13 +52,13 @@ curl -X POST http://localhost:5000/api/orders \
 
 | Check | Expected |
 |-------|----------|
-| HTTP Response | 201 Created |
+| HTTP Response | 200 OK |
 | Response status | `"status": "Confirmed"` |
 | Order in DB | Status = Confirmed |
-| Product stock | Decreased by 2 (98 remaining) |
-| Stock Reservation | Created with Status = Active |
+| Product stock | **UNCHANGED** (stock is NOT decreased) |
+| Stock Reservation | Created with Status = 0 (Active) |
 | RabbitMQ | `OrderConfirmedEvent` published |
-| Notification Service | Logs confirmation email sent |
+| Notification DB | `ProcessedMessages` has `OrderConfirmedConsumer` row |
 
 ### Verification Commands
 
@@ -86,7 +88,8 @@ Customer cancels a confirmed order. Stock is released back to inventory and canc
 ```bash
 # Cancel the order created in scenario 1
 curl -X POST http://localhost:5000/api/orders/<ORDER_ID>/cancel \
-  -H "Content-Type: application/json"
+  -H "Content-Type: application/json" \
+  -d '{"reason": "Customer requested cancellation"}'
 ```
 
 ### Expected Results
@@ -96,10 +99,10 @@ curl -X POST http://localhost:5000/api/orders/<ORDER_ID>/cancel \
 | HTTP Response | 200 OK |
 | Response status | `"status": "Cancelled"` |
 | Order in DB | Status = Cancelled |
-| Product stock | Increased back (100 again) |
-| Stock Reservation | Status = Released |
+| Product stock | **UNCHANGED** (stock is never modified) |
+| Stock Reservation | Status = 1 (Released) |
 | RabbitMQ | `OrderCancelledEvent` published |
-| Notification Service | Logs cancellation email sent |
+| Notification DB | `ProcessedMessages` has `OrderCancelledConsumer` row |
 
 ### Verification Commands
 
@@ -149,7 +152,9 @@ curl -X POST http://localhost:5000/api/orders \
     "items": [
       {
         "productId": "<PRODUCT_ID>",
-        "quantity": 10
+        "productName": "Limited Item",
+        "quantity": 10,
+        "unitPrice": 99.99
       }
     ]
   }'

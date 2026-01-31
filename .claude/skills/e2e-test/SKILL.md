@@ -40,9 +40,16 @@ Execute end-to-end test scenarios against running microservices with automatic d
 
 | Database | Tables | Purpose |
 |----------|--------|---------|
-| `productdb` | `Product`, `Stock`, `StockReservation` | Product catalog |
-| `orderdb` | `Order`, `OrderItem`, `OutboxMessage` | Orders + outbox |
-| `notificationdb` | `ProcessedMessage` | Inbox pattern |
+| `productdb` | `Product`, `Stock`, `StockReservation`, `OutboxMessage`, `InboxState` | Product catalog & stock |
+| `orderdb` | `Order`, `OrderItem`, `OutboxMessage`, `OutboxState`, `InboxState` | Orders + outbox |
+| `notificationdb` | `ProcessedMessages` | Inbox pattern (note: plural "Messages") |
+
+### Stock Behavior (IMPORTANT)
+
+**Stock quantity is NOT decreased** when orders are created. Instead:
+- A `StockReservation` record is created with `Status=0` (Active)
+- When order is cancelled, reservation changes to `Status=1` (Released)
+- The `Stock.Quantity` field represents total inventory, not available inventory
 
 ### Message Flow
 
@@ -74,11 +81,25 @@ Based on `$ARGUMENTS`, plan the test scenario:
 
 #### `happy` - Order Happy Path
 1. GET products → pick one with stock > 0
-2. POST order → create order
+2. POST order → create order (see API Contract below)
 3. Verify: Order status = Confirmed
-4. Verify: Stock decreased
-5. Verify: Notification inbox has record
+4. Verify: StockReservation created (Status=0)
+5. Verify: Notification inbox has record (`ProcessedMessages` table)
 6. Check logs for complete flow
+
+**API Contract - Create Order:**
+```json
+{
+  "customerId": "guid",
+  "customerEmail": "email@example.com",
+  "items": [{
+    "productId": "guid",
+    "productName": "required!",
+    "quantity": 2,
+    "unitPrice": 149.99
+  }]
+}
+```
 
 #### `unhappy` - Failure Scenarios
 1. **Out of stock**: Order product with quantity > available
@@ -89,10 +110,18 @@ Based on `$ARGUMENTS`, plan the test scenario:
 
 #### `cancel` - Order Cancellation
 1. Create order first (happy path)
-2. POST cancel order
+2. POST cancel order (see API Contract below)
 3. Verify: Order status = Cancelled
-4. Verify: Stock released
-5. Verify: Cancellation event sent
+4. Verify: StockReservation status changed to 1 (Released)
+5. Verify: Cancellation notification processed (`OrderCancelledConsumer`)
+
+**API Contract - Cancel Order:**
+```bash
+POST /api/orders/{orderId}/cancel
+Content-Type: application/json
+
+{"reason": "Customer requested cancellation"}  # Body is REQUIRED!
+```
 
 #### `debug` - Service Debug Info
 1. Show all service ports and URLs
@@ -136,14 +165,36 @@ Use these helpers:
 # Service discovery
 ./tools/e2e-test/discover.sh
 
-# API calls
-curl -s http://localhost:$PORT/api/endpoint | jq '.'
+# API calls (use Gateway port from discovery)
+curl -s http://localhost:$GATEWAY_PORT/api/endpoint | jq '.'
 
-# Database queries
-./tools/e2e-test/db-query.sh <database> "<SQL>"
+# Database queries - get password first, then query
+PG_PASS=$(docker exec <container> printenv POSTGRES_PASSWORD)
+docker exec -e PGPASSWORD="$PG_PASS" <container> psql -U postgres -d <db> -c '<SQL>'
+
+# Example:
+PG_PASS=$(docker exec postgres-4cdf07e3 printenv POSTGRES_PASSWORD)
+docker exec -e PGPASSWORD="$PG_PASS" postgres-4cdf07e3 psql -U postgres -d productdb -c 'SELECT * FROM "StockReservation";'
 
 # Log inspection
 ./tools/e2e-test/logs.sh <service> [lines]
+
+# Trace correlation ID
+./tools/e2e-test/trace-correlation.sh <correlation-id>
+```
+
+### Finding Service Ports Manually
+
+If `discover.sh` fails to find services, use this:
+
+```bash
+# List all dotnet processes with ports
+lsof -i -P -n | grep -E "EShop\.(Ord|Pro|Gat)" | grep LISTEN
+
+# Typical output:
+# EShop.Ord 45956  ... TCP 127.0.0.1:49814 (LISTEN)  <- Order API HTTP
+# EShop.Pro 45955  ... TCP 127.0.0.1:49815 (LISTEN)  <- Product API HTTP
+# EShop.Gat 45954  ... TCP 127.0.0.1:49818 (LISTEN)  <- Gateway HTTP
 ```
 
 ### Phase 4: Reporting
@@ -226,12 +277,28 @@ Wait for user decision before proceeding.
 
 | Check | Query/Command | Expected |
 |-------|---------------|----------|
-| API Response | `POST /api/orders` | 201, `status: "Confirmed"` |
-| Order in DB | `SELECT * FROM "Order" WHERE "Id"='X'` | `Status = 1` |
-| Stock reserved | `SELECT * FROM "StockReservation" WHERE "OrderId"='X'` | 1 row |
-| Stock decreased | `SELECT "Quantity" FROM "Stock" WHERE "ProductId"='X'` | original - ordered |
-| Outbox empty | `SELECT * FROM "OutboxMessage"` | 0 pending |
-| Notification inbox | `SELECT * FROM "ProcessedMessage"` | 1 row for OrderConfirmed |
+| API Response | `POST /api/orders` | 200, `status: "Confirmed"` |
+| Order in DB | `SELECT * FROM "Order" WHERE "Id"='X'` | `Status = 1` (Confirmed) |
+| Reservation created | `SELECT * FROM "StockReservation" WHERE "OrderId"='X'` | 1 row, `Status=0` |
+| Stock unchanged | `SELECT "Quantity" FROM "Stock"` | Same as before (stock is NOT decreased) |
+| Outbox processed | `SELECT * FROM "OutboxMessage"` | 0 pending (processed) |
+| Notification inbox | `SELECT * FROM "ProcessedMessages"` | `OrderConfirmedConsumer` row |
+
+### Order Cancellation
+
+| Check | Query/Command | Expected |
+|-------|---------------|----------|
+| API Response | `POST /api/orders/{id}/cancel` | 200, `status: "Cancelled"` |
+| Order in DB | `SELECT * FROM "Order" WHERE "Id"='X'` | `Status = 3` (Cancelled) |
+| Reservation released | `SELECT * FROM "StockReservation" WHERE "OrderId"='X'` | `Status=1` (Released) |
+| Notification inbox | `SELECT * FROM "ProcessedMessages"` | `OrderCancelledConsumer` row |
+
+### Stock Low Alert
+
+| Check | Query/Command | Expected |
+|-------|---------------|----------|
+| Triggered when | Reservation makes available < threshold | `StockLowEvent` published |
+| Notification inbox | `SELECT * FROM "ProcessedMessages"` | `StockLowConsumer` row |
 
 ### Log Patterns to Verify
 
@@ -389,11 +456,10 @@ DELETE FROM "InboxState";
 -- Clear stock reservations (productdb)
 DELETE FROM "StockReservation";
 
--- Reset stock to original values (productdb)
-UPDATE "Stock" SET "Quantity" = 100;
+-- Note: Stock.Quantity doesn't need reset - it's not modified by orders
 
--- Clear processed messages (notificationdb)
-DELETE FROM "ProcessedMessage";
+-- Clear processed messages (notificationdb) - note plural "Messages"
+DELETE FROM "ProcessedMessages";
 ```
 
 ### When to Clean Up
@@ -428,3 +494,18 @@ DELETE FROM "ProcessedMessage";
 | `./tools/reset-db.sh` | Database reset script |
 | `src/Services/*/logs/*.log` | Service log files |
 | `http://localhost:PORT/swagger` | API documentation |
+
+## Technical Notes
+
+### StockReservation Table Schema
+- `ReservedAt` - timestamp when reservation was made
+- `ExpiresAt` - when reservation expires
+- `Status`: 0 = Active, 1 = Released
+
+### Process Names in lsof
+Aspire services use truncated names:
+- `EShop.Ord` / `Order.API`
+- `EShop.Pro` / `Products.`
+- `EShop.Gat` / `Gateway.A`
+
+The `discover.sh` script searches for both naming patterns.
