@@ -1,5 +1,7 @@
 ﻿namespace EShop.Common.Application.Correlation;
 
+/// Ambient context for CorrelationId using AsyncLocal. Analogous to HttpContext.
+/// For DI-friendly access, use <see cref="ICorrelationIdAccessor"/> instead.
 public sealed class CorrelationContext
 {
     private static readonly AsyncLocal<CorrelationContext?> CurrentContext = new();

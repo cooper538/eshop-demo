@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-03 |
-| Status | ⚪ pending |
+| Status | 🔵 in_progress |
 | Dependencies | task-01 |
 | Est. Tests | ~17 |
 
