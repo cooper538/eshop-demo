@@ -1,4 +1,4 @@
-﻿using EShop.ServiceClients.Exceptions;
+﻿using EShop.Contracts.ServiceClients;
 using Grpc.Core;
 
 namespace EShop.ServiceClients.Infrastructure.Grpc;

@@ -19,7 +19,7 @@ var rabbitmq = builder
 
 // Migration service runs first and applies all database migrations
 var migrationService = builder
-    .AddProject<Projects.EShop_DatabaseMigration>("migration-service")
+    .AddProject<Projects.EShop_DatabaseMigration>(ResourceNames.Services.Migration)
     .WithReference(productDb)
     .WithReference(orderDb)
     .WithReference(notificationDb)
@@ -29,7 +29,7 @@ var migrationService = builder
 
 // All services wait for migrations to complete
 var productService = builder
-    .AddProject<Projects.EShop_Products_API>("product-service")
+    .AddProject<Projects.EShop_Products_API>(ResourceNames.Services.Product)
     .WithHttpEndpoint()
     .WithHttpsEndpoint()
     .WithReference(productDb)
@@ -38,7 +38,7 @@ var productService = builder
     .WaitFor(rabbitmq);
 
 var orderService = builder
-    .AddProject<Projects.EShop_Order_API>("order-service")
+    .AddProject<Projects.EShop_Order_API>(ResourceNames.Services.Order)
     .WithHttpEndpoint()
     .WithHttpsEndpoint()
     .WithReference(orderDb)
@@ -48,19 +48,19 @@ var orderService = builder
     .WaitFor(rabbitmq);
 
 var notificationService = builder
-    .AddProject<Projects.EShop_NotificationService>("notification-service")
+    .AddProject<Projects.EShop_NotificationService>(ResourceNames.Services.Notification)
     .WithReference(notificationDb)
     .WithReference(rabbitmq)
     .WaitForCompletion(migrationService)
     .WaitFor(rabbitmq);
 
 var analyticsService = builder
-    .AddProject<Projects.EShop_AnalyticsService>("analytics-service")
+    .AddProject<Projects.EShop_AnalyticsService>(ResourceNames.Services.Analytics)
     .WithReference(rabbitmq)
     .WaitFor(rabbitmq);
 
 var gateway = builder
-    .AddProject<Projects.EShop_Gateway_API>("gateway")
+    .AddProject<Projects.EShop_Gateway_API>(ResourceNames.Services.Gateway)
     .WithHttpEndpoint()
     .WithHttpsEndpoint()
     .WithReference(productService)

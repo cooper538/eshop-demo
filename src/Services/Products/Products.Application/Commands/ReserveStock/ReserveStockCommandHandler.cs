@@ -42,10 +42,17 @@ public sealed class ReserveStockCommandHandler
         var now = _dateTimeProvider.UtcNow;
         var reservationDuration = _options.DefaultDuration;
 
-        foreach (var item in request.Items)
+        try
         {
-            stocks[item.ProductId]
-                .ReserveStock(request.OrderId, item.Quantity, now, reservationDuration);
+            foreach (var item in request.Items)
+            {
+                stocks[item.ProductId]
+                    .ReserveStock(request.OrderId, item.Quantity, now, reservationDuration);
+            }
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StockReservationResult.Failed(ex.Message);
         }
 
         return StockReservationResult.Succeeded();
