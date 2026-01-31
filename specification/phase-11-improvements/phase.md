@@ -3,24 +3,31 @@
 ## Metadata
 | Key | Value |
 |-----|-------|
-| Status | 🔵 in progress |
+| Status | 🔵 in_progress |
 
-## Overview
+## Objective
+Address technical debt, improve DDD alignment, and validate system reliability through E2E testing.
 
-This phase contains improvements, refactoring, and technical debt fixes that emerged during development.
-These are enhancements that improve code quality, domain model alignment, or architectural patterns.
+## Scope
+- [x] Separate Product catalog from Stock inventory (distinct aggregates)
+- [x] Architecture tests for Clean Architecture and DDD compliance
+- [x] UnitOfWork behavior refactoring (domain events before SaveChanges)
+- [x] IDateTimeProvider abstraction for testability
+- [x] Analytics Service (pub-sub pattern demonstration)
+- [ ] E2E happy flow validation (Order flows, Stock Low Alert, CorrelationId)
+- [ ] E2E error flow validation (404, 400, service unavailable)
 
 ## Tasks
 
-| # | Task | Description | Status |
-|---|------|-------------|--------|
-| 01 | [Product Domain Refactoring](tasks/task-01-product-domain-refactoring.md) | Separate Product catalog from Stock inventory into distinct aggregates | ✅ Completed |
-| 02 | [Architecture Tests](tasks/task-02-architecture-tests.md) | NetArchTest.Rules tests for Clean Architecture and DDD compliance | ✅ Completed |
-| 03 | [UnitOfWork Behavior](tasks/task-03-unitofwork-behavior.md) | Refactor domain event dispatch to run before SaveChangesAsync | ✅ Completed |
-| 04 | [IDateTimeProvider](tasks/task-04-datetime-provider.md) | Introduce IDateTimeProvider abstraction for testability | ✅ Completed |
-| 05 | [Analytics Service](tasks/task-05-analytics-service.md) | New microservice demonstrating pub-sub pattern with OrderConfirmed consumer | ✅ Completed |
-| 06 | [E2E Happy Flow Validation](tasks/task-06-e2e-happy-flow-validation.md) | Complete E2E validation of all Order flows, Stock Low Alert, and Correlation ID propagation | ⚪ Pending |
-| 07 | [E2E Error Flow Validation](tasks/task-07-e2e-error-flow-validation.md) | Complete E2E validation of error flows (404, 400, service unavailable) | ⚪ Pending |
+| # | Task | Status | Dependencies |
+|---|------|--------|--------------|
+| 01 | [Product Domain Refactoring](tasks/task-01-product-domain-refactoring.md) | ✅ | - |
+| 02 | [Architecture Tests](tasks/task-02-architecture-tests.md) | ✅ | - |
+| 03 | [UnitOfWork Behavior](tasks/task-03-unitofwork-behavior.md) | ✅ | - |
+| 04 | [IDateTimeProvider](tasks/task-04-datetime-provider.md) | ✅ | - |
+| 05 | [Analytics Service](tasks/task-05-analytics-service.md) | ✅ | - |
+| 06 | [E2E Happy Flow Validation](tasks/task-06-e2e-happy-flow-validation.md) | ⚪ | 05 |
+| 07 | [E2E Error Flow Validation](tasks/task-07-e2e-error-flow-validation.md) | ⚪ | 06 |
 
 ## Goals
 
