@@ -59,6 +59,26 @@ Order API → [gRPC] → Product API (ReserveStock)
 OrderConfirmedEvent → [RabbitMQ] → Notification + Analytics
 ```
 
+## CRITICAL: Gateway-First Rule
+
+**ALL API calls in E2E tests MUST go through the Gateway.** This is non-negotiable.
+
+```
+✓ CORRECT:  curl http://localhost:$GATEWAY_PORT/api/products
+✗ WRONG:    curl http://localhost:$PRODUCT_PORT/api/products
+```
+
+**Why:**
+- Gateway is the only entry point in production
+- E2E tests must simulate real-world usage
+- Tests the full stack: YARP proxy, correlation ID propagation, routing
+- Catches Gateway-specific issues (routing, headers, timeouts)
+
+**When direct service access is allowed:**
+- `debug` scenario only - to compare Gateway vs direct response
+- Troubleshooting when Gateway returns error but you need to verify backend works
+- Never in `happy`, `unhappy`, `cancel` scenarios
+
 ## Process
 
 ### Phase 0: Service Mode Selection
@@ -110,11 +130,12 @@ If services are not running:
 Based on `$ARGUMENTS`, plan the test scenario:
 
 #### `happy` - Order Happy Path
-1. GET products → pick one with stock > 0
-2. POST order → create order (see API Contract below)
-3. Verify: Order status = Confirmed
-4. Verify: StockReservation created (Status=0)
-5. Verify: Notification inbox has record (`ProcessedMessages` table)
+All API calls via Gateway (`$GATEWAY_PORT`):
+1. GET `/api/products` via Gateway → pick one with stock > 0
+2. POST `/api/orders` via Gateway → create order (see API Contract below)
+3. Verify: Order status = Confirmed (via Gateway GET `/api/orders/{id}`)
+4. Verify: StockReservation created (Status=0) - DB query
+5. Verify: Notification inbox has record (`ProcessedMessages` table) - DB query
 6. Check logs for complete flow
 
 **API Contract - Create Order:**
@@ -132,18 +153,20 @@ Based on `$ARGUMENTS`, plan the test scenario:
 ```
 
 #### `unhappy` - Failure Scenarios
-1. **Out of stock**: Order product with quantity > available
-2. **Invalid product**: Order non-existent productId
-3. **Invalid data**: Missing required fields
-4. Verify: Appropriate error responses
-5. Verify: No side effects (stock unchanged, no events)
+All API calls via Gateway (`$GATEWAY_PORT`):
+1. **Out of stock**: POST `/api/orders` via Gateway with quantity > available
+2. **Invalid product**: POST `/api/orders` via Gateway with non-existent productId
+3. **Invalid data**: POST `/api/orders` via Gateway with missing required fields
+4. Verify: Appropriate error responses from Gateway
+5. Verify: No side effects (stock unchanged, no events) - DB queries
 
 #### `cancel` - Order Cancellation
-1. Create order first (happy path)
-2. POST cancel order (see API Contract below)
-3. Verify: Order status = Cancelled
-4. Verify: StockReservation status changed to 1 (Released)
-5. Verify: Cancellation notification processed (`OrderCancelledConsumer`)
+All API calls via Gateway (`$GATEWAY_PORT`):
+1. Create order first via Gateway (happy path steps 1-2)
+2. POST `/api/orders/{orderId}/cancel` via Gateway (see API Contract below)
+3. Verify: Order status = Cancelled (via Gateway GET `/api/orders/{id}`)
+4. Verify: StockReservation status changed to 1 (Released) - DB query
+5. Verify: Cancellation notification processed (`OrderCancelledConsumer`) - DB query
 
 **API Contract - Cancel Order:**
 ```bash
@@ -154,12 +177,15 @@ Content-Type: application/json
 ```
 
 #### `debug` - Service Debug Info
-1. Show all service ports and URLs
+**This is the only scenario where direct service access is allowed** (for comparison/troubleshooting).
+
+1. Show all service ports and URLs (Gateway + backend services)
 2. Show database connection info
 3. Show recent logs (last 20 lines per service)
 4. Show message queue status (RabbitMQ)
 5. Show gRPC connectivity status
 6. Check service discovery configuration
+7. (Optional) Compare Gateway response vs direct service response
 
 #### `trace <correlation-id>` - Distributed Request Tracing
 1. Run `./tools/e2e-test/trace-correlation.sh <correlation-id>`
@@ -189,14 +215,23 @@ Execute scenario step by step. **After each step:**
 2. Verify expected outcome
 3. If failure detected → **STOP and consult user**
 
+**REMEMBER: All API calls go through Gateway!** (see Gateway-First Rule above)
+
 Use these helpers:
 
 ```bash
-# Service discovery
+# Service discovery - saves ports to .env file
 ./tools/e2e-test/discover.sh
+source ./tools/e2e-test/.env
 
-# API calls (use Gateway port from discovery)
-curl -s http://localhost:$GATEWAY_PORT/api/endpoint | jq '.'
+# API calls - ALWAYS use Gateway port!
+curl -s "http://localhost:$GATEWAY_PORT/api/products" | jq '.'
+curl -s "http://localhost:$GATEWAY_PORT/api/orders" | jq '.'
+curl -s -X POST "http://localhost:$GATEWAY_PORT/api/orders" -H "Content-Type: application/json" -d '...'
+
+# WRONG - never call services directly in E2E tests:
+# curl -s "http://localhost:$PRODUCT_PORT/api/products"  # ✗ DON'T DO THIS
+# curl -s "http://localhost:$ORDER_PORT/api/orders"      # ✗ DON'T DO THIS
 
 # Database queries - get password first, then query
 PG_PASS=$(docker exec <container> printenv POSTGRES_PASSWORD)
@@ -237,11 +272,13 @@ Generate structured report:
 ═══════════════════════════════════════════════════════
 
 ENVIRONMENT
-  Gateway:      http://localhost:XXXXX ✓
-  Order API:    http://localhost:XXXXX ✓
-  Product API:  http://localhost:XXXXX ✓
+  Gateway:      http://localhost:XXXXX ✓  ← All API calls go here
   PostgreSQL:   localhost:XXXXX ✓
   RabbitMQ:     localhost:XXXXX ✓
+
+  Backend services (for reference only):
+    Order API:    http://localhost:XXXXX ✓
+    Product API:  http://localhost:XXXXX ✓
 
 SCENARIO: <description>
 
@@ -303,11 +340,14 @@ Wait for user decision before proceeding.
 
 ## Key Validation Points
 
+**Note:** All API calls in these validation points go through Gateway.
+
 ### Order Creation (Happy Path)
 
 | Check | Query/Command | Expected |
 |-------|---------------|----------|
-| API Response | `POST /api/orders` | 200, `status: "Confirmed"` |
+| API Response | `POST $GATEWAY_PORT/api/orders` | 200, `status: "Confirmed"` |
+| Get Order | `GET $GATEWAY_PORT/api/orders/{id}` | `status: "Confirmed"` |
 | Order in DB | `SELECT * FROM "Order" WHERE "Id"='X'` | `Status = 1` (Confirmed) |
 | Reservation created | `SELECT * FROM "StockReservation" WHERE "OrderId"='X'` | 1 row, `Status=0` |
 | Stock unchanged | `SELECT "Quantity" FROM "Stock"` | Same as before (stock is NOT decreased) |
@@ -318,7 +358,8 @@ Wait for user decision before proceeding.
 
 | Check | Query/Command | Expected |
 |-------|---------------|----------|
-| API Response | `POST /api/orders/{id}/cancel` | 200, `status: "Cancelled"` |
+| API Response | `POST $GATEWAY_PORT/api/orders/{id}/cancel` | 200, `status: "Cancelled"` |
+| Get Order | `GET $GATEWAY_PORT/api/orders/{id}` | `status: "Cancelled"` |
 | Order in DB | `SELECT * FROM "Order" WHERE "Id"='X'` | `Status = 3` (Cancelled) |
 | Reservation released | `SELECT * FROM "StockReservation" WHERE "OrderId"='X'` | `Status=1` (Released) |
 | Notification inbox | `SELECT * FROM "ProcessedMessages"` | `OrderCancelledConsumer` row |

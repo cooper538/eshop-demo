@@ -21,6 +21,9 @@ public sealed class CorrelationIdMiddleware
             context.Request.Headers[CorrelationIdConstants.HttpHeaderName].FirstOrDefault()
             ?? Guid.NewGuid().ToString();
 
+        // Set header in REQUEST so YARP (reverse proxy) forwards it to downstream services
+        context.Request.Headers[CorrelationIdConstants.HttpHeaderName] = correlationId;
+
         context.Response.OnStarting(() =>
         {
             context.Response.Headers[CorrelationIdConstants.HttpHeaderName] = correlationId;
