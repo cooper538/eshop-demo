@@ -1,0 +1,525 @@
+{
+  "info": {
+    "_postman_id": "e-shop-api-collection",
+    "name": "EShop API",
+    "description": "Postman collection for E-Shop microservices.\n\n## Usage\n1. Select environment (Development/Production)\n2. Update `baseUrl` from Aspire dashboard\n3. Run requests - IDs are auto-saved",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "correlationId",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.environment.get('correlationId') || pm.environment.get('correlationId').startsWith('test-')) {",
+          "    pm.environment.set('correlationId', 'test-' + Date.now());",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/api/products?page=1&pageSize=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"],
+              "query": [{"key": "page", "value": "1"}, {"key": "pageSize", "value": "20"}]
+            }
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "var json = pm.response.json();",
+            "if (json.items?.length > 0) pm.environment.set('productId', json.items[0].id);"
+          ]}}]
+        },
+        {
+          "name": "List Products (with Category)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/api/products?category=Electronics&page=1&pageSize=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"],
+              "query": [{"key": "category", "value": "Electronics"}, {"key": "page", "value": "1"}, {"key": "pageSize", "value": "20"}]
+            }
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ]}}]
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{productId}}"]
+            }
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ]}}]
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"Test Product\",\n  \"description\": \"A test product\",\n  \"price\": 99.99,\n  \"stockQuantity\": 100,\n  \"lowStockThreshold\": 10,\n  \"category\": \"Electronics\"\n}"},
+            "url": {"raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.environment.set('productId', pm.response.json().id);"
+          ]}}]
+        },
+        {
+          "name": "Create Product (Low Stock)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"Low Stock Product\",\n  \"description\": \"Product with low stock threshold\",\n  \"price\": 49.99,\n  \"stockQuantity\": 10,\n  \"lowStockThreshold\": 5,\n  \"category\": \"Books\"\n}"},
+            "url": {"raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.environment.set('lowStockProductId', pm.response.json().id);"
+          ]}}]
+        },
+        {
+          "name": "Create Product (Limited Stock)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"Limited Stock Product\",\n  \"description\": \"Very limited stock\",\n  \"price\": 199.99,\n  \"stockQuantity\": 5,\n  \"lowStockThreshold\": 2,\n  \"category\": \"Clothing\"\n}"},
+            "url": {"raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.environment.set('limitedStockProductId', pm.response.json().id);"
+          ]}}]
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"id\": \"{{productId}}\",\n  \"name\": \"Updated Product\",\n  \"description\": \"Updated description\",\n  \"price\": 149.99,\n  \"lowStockThreshold\": 15,\n  \"category\": \"Electronics\"\n}"},
+            "url": {"raw": "{{baseUrl}}/api/products/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api", "products", "{{productId}}"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ]}}]
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "List Orders",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders?page=1&pageSize=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"],
+              "query": [{"key": "page", "value": "1"}, {"key": "pageSize", "value": "20"}]
+            }
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ]}}]
+        },
+        {
+          "name": "List Orders (by Customer)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders?customerId={{customerId}}&page=1&pageSize=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"],
+              "query": [{"key": "customerId", "value": "{{customerId}}"}, {"key": "page", "value": "1"}, {"key": "pageSize", "value": "20"}]
+            }
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ]}}]
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "url": {"raw": "{{baseUrl}}/api/orders/{{orderId}}", "host": ["{{baseUrl}}"], "path": ["api", "orders", "{{orderId}}"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ]}}]
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Test Product\",\n      \"quantity\": 2,\n      \"unitPrice\": 99.99\n    }\n  ]\n}"},
+            "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.environment.set('orderId', pm.response.json().orderId);"
+          ]}}]
+        },
+        {
+          "name": "Create Order (Multiple Items)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [\n    {\"productId\": \"{{productId}}\", \"productName\": \"Product 1\", \"quantity\": 1, \"unitPrice\": 99.99},\n    {\"productId\": \"{{lowStockProductId}}\", \"productName\": \"Product 2\", \"quantity\": 2, \"unitPrice\": 49.99}\n  ]\n}"},
+            "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.environment.set('multiItemOrderId', pm.response.json().orderId);"
+          ]}}]
+        },
+        {
+          "name": "Create Order (Exceed Stock)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [\n    {\"productId\": \"{{limitedStockProductId}}\", \"productName\": \"Limited Product\", \"quantity\": 999, \"unitPrice\": 199.99}\n  ]\n}"},
+            "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.environment.set('rejectedOrderId', pm.response.json().orderId);"
+          ]}}]
+        },
+        {
+          "name": "Create Order (Non-existent Product)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [\n    {\"productId\": \"00000000-0000-0000-0000-000000000000\", \"productName\": \"Non-existent Product\", \"quantity\": 1, \"unitPrice\": 99.99}\n  ]\n}"},
+            "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 4XX', () => pm.expect(pm.response.code).to.be.within(400, 499));"
+          ]}}]
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"reason\": \"Customer requested cancellation\"\n}"},
+            "url": {"raw": "{{baseUrl}}/api/orders/{{orderId}}/cancel", "host": ["{{baseUrl}}"], "path": ["api", "orders", "{{orderId}}", "cancel"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ]}}]
+        }
+      ]
+    },
+    {
+      "name": "E2E Flows",
+      "item": [
+        {
+          "name": "1. Happy Path - Create Order",
+          "item": [
+            {
+              "name": "1.1 Create Product",
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Happy Path Product\",\n  \"description\": \"E2E test product\",\n  \"price\": 75.00,\n  \"stockQuantity\": 50,\n  \"lowStockThreshold\": 5,\n  \"category\": \"E2E-Test\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"]}
+              },
+              "event": [
+                {"listen": "prerequest", "script": {"type": "text/javascript", "exec": ["pm.environment.set('correlationId', 'happy-path-' + Date.now());"]}},
+                {"listen": "test", "script": {"type": "text/javascript", "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "var json = pm.response.json();",
+                  "pm.environment.set('e2eProductId', json.id);",
+                  "pm.environment.set('e2eProductName', json.name);",
+                  "pm.environment.set('e2eProductPrice', json.price);"
+                ]}}
+              ]
+            },
+            {
+              "name": "1.2 Create Order",
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{e2eProductId}}\", \"productName\": \"{{e2eProductName}}\", \"quantity\": 3, \"unitPrice\": {{e2eProductPrice}}}]\n}"},
+                "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
+              },
+              "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+                "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                "pm.environment.set('e2eOrderId', pm.response.json().orderId);"
+              ]}}]
+            },
+            {
+              "name": "1.3 Verify Order",
+              "request": {
+                "method": "GET",
+                "header": [{"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "url": {"raw": "{{baseUrl}}/api/orders/{{e2eOrderId}}", "host": ["{{baseUrl}}"], "path": ["api", "orders", "{{e2eOrderId}}"]}
+              },
+              "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));"
+              ]}}]
+            },
+            {
+              "name": "1.4 Verify Stock",
+              "request": {
+                "method": "GET",
+                "header": [{"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "url": {"raw": "{{baseUrl}}/api/products/{{e2eProductId}}", "host": ["{{baseUrl}}"], "path": ["api", "products", "{{e2eProductId}}"]}
+              },
+              "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));"
+              ]}}]
+            }
+          ]
+        },
+        {
+          "name": "2. Cancel Order Flow",
+          "item": [
+            {
+              "name": "2.1 Create Product",
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Cancel Flow Product\",\n  \"description\": \"E2E cancel test\",\n  \"price\": 50.00,\n  \"stockQuantity\": 20,\n  \"lowStockThreshold\": 5,\n  \"category\": \"E2E-Test\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"]}
+              },
+              "event": [
+                {"listen": "prerequest", "script": {"type": "text/javascript", "exec": ["pm.environment.set('correlationId', 'cancel-flow-' + Date.now());"]}},
+                {"listen": "test", "script": {"type": "text/javascript", "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "var json = pm.response.json();",
+                  "pm.environment.set('cancelProductId', json.id);",
+                  "pm.environment.set('cancelProductName', json.name);",
+                  "pm.environment.set('cancelProductPrice', json.price);"
+                ]}}
+              ]
+            },
+            {
+              "name": "2.2 Create Order",
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{cancelProductId}}\", \"productName\": \"{{cancelProductName}}\", \"quantity\": 5, \"unitPrice\": {{cancelProductPrice}}}]\n}"},
+                "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
+              },
+              "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+                "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                "pm.environment.set('cancelOrderId', pm.response.json().orderId);"
+              ]}}]
+            },
+            {
+              "name": "2.3 Cancel Order",
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "body": {"mode": "raw", "raw": "{\"reason\": \"E2E Test cancellation\"}"},
+                "url": {"raw": "{{baseUrl}}/api/orders/{{cancelOrderId}}/cancel", "host": ["{{baseUrl}}"], "path": ["api", "orders", "{{cancelOrderId}}", "cancel"]}
+              },
+              "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));"
+              ]}}]
+            },
+            {
+              "name": "2.4 Verify Order",
+              "request": {
+                "method": "GET",
+                "header": [{"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "url": {"raw": "{{baseUrl}}/api/orders/{{cancelOrderId}}", "host": ["{{baseUrl}}"], "path": ["api", "orders", "{{cancelOrderId}}"]}
+              },
+              "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));"
+              ]}}]
+            },
+            {
+              "name": "2.5 Verify Stock",
+              "request": {
+                "method": "GET",
+                "header": [{"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "url": {"raw": "{{baseUrl}}/api/products/{{cancelProductId}}", "host": ["{{baseUrl}}"], "path": ["api", "products", "{{cancelProductId}}"]}
+              },
+              "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));"
+              ]}}]
+            }
+          ]
+        },
+        {
+          "name": "3. Order Rejection Flow",
+          "item": [
+            {
+              "name": "3.1 Create Limited Product",
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Limited Edition\",\n  \"description\": \"Only 3 in stock\",\n  \"price\": 299.99,\n  \"stockQuantity\": 3,\n  \"lowStockThreshold\": 2,\n  \"category\": \"E2E-Test\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"]}
+              },
+              "event": [
+                {"listen": "prerequest", "script": {"type": "text/javascript", "exec": ["pm.environment.set('correlationId', 'rejection-' + Date.now());"]}},
+                {"listen": "test", "script": {"type": "text/javascript", "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "var json = pm.response.json();",
+                  "pm.environment.set('rejectProductId', json.id);",
+                  "pm.environment.set('rejectProductName', json.name);",
+                  "pm.environment.set('rejectProductPrice', json.price);"
+                ]}}
+              ]
+            },
+            {
+              "name": "3.2 Create Order (Exceeds Stock)",
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{rejectProductId}}\", \"productName\": \"{{rejectProductName}}\", \"quantity\": 10, \"unitPrice\": {{rejectProductPrice}}}]\n}"},
+                "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
+              },
+              "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+                "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                "pm.environment.set('rejectOrderId', pm.response.json().orderId);"
+              ]}}]
+            },
+            {
+              "name": "3.3 Verify Order",
+              "request": {
+                "method": "GET",
+                "header": [{"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "url": {"raw": "{{baseUrl}}/api/orders/{{rejectOrderId}}", "host": ["{{baseUrl}}"], "path": ["api", "orders", "{{rejectOrderId}}"]}
+              },
+              "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));"
+              ]}}]
+            },
+            {
+              "name": "3.4 Verify Stock",
+              "request": {
+                "method": "GET",
+                "header": [{"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "url": {"raw": "{{baseUrl}}/api/products/{{rejectProductId}}", "host": ["{{baseUrl}}"], "path": ["api", "products", "{{rejectProductId}}"]}
+              },
+              "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));"
+              ]}}]
+            }
+          ]
+        },
+        {
+          "name": "4. Stock Low Alert Flow",
+          "item": [
+            {
+              "name": "4.1 Create Product Near Threshold",
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Alert Test Product\",\n  \"description\": \"Stock near threshold\",\n  \"price\": 25.00,\n  \"stockQuantity\": 8,\n  \"lowStockThreshold\": 5,\n  \"category\": \"E2E-Test\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"]}
+              },
+              "event": [
+                {"listen": "prerequest", "script": {"type": "text/javascript", "exec": ["pm.environment.set('correlationId', 'stock-alert-' + Date.now());"]}},
+                {"listen": "test", "script": {"type": "text/javascript", "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "var json = pm.response.json();",
+                  "pm.environment.set('alertProductId', json.id);",
+                  "pm.environment.set('alertProductName', json.name);",
+                  "pm.environment.set('alertProductPrice', json.price);"
+                ]}}
+              ]
+            },
+            {
+              "name": "4.2 Order to Trigger Low Stock",
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{alertProductId}}\", \"productName\": \"{{alertProductName}}\", \"quantity\": 5, \"unitPrice\": {{alertProductPrice}}}]\n}"},
+                "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
+              },
+              "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+                "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                "pm.environment.set('alertOrderId', pm.response.json().orderId);"
+              ]}}]
+            },
+            {
+              "name": "4.3 Verify Stock",
+              "request": {
+                "method": "GET",
+                "header": [{"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "url": {"raw": "{{baseUrl}}/api/products/{{alertProductId}}", "host": ["{{baseUrl}}"], "path": ["api", "products", "{{alertProductId}}"]}
+              },
+              "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));"
+              ]}}]
+            }
+          ]
+        },
+        {
+          "name": "5. Correlation ID Test",
+          "item": [
+            {
+              "name": "5.1 Create Product",
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "body": {"mode": "raw", "raw": "{\n  \"name\": \"Correlation Test\",\n  \"description\": \"Testing correlation ID\",\n  \"price\": 10.00,\n  \"stockQuantity\": 100,\n  \"lowStockThreshold\": 10,\n  \"category\": \"E2E-Test\"\n}"},
+                "url": {"raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"]}
+              },
+              "event": [
+                {"listen": "prerequest", "script": {"type": "text/javascript", "exec": [
+                  "var id = 'trace-' + Date.now();",
+                  "pm.environment.set('correlationId', id);",
+                  "console.log('Correlation ID: ' + id);"
+                ]}},
+                {"listen": "test", "script": {"type": "text/javascript", "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.environment.set('traceProductId', pm.response.json().id);"
+                ]}}
+              ]
+            },
+            {
+              "name": "5.2 Create Order",
+              "request": {
+                "method": "POST",
+                "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
+                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{traceProductId}}\", \"productName\": \"Correlation Test\", \"quantity\": 2, \"unitPrice\": 10.00}]\n}"},
+                "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
+              },
+              "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+                "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                "console.log('Trace with: ./tools/e2e-test/trace-correlation.sh ' + pm.environment.get('correlationId'));"
+              ]}}]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
