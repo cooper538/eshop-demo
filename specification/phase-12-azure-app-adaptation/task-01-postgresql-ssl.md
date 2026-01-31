@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-01 |
-| Status | pending |
+| Status | in_progress |
 | Dependencies | - |
 
 ## Summary
@@ -96,4 +96,7 @@ public static IHostApplicationBuilder AddDatabaseAzure<TDbContext>(
 
 ---
 ## Notes
-(Updated during implementation)
+- TrustServerCertificate is obsolete in Npgsql 9.x - removed from implementation
+- Created `AddNpgsqlDbContextAzure<T>()` extension (not modifying Aspire's extension)
+- Added `AddNpgsqlDbContextPoolAzure<T>()` for high-throughput scenarios
+- Retry policy: 3 retries, max 10s delay
