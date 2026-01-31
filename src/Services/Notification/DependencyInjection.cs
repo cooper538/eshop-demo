@@ -1,5 +1,6 @@
 ﻿using EShop.Common.Application.Extensions;
 using EShop.Common.Infrastructure.Correlation.MassTransit;
+using EShop.Common.Infrastructure.Data;
 using EShop.NotificationService.Configuration;
 using EShop.NotificationService.Consumers;
 using EShop.NotificationService.Data;
@@ -21,7 +22,17 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        builder.AddNpgsqlDbContext<NotificationDbContext>(ResourceNames.Databases.Notification);
+        // Environment-aware database configuration
+        if (builder.Environment.IsProduction())
+        {
+            builder.AddNpgsqlDbContextAzure<NotificationDbContext>(
+                ResourceNames.Databases.Notification
+            );
+        }
+        else
+        {
+            builder.AddNpgsqlDbContext<NotificationDbContext>(ResourceNames.Databases.Notification);
+        }
 
         builder.Services.AddSingleton<IEmailService, FakeEmailService>();
         builder.Services.AddDateTimeProvider();

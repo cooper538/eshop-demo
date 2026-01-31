@@ -8,6 +8,12 @@ builder.AddYamlConfiguration("gateway");
 builder.AddServiceDefaults();
 builder.AddSerilog();
 
+// Azure: Load secrets from Key Vault before other configuration
+if (builder.Environment.IsProduction())
+{
+    builder.AddKeyVaultConfiguration();
+}
+
 builder
     .Services.AddHealthChecks()
     .AddServiceHealthCheck(ResourceNames.Services.Product)

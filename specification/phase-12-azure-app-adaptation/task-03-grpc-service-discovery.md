@@ -83,19 +83,22 @@ private static void RegisterGrpcClients(
 
 ## Service URL Configuration (Production/Azure)
 
-```yaml
-# order.settings.Production.yaml
-ServiceClients:
-  ProductService:
-    Url: https://product-service.internal.eshop-env.westeurope.azurecontainerapps.io
+Service URLs are injected via **environment variables** in Container Apps (not in YAML files):
+
+```bicep
+// In Container Apps Bicep module
+env: [
+  { name: 'ServiceClients__ProductService__Url', value: 'https://product-service.internal.${envSuffix}' }
+]
 ```
+
+.NET automatically maps `ServiceClients__ProductService__Url` → `ServiceClients:ProductService:Url`
 
 ## Files to Create/Modify
 
 | Action | File |
 |--------|------|
 | MODIFY | `src/Common/EShop.ServiceClients/Extensions/ServiceCollectionExtensions.cs` |
-| CREATE | `src/Services/Order/Order.API/order.settings.Production.yaml` |
 
 ## Related Specs
 - -> [azure-infrastructure.md](../high-level-specs/azure-infrastructure.md) (Section: 8.2 Service Discovery)
@@ -107,4 +110,4 @@ ServiceClients:
 - gRPC requires HTTP/2 which is supported by Container Apps
 - Environment detection: `IsDevelopment()` = local Aspire, `IsProduction()` = Azure
 - No new extension class needed - modify existing ServiceCollectionExtensions.cs
-- Updated `order.settings.Production.yaml` with Azure Container Apps FQDN for product-service
+- Service URLs injected via env vars in Container Apps (not in YAML files in git)
