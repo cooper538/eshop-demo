@@ -1,5 +1,4 @@
-# Gateway Service - Production Configuration
-# Overrides base gateway.settings.yaml for production environment
+# Gateway Service - Production Configuration (Azure)
 
 Logging:
   LogLevel:

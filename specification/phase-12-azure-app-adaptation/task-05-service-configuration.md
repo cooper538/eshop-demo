@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-05 |
-| Status | pending |
+| Status | in_progress |
 | Dependencies | task-01, task-02, task-03 |
 
 ## Summary
@@ -112,3 +112,5 @@ ServiceClients:
 - AppHost (Aspire) configuration remains unchanged - only individual services get Azure awareness
 - Environment detection uses built-in `IsProduction()` - no custom code needed
 - Config files: `*.settings.Production.yaml` (not `appsettings.Azure.yaml`)
+- `AddNpgsqlDbContextAzure` gracefully skips when connection string missing (design-time builds)
+- Gateway.API added reference to EShop.Common.Infrastructure for Key Vault support

@@ -1,4 +1,5 @@
 using EShop.Common.Application.Data;
+using EShop.Common.Infrastructure.Data;
 using EShop.Common.Infrastructure.Data.Interceptors;
 using EShop.Common.Infrastructure.Extensions;
 using EShop.Order.Application.Data;
@@ -17,19 +18,56 @@ public static class DependencyInjection
     {
         builder.Services.AddScoped<DomainEventDispatchInterceptor>();
 
-        builder.Services.AddDbContext<OrderDbContext>(
-            (sp, options) =>
-            {
-                var connectionString = builder.Configuration.GetConnectionString(
-                    ResourceNames.Databases.Order
-                );
-                options.UseNpgsql(connectionString);
-                options.AddInterceptors(sp.GetRequiredService<DomainEventDispatchInterceptor>());
-            }
-        );
+        // Environment-aware database configuration
+        if (builder.Environment.IsProduction())
+        {
+            var connectionString = builder.Configuration.GetConnectionString(
+                ResourceNames.Databases.Order
+            );
 
-        // Add Aspire health checks, retries, and telemetry
-        builder.EnrichNpgsqlDbContext<OrderDbContext>();
+            if (!string.IsNullOrWhiteSpace(connectionString))
+            {
+                connectionString = PostgresConnectionStringBuilder.EnsureSslMode(connectionString);
+
+                builder.Services.AddDbContext<OrderDbContext>(
+                    (sp, options) =>
+                    {
+                        options.UseNpgsql(
+                            connectionString,
+                            npgsqlOptions =>
+                            {
+                                npgsqlOptions.EnableRetryOnFailure(
+                                    maxRetryCount: 3,
+                                    maxRetryDelay: TimeSpan.FromSeconds(10),
+                                    errorCodesToAdd: null
+                                );
+                            }
+                        );
+                        options.AddInterceptors(
+                            sp.GetRequiredService<DomainEventDispatchInterceptor>()
+                        );
+                    }
+                );
+            }
+        }
+        else
+        {
+            builder.Services.AddDbContext<OrderDbContext>(
+                (sp, options) =>
+                {
+                    var connectionString = builder.Configuration.GetConnectionString(
+                        ResourceNames.Databases.Order
+                    );
+                    options.UseNpgsql(connectionString);
+                    options.AddInterceptors(
+                        sp.GetRequiredService<DomainEventDispatchInterceptor>()
+                    );
+                }
+            );
+
+            // Add Aspire health checks, retries, and telemetry
+            builder.EnrichNpgsqlDbContext<OrderDbContext>();
+        }
 
         builder.Services.AddScoped<IOrderDbContext>(sp => sp.GetRequiredService<OrderDbContext>());
 

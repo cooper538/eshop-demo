@@ -5,21 +5,8 @@ using Microsoft.Extensions.Hosting;
 
 namespace EShop.Common.Infrastructure.Data;
 
-/// <summary>
-/// Extension methods for configuring PostgreSQL database connections
-/// in Azure environments with SSL support.
-/// </summary>
 public static class DatabaseExtensions
 {
-    /// <summary>
-    /// Adds a PostgreSQL DbContext configured for Azure deployment with SSL mode enabled.
-    /// Use this method for Azure environments. For local development with Aspire,
-    /// use the standard AddNpgsqlDbContext from Aspire package.
-    /// </summary>
-    /// <typeparam name="TDbContext">The DbContext type to register</typeparam>
-    /// <param name="builder">The host application builder</param>
-    /// <param name="connectionName">The name of the connection string in configuration</param>
-    /// <returns>The host application builder for chaining</returns>
     public static IHostApplicationBuilder AddNpgsqlDbContextAzure<TDbContext>(
         this IHostApplicationBuilder builder,
         string connectionName
@@ -32,9 +19,8 @@ public static class DatabaseExtensions
 
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            throw new InvalidOperationException(
-                $"Connection string '{connectionName}' not found in configuration."
-            );
+            // Design-time build (OpenAPI generation) - skip DB registration gracefully
+            return builder;
         }
 
         connectionString = PostgresConnectionStringBuilder.EnsureSslMode(connectionString);
@@ -57,10 +43,6 @@ public static class DatabaseExtensions
         return builder;
     }
 
-    /// <summary>
-    /// Adds a PostgreSQL DbContext with pooling configured for Azure deployment.
-    /// Recommended for high-throughput scenarios.
-    /// </summary>
     public static IHostApplicationBuilder AddNpgsqlDbContextPoolAzure<TDbContext>(
         this IHostApplicationBuilder builder,
         string connectionName,
@@ -74,9 +56,7 @@ public static class DatabaseExtensions
 
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            throw new InvalidOperationException(
-                $"Connection string '{connectionName}' not found in configuration."
-            );
+            return builder;
         }
 
         connectionString = PostgresConnectionStringBuilder.EnsureSslMode(connectionString);

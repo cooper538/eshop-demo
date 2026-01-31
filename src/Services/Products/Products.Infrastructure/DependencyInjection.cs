@@ -1,4 +1,5 @@
 ﻿using EShop.Common.Application.Data;
+using EShop.Common.Infrastructure.Data;
 using EShop.Common.Infrastructure.Extensions;
 using EShop.Products.Application.Data;
 using EShop.Products.Infrastructure.BackgroundJobs;
@@ -13,7 +14,15 @@ public static class DependencyInjection
 {
     public static IHostApplicationBuilder AddInfrastructure(this IHostApplicationBuilder builder)
     {
-        builder.AddNpgsqlDbContext<ProductDbContext>(ResourceNames.Databases.Product);
+        // Environment-aware database configuration
+        if (builder.Environment.IsProduction())
+        {
+            builder.AddNpgsqlDbContextAzure<ProductDbContext>(ResourceNames.Databases.Product);
+        }
+        else
+        {
+            builder.AddNpgsqlDbContext<ProductDbContext>(ResourceNames.Databases.Product);
+        }
 
         builder.Services.AddScoped<IProductDbContext>(sp =>
             sp.GetRequiredService<ProductDbContext>()
