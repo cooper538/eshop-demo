@@ -39,6 +39,16 @@ public sealed class ReserveStockCommandHandler
         }
 
         var stocks = await LoadStocksAsync(request.Items, cancellationToken);
+
+        var requestedIds = request.Items.Select(i => i.ProductId).ToHashSet();
+        var missingIds = requestedIds.Except(stocks.Keys).ToList();
+        if (missingIds.Count > 0)
+        {
+            return StockReservationResult.ProductNotFound(
+                $"Products not found: {string.Join(", ", missingIds)}"
+            );
+        }
+
         var now = _dateTimeProvider.UtcNow;
         var reservationDuration = _options.DefaultDuration;
 

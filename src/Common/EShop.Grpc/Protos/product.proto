@@ -46,6 +46,13 @@ message OrderItem {
 message ReserveStockResponse {
   bool success = 1;
   optional string failure_reason = 2;
+  ErrorCode error_code = 3;
+}
+
+enum ErrorCode {
+  ERROR_CODE_NONE = 0;
+  ERROR_CODE_INSUFFICIENT_STOCK = 1;
+  ERROR_CODE_PRODUCT_NOT_FOUND = 2;
 }
 
 message ReleaseStockRequest {

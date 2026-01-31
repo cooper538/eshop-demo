@@ -77,6 +77,7 @@ public sealed class ProductGrpcService : ProductService.ProductServiceBase
         {
             Success = result.IsSuccess,
             FailureReason = result.FailureMessage ?? string.Empty,
+            ErrorCode = MapErrorCode(result.ErrorCode),
         };
     }
 
@@ -95,4 +96,15 @@ public sealed class ProductGrpcService : ProductService.ProductServiceBase
         };
     }
 #pragma warning restore CA1062
+
+    private static ErrorCode MapErrorCode(EStockReservationError errorCode)
+    {
+        return errorCode switch
+        {
+            EStockReservationError.None => ErrorCode.None,
+            EStockReservationError.InsufficientStock => ErrorCode.InsufficientStock,
+            EStockReservationError.ProductNotFound => ErrorCode.ProductNotFound,
+            _ => ErrorCode.None,
+        };
+    }
 }
