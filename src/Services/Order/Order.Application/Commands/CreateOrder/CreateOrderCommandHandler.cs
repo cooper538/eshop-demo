@@ -1,4 +1,5 @@
-﻿using EShop.Contracts.ServiceClients;
+﻿using EShop.Common.Application.Exceptions;
+using EShop.Contracts.ServiceClients;
 using EShop.Contracts.ServiceClients.Product;
 using EShop.Order.Application.Data;
 using EShop.SharedKernel.Services;
@@ -54,6 +55,14 @@ public sealed class CreateOrderCommandHandler
 
         if (!reservationResult.Success)
         {
+            // Validation error (product not found) - throw validation exception for 400 response
+            if (reservationResult.ErrorCode == EStockReservationErrorCode.ProductNotFound)
+            {
+                throw new ValidationException(
+                    reservationResult.FailureReason ?? "One or more products not found"
+                );
+            }
+
             // Business rejection (insufficient stock) - reject order
             order.Reject(
                 reservationResult.FailureReason ?? "Stock reservation failed",

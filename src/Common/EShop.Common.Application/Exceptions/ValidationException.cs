@@ -9,4 +9,10 @@ public sealed class ValidationException : ApplicationException
     {
         Errors = errors;
     }
+
+    public ValidationException(string message)
+        : base(message)
+    {
+        Errors = new Dictionary<string, string[]>();
+    }
 }
