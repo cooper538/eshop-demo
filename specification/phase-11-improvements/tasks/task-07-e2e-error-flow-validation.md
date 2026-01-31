@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-07 |
-| Status | ⚪ pending |
+| Status | 🔵 in_progress |
 | Dependencies | task-06 |
 | Type | Validation (non-development) |
 

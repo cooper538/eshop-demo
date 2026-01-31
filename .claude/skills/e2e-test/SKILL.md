@@ -61,19 +61,49 @@ OrderConfirmedEvent → [RabbitMQ] → Notification + Analytics
 
 ## Process
 
+### Phase 0: Service Mode Selection
+
+**ALWAYS start here.** Use `AskUserQuestion` to ask the user how they want to manage services:
+
+**Question:** "How should I manage services for this E2E test?"
+
+**Options:**
+1. **Manual (Recommended)** - "I'll run the services myself or they're already running"
+   - User controls AppHost in their own terminal
+   - Skill only discovers existing services
+   - User responsible for starting/stopping
+
+2. **Automatic** - "Start AppHost as a background process"
+   - Skill starts `dotnet run --project src/AppHost` in background using `run_in_background: true`
+   - Skill waits for services to be healthy
+   - Skill offers to stop AppHost at the end using `TaskStop`
+
+**Based on selection:**
+
+- **Manual mode:** Proceed to Phase 1 (Environment Discovery)
+- **Automatic mode:**
+  1. Start AppHost in background:
+     ```bash
+     dotnet run --project src/AppHost
+     ```
+     Use `run_in_background: true` parameter
+  2. Wait 15-30 seconds for services to start
+  3. Run discovery to verify services are healthy
+  4. If services not healthy after 60s, show logs and ask user what to do
+  5. **Remember the task_id** - you'll need it for cleanup at the end
+
 ### Phase 1: Environment Discovery
 
-**ALWAYS start here.** Run `./tools/e2e-test/discover.sh` to get:
+Run `./tools/e2e-test/discover.sh` to get:
 
 1. **Running services** - ports dynamically assigned by Aspire
 2. **Database connection** - PostgreSQL container and credentials
 3. **Message broker** - RabbitMQ management URL
 4. **Health status** - all service health endpoints
 
-If services are not running, inform user:
-```
-Services not detected. Start with: dotnet run --project src/AppHost
-```
+If services are not running:
+- **Manual mode:** Inform user: `Services not detected. Start with: dotnet run --project src/AppHost`
+- **Automatic mode:** Check AppHost logs for errors, report to user
 
 ### Phase 2: Scenario Planning
 
@@ -402,20 +432,34 @@ services
 
 ## Cleanup After Testing
 
-After completing tests, offer cleanup options to user:
+After completing tests, offer cleanup options based on the mode selected in Phase 0:
 
 ### Ask User About Cleanup
 
+**Manual mode:**
 ```
 Test completed. Cleanup options:
 
 1. Keep everything running (for further testing)
-2. Stop Aspire services (Ctrl+C in AppHost terminal)
-3. Reset test data (purge queues, clear orders)
-4. Full cleanup (stop services + reset data)
+2. Reset test data (purge queues, clear orders)
+
+Note: Stop services manually with Ctrl+C in your AppHost terminal.
+What would you like to do?
+```
+
+**Automatic mode (AppHost started by skill):**
+```
+Test completed. Cleanup options:
+
+1. Keep AppHost running (for further testing)
+2. Stop AppHost (terminate background process)
+3. Reset test data only (keep services running)
+4. Full cleanup (stop AppHost + reset data)
 
 What would you like to do?
 ```
+
+Use `TaskStop` with the saved `task_id` to stop the background AppHost process.
 
 ### Cleanup Commands
 
@@ -427,8 +471,25 @@ Use `./tools/e2e-test/cleanup.sh` for easy cleanup:
 ./tools/e2e-test/cleanup.sh queues    # Purge RabbitMQ queues
 ./tools/e2e-test/cleanup.sh logs      # Remove logs older than 7 days
 ./tools/e2e-test/cleanup.sh env       # Remove generated .env
-./tools/e2e-test/cleanup.sh all       # Full cleanup
+./tools/e2e-test/cleanup.sh services  # Kill all running EShop services
+./tools/e2e-test/cleanup.sh all       # Full cleanup (except services)
 ```
+
+### Kill Services
+
+Use `./tools/e2e-test/kill-services.sh` to kill all running EShop services:
+
+```bash
+./tools/e2e-test/kill-services.sh           # Show running services
+./tools/e2e-test/kill-services.sh kill      # Kill with confirmation
+./tools/e2e-test/kill-services.sh --force   # Kill without confirmation
+```
+
+This script finds and terminates all processes matching:
+- `EShop.*` (AppHost, common libs)
+- `Order.API`, `Products.API`, `Gateway.API`
+- `Notification.API`, `Analytics.API`
+- `DatabaseMigration`
 
 Or manually:
 
@@ -477,7 +538,8 @@ DELETE FROM "ProcessedMessages";
 - **Preserve logs** - useful for debugging issues found during tests
 - **Database reset** uses `./tools/reset-db.sh` which re-seeds products
 - **RabbitMQ queues** auto-recreate when services restart
-- **If you started AppHost** - always offer to stop it at the end (use TaskStop for background tasks)
+- **Automatic mode cleanup** - if you started AppHost in background, ALWAYS offer to stop it at the end using `TaskStop` with the saved `task_id`
+- **Manual mode** - user manages services, don't attempt to stop them
 
 ## Files Reference
 
@@ -491,6 +553,7 @@ DELETE FROM "ProcessedMessages";
 | `./tools/e2e-test/grpc.sh` | gRPC diagnostics |
 | `./tools/e2e-test/trace-correlation.sh` | Distributed tracing by CorrelationId |
 | `./tools/e2e-test/cleanup.sh` | Test cleanup (default: all) |
+| `./tools/e2e-test/kill-services.sh` | Kill all running EShop services |
 | `./tools/reset-db.sh` | Database reset script |
 | `src/Services/*/logs/*.log` | Service log files |
 | `http://localhost:PORT/swagger` | API documentation |
