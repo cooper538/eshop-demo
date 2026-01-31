@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-02 |
-| Status | pending |
+| Status | in_progress |
 | Dependencies | - |
 
 ## Summary
@@ -83,3 +83,5 @@ public class EShopSecretManager : KeyVaultSecretManager
 ## Notes
 - DefaultAzureCredential authentication chain: Environment -> Managed Identity -> Azure CLI -> Visual Studio
 - Key Vault URI format: `https://{vault-name}.vault.azure.net/`
+- Package versions: Azure.Identity 1.17.1, Azure.Extensions...Secrets 1.4.0
+- User-assigned MI supported via `KeyVault:ManagedIdentityClientId` config key
