@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Products.Infrastructure.Data;
+namespace EShop.Products.Infrastructure.Data;
 
 public class ProductDatabaseSeeder : BackgroundService
 {

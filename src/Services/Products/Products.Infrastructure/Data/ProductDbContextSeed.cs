@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
+using EShop.Products.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
-using Products.Domain.Entities;
 
-namespace Products.Infrastructure.Data;
+namespace EShop.Products.Infrastructure.Data;
 
 public static class ProductDbContextSeed
 {

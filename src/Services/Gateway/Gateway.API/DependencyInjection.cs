@@ -1,11 +1,11 @@
 ﻿using System.Globalization;
 using System.Threading.RateLimiting;
 using EShop.Common.Api.Extensions;
-using Gateway.API.Configuration;
+using EShop.Gateway.API.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
-namespace Gateway.API;
+namespace EShop.Gateway.API;
 
 public static class DependencyInjection
 {

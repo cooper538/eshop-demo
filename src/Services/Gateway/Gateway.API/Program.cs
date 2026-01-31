@@ -1,5 +1,5 @@
-﻿using Gateway.API;
-using Gateway.API.Configuration;
+﻿using EShop.Gateway.API;
+using EShop.Gateway.API.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 

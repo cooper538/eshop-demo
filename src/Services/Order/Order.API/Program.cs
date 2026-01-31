@@ -1,7 +1,7 @@
 ﻿using EShop.Common.Api.Extensions;
-using Order.API;
-using Order.Application;
-using Order.Infrastructure;
+using EShop.Order.API;
+using EShop.Order.Application;
+using EShop.Order.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 

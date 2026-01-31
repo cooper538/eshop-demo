@@ -1,13 +1,13 @@
 ﻿using System.Linq.Expressions;
+using EShop.Products.Application.Data;
+using EShop.Products.Domain.Entities;
+using EShop.Products.Domain.Enums;
 using EShop.SharedKernel.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Products.Application.Data;
-using Products.Domain.Entities;
-using Products.Domain.Enums;
 
-namespace Products.Application.Commands.ExpireReservations;
+namespace EShop.Products.Application.Commands.ExpireReservations;
 
 public sealed partial class ExpireReservationsCommandHandler
     : IRequestHandler<ExpireReservationsCommand>

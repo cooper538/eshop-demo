@@ -1,9 +1,9 @@
-﻿using EShop.SharedKernel.Services;
+﻿using EShop.Products.Application.Data;
+using EShop.Products.Application.Dtos;
+using EShop.SharedKernel.Services;
 using MediatR;
-using Products.Application.Data;
-using Products.Application.Dtos;
 
-namespace Products.Application.Commands.CreateProduct;
+namespace EShop.Products.Application.Commands.CreateProduct;
 
 public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ProductDto>
 {

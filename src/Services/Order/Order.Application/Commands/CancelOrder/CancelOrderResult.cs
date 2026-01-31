@@ -1,4 +1,4 @@
-﻿namespace Order.Application.Commands.CancelOrder;
+﻿namespace EShop.Order.Application.Commands.CancelOrder;
 
 public sealed record CancelOrderResult(
     Guid OrderId,

@@ -1,8 +1,8 @@
 ﻿using EShop.Common.Infrastructure.Data;
+using EShop.Order.Domain.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Order.Domain.Entities;
 
-namespace Order.Infrastructure.Data.Configurations;
+namespace EShop.Order.Infrastructure.Data.Configurations;
 
 public class OrderConfiguration : AggregateRootConfiguration<OrderEntity>
 {

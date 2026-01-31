@@ -1,9 +1,9 @@
-﻿using EShop.SharedKernel.Domain;
-using Order.Domain.Enums;
-using Order.Domain.Events;
-using Order.Domain.Exceptions;
+﻿using EShop.Order.Domain.Enums;
+using EShop.Order.Domain.Events;
+using EShop.Order.Domain.Exceptions;
+using EShop.SharedKernel.Domain;
 
-namespace Order.Domain.Entities;
+namespace EShop.Order.Domain.Entities;
 
 public class OrderEntity : AggregateRoot
 {

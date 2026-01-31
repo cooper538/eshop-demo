@@ -1,14 +1,14 @@
-﻿using MediatR;
+﻿using EShop.Products.Application.Commands.CreateProduct;
+using EShop.Products.Application.Commands.UpdateProduct;
+using EShop.Products.Application.Dtos;
+using EShop.Products.Application.Queries.GetProductById;
+using EShop.Products.Application.Queries.GetProducts;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Products.Application.Commands.CreateProduct;
-using Products.Application.Commands.UpdateProduct;
-using Products.Application.Dtos;
-using Products.Application.Queries.GetProductById;
-using Products.Application.Queries.GetProducts;
 
 #pragma warning disable IDE1006 // ASP.NET Core convention: controller actions don't need Async suffix
 
-namespace Products.API.Controllers;
+namespace EShop.Products.API.Controllers;
 
 /// <summary>
 /// External API for product catalog operations.

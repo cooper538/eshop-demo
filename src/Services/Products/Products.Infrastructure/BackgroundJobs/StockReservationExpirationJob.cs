@@ -1,12 +1,12 @@
 ﻿using EShop.Common.Application.Exceptions;
+using EShop.Products.Application.Commands.ExpireReservations;
+using EShop.Products.Application.Configuration;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Products.Application.Commands.ExpireReservations;
-using Products.Application.Configuration;
 
-namespace Products.Infrastructure.BackgroundJobs;
+namespace EShop.Products.Infrastructure.BackgroundJobs;
 
 // Background job that expires stale stock reservations and releases stock back to inventory
 public sealed partial class StockReservationExpirationJob : BackgroundService

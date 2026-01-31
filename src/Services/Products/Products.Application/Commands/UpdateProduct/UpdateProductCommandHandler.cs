@@ -1,12 +1,12 @@
 ﻿using EShop.Common.Application.Exceptions;
+using EShop.Products.Application.Data;
+using EShop.Products.Application.Dtos;
+using EShop.Products.Domain.Entities;
 using EShop.SharedKernel.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Products.Application.Data;
-using Products.Application.Dtos;
-using Products.Domain.Entities;
 
-namespace Products.Application.Commands.UpdateProduct;
+namespace EShop.Products.Application.Commands.UpdateProduct;
 
 public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, ProductDto>
 {

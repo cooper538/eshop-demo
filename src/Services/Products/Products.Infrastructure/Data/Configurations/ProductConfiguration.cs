@@ -1,8 +1,8 @@
 ﻿using EShop.Common.Infrastructure.Data;
+using EShop.Products.Domain.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Products.Domain.Entities;
 
-namespace Products.Infrastructure.Data.Configurations;
+namespace EShop.Products.Infrastructure.Data.Configurations;
 
 public class ProductConfiguration : AggregateRootConfiguration<ProductEntity>
 {

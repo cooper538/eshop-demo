@@ -1,14 +1,14 @@
 ﻿using EShop.Common.Application.Exceptions;
 using EShop.Contracts.ServiceClients.Product;
+using EShop.Order.Application.Data;
+using EShop.Order.Domain.Entities;
+using EShop.Order.Domain.Exceptions;
 using EShop.SharedKernel.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Order.Application.Data;
-using Order.Domain.Entities;
-using Order.Domain.Exceptions;
 
-namespace Order.Application.Commands.CancelOrder;
+namespace EShop.Order.Application.Commands.CancelOrder;
 
 public sealed class CancelOrderCommandHandler
     : IRequestHandler<CancelOrderCommand, CancelOrderResult>

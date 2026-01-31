@@ -1,13 +1,13 @@
 ﻿using EShop.Common.Application.Data;
 using EShop.Common.Infrastructure.Data;
+using EShop.Products.Application.Data;
+using EShop.Products.Domain.Entities;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
-using Products.Application.Data;
-using Products.Domain.Entities;
 
-namespace Products.Infrastructure.Data;
+namespace EShop.Products.Infrastructure.Data;
 
 public class ProductDbContext : DbContext, IProductDbContext, IChangeTrackerAccessor, IUnitOfWork
 {

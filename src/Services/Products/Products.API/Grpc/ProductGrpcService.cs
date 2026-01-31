@@ -1,13 +1,13 @@
 ﻿using System.Globalization;
 using EShop.Grpc.Product;
+using EShop.Products.Application.Commands.ReleaseStock;
+using EShop.Products.Application.Commands.ReserveStock;
+using EShop.Products.Application.Dtos;
+using EShop.Products.Application.Queries.GetProductsBatch;
 using Grpc.Core;
 using MediatR;
-using Products.Application.Commands.ReleaseStock;
-using Products.Application.Commands.ReserveStock;
-using Products.Application.Dtos;
-using Products.Application.Queries.GetProductsBatch;
 
-namespace Products.API.Grpc;
+namespace EShop.Products.API.Grpc;
 
 public sealed class ProductGrpcService : ProductService.ProductServiceBase
 {

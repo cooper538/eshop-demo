@@ -1,12 +1,12 @@
 ﻿using EShop.Common.Application.Events;
 using EShop.Contracts.IntegrationEvents.Order;
+using EShop.Order.Domain.Events;
 using EShop.SharedKernel.Services;
 using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Order.Domain.Events;
 
-namespace Order.Application.EventHandlers;
+namespace EShop.Order.Application.EventHandlers;
 
 public sealed class OrderCancelledDomainEventHandler(
     IPublishEndpoint publishEndpoint,

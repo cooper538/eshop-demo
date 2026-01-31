@@ -1,14 +1,14 @@
-﻿using MediatR;
+﻿using EShop.Order.Application.Commands.CancelOrder;
+using EShop.Order.Application.Commands.CreateOrder;
+using EShop.Order.Application.Dtos;
+using EShop.Order.Application.Queries.GetOrderById;
+using EShop.Order.Application.Queries.GetOrders;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Order.Application.Commands.CancelOrder;
-using Order.Application.Commands.CreateOrder;
-using Order.Application.Dtos;
-using Order.Application.Queries.GetOrderById;
-using Order.Application.Queries.GetOrders;
 
 #pragma warning disable IDE1006 // ASP.NET Core convention: controller actions don't need Async suffix
 
-namespace Order.API.Controllers;
+namespace EShop.Order.API.Controllers;
 
 /// <summary>
 /// External API for order operations.

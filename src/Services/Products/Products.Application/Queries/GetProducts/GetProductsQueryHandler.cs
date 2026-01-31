@@ -1,9 +1,9 @@
-﻿using MediatR;
+﻿using EShop.Products.Application.Data;
+using EShop.Products.Application.Dtos;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Products.Application.Data;
-using Products.Application.Dtos;
 
-namespace Products.Application.Queries.GetProducts;
+namespace EShop.Products.Application.Queries.GetProducts;
 
 public sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, GetProductsResult>
 {

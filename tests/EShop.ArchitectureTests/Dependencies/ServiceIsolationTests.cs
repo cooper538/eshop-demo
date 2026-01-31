@@ -20,7 +20,7 @@ public class ServiceIsolationTests : ArchitectureTestBase
 
         AssertNoViolations(
             result,
-            "Order.Domain should not directly depend on Products.Domain (cross-service isolation)."
+            "EShop.Order.Domain should not directly depend on EShop.Products.Domain (cross-service isolation)."
         );
     }
 
@@ -35,7 +35,7 @@ public class ServiceIsolationTests : ArchitectureTestBase
 
         AssertNoViolations(
             result,
-            "Products.Domain should not directly depend on Order.Domain (cross-service isolation)."
+            "EShop.Products.Domain should not directly depend on EShop.Order.Domain (cross-service isolation)."
         );
     }
 
@@ -54,7 +54,7 @@ public class ServiceIsolationTests : ArchitectureTestBase
 
         AssertNoViolations(
             result,
-            "Order.Application should not directly depend on Products.Application (cross-service isolation)."
+            "EShop.Order.Application should not directly depend on EShop.Products.Application (cross-service isolation)."
         );
     }
 
@@ -69,7 +69,7 @@ public class ServiceIsolationTests : ArchitectureTestBase
 
         AssertNoViolations(
             result,
-            "Products.Application should not directly depend on Order.Application (cross-service isolation)."
+            "EShop.Products.Application should not directly depend on EShop.Order.Application (cross-service isolation)."
         );
     }
 

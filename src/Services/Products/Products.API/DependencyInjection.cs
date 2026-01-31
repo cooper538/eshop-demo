@@ -1,11 +1,11 @@
 ﻿using EShop.Common.Api.Extensions;
 using EShop.Common.Api.Grpc;
+using EShop.Products.API.Configuration;
+using EShop.Products.API.Grpc;
+using EShop.Products.Application.Configuration;
 using FluentValidation;
-using Products.API.Configuration;
-using Products.API.Grpc;
-using Products.Application.Configuration;
 
-namespace Products.API;
+namespace EShop.Products.API;
 
 public static class DependencyInjection
 {

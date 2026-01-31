@@ -1,9 +1,9 @@
 ﻿using EShop.Contracts.ServiceClients.Product;
+using EShop.Order.Application.Data;
 using EShop.SharedKernel.Services;
 using MediatR;
-using Order.Application.Data;
 
-namespace Order.Application.Commands.CreateOrder;
+namespace EShop.Order.Application.Commands.CreateOrder;
 
 public sealed class CreateOrderCommandHandler
     : IRequestHandler<CreateOrderCommand, CreateOrderResult>

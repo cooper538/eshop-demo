@@ -1,7 +1,7 @@
-﻿using EShop.SharedKernel.Domain;
-using Products.Domain.Events;
+﻿using EShop.Products.Domain.Events;
+using EShop.SharedKernel.Domain;
 
-namespace Products.Domain.Entities;
+namespace EShop.Products.Domain.Entities;
 
 public class ProductEntity : AggregateRoot
 {

@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EShop.Products.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using Products.Domain.Entities;
 
-namespace Products.Application.Data;
+namespace EShop.Products.Application.Data;
 
 public interface IProductDbContext
 {

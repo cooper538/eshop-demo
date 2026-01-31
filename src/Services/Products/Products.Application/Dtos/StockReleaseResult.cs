@@ -1,4 +1,4 @@
-﻿namespace Products.Application.Dtos;
+﻿namespace EShop.Products.Application.Dtos;
 
 public sealed record StockReleaseResult(bool Success, string? FailureReason = null)
 {

@@ -1,6 +1,6 @@
 ﻿using EShop.SharedKernel.Domain;
 
-namespace Order.Domain.Entities;
+namespace EShop.Order.Domain.Entities;
 
 public class OrderItem : IOwnedEntity
 {

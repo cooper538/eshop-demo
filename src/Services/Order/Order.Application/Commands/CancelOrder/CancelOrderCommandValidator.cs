@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Order.Application.Commands.CancelOrder;
+namespace EShop.Order.Application.Commands.CancelOrder;
 
 public sealed class CancelOrderCommandValidator : AbstractValidator<CancelOrderCommand>
 {

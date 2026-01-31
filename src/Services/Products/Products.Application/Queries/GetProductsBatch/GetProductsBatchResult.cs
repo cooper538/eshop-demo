@@ -1,5 +1,5 @@
-﻿using Products.Application.Dtos;
+﻿using EShop.Products.Application.Dtos;
 
-namespace Products.Application.Queries.GetProductsBatch;
+namespace EShop.Products.Application.Queries.GetProductsBatch;
 
 public sealed record GetProductsBatchResult(IReadOnlyList<ProductInfoDto> Products);

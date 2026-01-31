@@ -1,6 +1,6 @@
-﻿using Products.Application.Dtos;
+﻿using EShop.Products.Application.Dtos;
 
-namespace Products.Application.Queries.GetProducts;
+namespace EShop.Products.Application.Queries.GetProducts;
 
 public sealed record GetProductsResult(
     IReadOnlyList<ProductDto> Items,

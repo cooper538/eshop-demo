@@ -1,10 +1,10 @@
 ﻿using EShop.Common.Application.Events;
+using EShop.Products.Application.Data;
+using EShop.Products.Domain.Entities;
+using EShop.Products.Domain.Events;
 using MediatR;
-using Products.Application.Data;
-using Products.Domain.Entities;
-using Products.Domain.Events;
 
-namespace Products.Application.EventHandlers;
+namespace EShop.Products.Application.EventHandlers;
 
 public sealed class ProductCreatedEventHandler
     : INotificationHandler<DomainEventNotification<ProductCreatedDomainEvent>>

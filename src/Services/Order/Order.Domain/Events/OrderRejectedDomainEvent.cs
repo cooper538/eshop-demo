@@ -1,6 +1,6 @@
 ﻿using EShop.SharedKernel.Events;
 
-namespace Order.Domain.Events;
+namespace EShop.Order.Domain.Events;
 
 public sealed record OrderRejectedDomainEvent(
     Guid OrderId,

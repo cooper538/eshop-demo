@@ -1,10 +1,10 @@
-﻿using MediatR;
+﻿using EShop.Products.Application.Data;
+using EShop.Products.Application.Dtos;
+using EShop.Products.Domain.Enums;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Products.Application.Data;
-using Products.Application.Dtos;
-using Products.Domain.Enums;
 
-namespace Products.Application.Commands.ReleaseStock;
+namespace EShop.Products.Application.Commands.ReleaseStock;
 
 public sealed class ReleaseStockCommandHandler
     : IRequestHandler<ReleaseStockCommand, StockReleaseResult>

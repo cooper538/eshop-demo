@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Order.Infrastructure.Data;
+using EShop.Order.Infrastructure.Data;
 
 #nullable disable
 
-namespace Order.Infrastructure.Data.Migrations
+namespace EShop.Order.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
     [Migration("20260129212019_InitialCreate")]
