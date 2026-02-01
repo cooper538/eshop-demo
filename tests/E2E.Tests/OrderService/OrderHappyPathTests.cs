@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Json;
 using EShop.E2E.Tests.Fixtures;
 using static EShop.E2E.Tests.OrderService.OrderTestHelpers;

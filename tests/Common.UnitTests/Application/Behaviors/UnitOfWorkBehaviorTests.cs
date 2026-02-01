@@ -1,4 +1,4 @@
-using EShop.Common.Application.Behaviors;
+﻿using EShop.Common.Application.Behaviors;
 using EShop.Common.Application.Cqrs;
 using EShop.Common.Application.Data;
 using EShop.Common.Application.Exceptions;

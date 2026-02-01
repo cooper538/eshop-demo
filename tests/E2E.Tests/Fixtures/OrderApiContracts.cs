@@ -1,4 +1,4 @@
-namespace EShop.E2E.Tests.Fixtures;
+﻿namespace EShop.E2E.Tests.Fixtures;
 
 public sealed record CreateOrderResponse(Guid OrderId, string Status, string? Message);
 

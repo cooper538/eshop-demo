@@ -1,4 +1,4 @@
-using EShop.Order.Application.Commands.CancelOrder;
+﻿using EShop.Order.Application.Commands.CancelOrder;
 using FluentValidation.TestHelper;
 
 namespace EShop.Order.UnitTests.Application.Validators;

@@ -1,4 +1,4 @@
-using Npgsql;
+﻿using Npgsql;
 
 namespace EShop.Common.Infrastructure.Data;
 

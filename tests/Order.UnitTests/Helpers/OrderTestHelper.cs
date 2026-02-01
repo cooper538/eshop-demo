@@ -1,4 +1,4 @@
-using EShop.Order.Domain.Entities;
+﻿using EShop.Order.Domain.Entities;
 using EShop.Order.Domain.Enums;
 
 namespace EShop.Order.UnitTests.Helpers;

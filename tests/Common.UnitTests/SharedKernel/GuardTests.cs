@@ -1,4 +1,4 @@
-using EShop.SharedKernel.Guards;
+﻿using EShop.SharedKernel.Guards;
 
 namespace EShop.Common.UnitTests.SharedKernel;
 

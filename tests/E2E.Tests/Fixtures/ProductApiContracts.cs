@@ -1,4 +1,4 @@
-namespace EShop.E2E.Tests.Fixtures;
+﻿namespace EShop.E2E.Tests.Fixtures;
 
 public sealed record ProductDto(Guid Id, string Name, string Description, decimal Price);
 

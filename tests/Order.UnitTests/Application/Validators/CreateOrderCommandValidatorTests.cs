@@ -1,4 +1,4 @@
-using EShop.Order.Application.Commands.CreateOrder;
+﻿using EShop.Order.Application.Commands.CreateOrder;
 using FluentValidation.TestHelper;
 
 namespace EShop.Order.UnitTests.Application.Validators;

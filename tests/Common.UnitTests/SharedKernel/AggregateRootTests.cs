@@ -1,4 +1,4 @@
-using EShop.Common.UnitTests.SharedKernel.TestDoubles;
+﻿using EShop.Common.UnitTests.SharedKernel.TestDoubles;
 
 namespace EShop.Common.UnitTests.SharedKernel;
 

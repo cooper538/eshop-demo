@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using EShop.E2E.Tests.Fixtures;
 
 namespace EShop.E2E.Tests.Gateway;
