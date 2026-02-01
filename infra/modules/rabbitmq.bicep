@@ -1,5 +1,4 @@
-// Module: RabbitMQ
-// Creates RabbitMQ on Azure Container Instance (ephemeral - no persistent storage)
+// Module: RabbitMQ (internal Container App)
 
 @description('Resource naming prefix')
 param prefix string
@@ -10,51 +9,57 @@ param location string
 @description('Resource tags')
 param tags object
 
+@description('Container Apps Environment ID')
+param environmentId string
+
 @description('RabbitMQ username')
 param rabbitMqUser string
 
-@description('RabbitMQ password')
 @secure()
 param rabbitMqPassword string
 
-resource rabbitMq 'Microsoft.ContainerInstance/containerGroups@2023-05-01' = {
+resource rabbitMq 'Microsoft.App/containerApps@2024-03-01' = {
   name: '${prefix}-rabbitmq'
   location: location
   tags: tags
   properties: {
-    containers: [
-      {
-        name: 'rabbitmq'
-        properties: {
+    environmentId: environmentId
+    configuration: {
+      activeRevisionsMode: 'Single'
+      ingress: {
+        external: false
+        targetPort: 5672
+        transport: 'tcp'
+        exposedPort: 5672
+      }
+      secrets: [
+        {
+          name: 'rabbitmq-password'
+          value: rabbitMqPassword
+        }
+      ]
+    }
+    template: {
+      containers: [
+        {
+          name: 'rabbitmq'
           image: 'rabbitmq:3-management-alpine'
           resources: {
-            requests: {
-              cpu: json('0.5')
-              memoryInGB: json('1.0')
-            }
+            cpu: json('0.5')
+            memory: '1Gi'
           }
-          ports: [
-            { port: 5672, protocol: 'TCP' }
-            { port: 15672, protocol: 'TCP' }
-          ]
-          environmentVariables: [
+          env: [
             { name: 'RABBITMQ_DEFAULT_USER', value: rabbitMqUser }
-            { name: 'RABBITMQ_DEFAULT_PASS', secureValue: rabbitMqPassword }
+            { name: 'RABBITMQ_DEFAULT_PASS', secretRef: 'rabbitmq-password' }
           ]
         }
-      }
-    ]
-    osType: 'Linux'
-    restartPolicy: 'Always'
-    ipAddress: {
-      type: 'Public'
-      ports: [
-        { port: 5672, protocol: 'TCP' }
-        { port: 15672, protocol: 'TCP' }
       ]
+      scale: {
+        minReplicas: 1
+        maxReplicas: 1
+      }
     }
   }
 }
 
-@description('RabbitMQ public IP')
-output rabbitMqIp string = rabbitMq.properties.ipAddress.ip
+output rabbitMqHost string = rabbitMq.properties.configuration.ingress.fqdn

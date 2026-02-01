@@ -1,4 +1,6 @@
-# Product Service - Production Configuration (Azure)
+# Product Service - Production
+
+AllowedHosts: "${ALLOWED_HOSTS:-product-service.internal.*.azurecontainerapps.io,localhost}"
 
 Logging:
   LogLevel:

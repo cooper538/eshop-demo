@@ -1,4 +1,6 @@
-# Gateway Service - Production Configuration (Azure)
+# Gateway - Production
+
+AllowedHosts: "${ALLOWED_HOSTS:-eshop-gateway.azurecontainerapps.io}"
 
 Logging:
   LogLevel:
@@ -7,8 +9,6 @@ Logging:
     Yarp: "Warning"
 
 Gateway:
-  # Enable authentication in Production
-  # TenantId and ClientId loaded from Key Vault or environment variables
   Authentication:
     Enabled: true
 

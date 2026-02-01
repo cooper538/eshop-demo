@@ -33,7 +33,7 @@ param rabbitMqUser string
 @secure()
 param rabbitMqPassword string
 
-var databases = ['productdb', 'orderdb', 'notificationdb', 'catalogdb']
+var databases = ['productdb', 'orderdb', 'notificationdb']
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: '${prefix}-kv'

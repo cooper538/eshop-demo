@@ -1,4 +1,6 @@
-# Order Service - Production Configuration (Azure)
+# Order Service - Production
+
+AllowedHosts: "${ALLOWED_HOSTS:-order-service.internal.*.azurecontainerapps.io,localhost}"
 
 Logging:
   LogLevel:

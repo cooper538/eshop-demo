@@ -1,5 +1,4 @@
-// Module: PostgreSQL
-// Creates PostgreSQL Flexible Server with databases
+// Module: PostgreSQL Flexible Server with VNet integration
 
 @description('Resource naming prefix')
 param prefix string
@@ -17,11 +16,13 @@ param administratorLogin string
 @secure()
 param administratorPassword string
 
+@description('Delegated subnet ID for PostgreSQL')
+param delegatedSubnetId string
+
 var databases = [
   'productdb'
   'orderdb'
   'notificationdb'
-  'catalogdb'
 ]
 
 resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' = {
@@ -46,15 +47,9 @@ resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-pr
     highAvailability: {
       mode: 'Disabled'
     }
-  }
-}
-
-resource firewallRule 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2023-12-01-preview' = {
-  parent: postgresServer
-  name: 'AllowAzureServices'
-  properties: {
-    startIpAddress: '0.0.0.0'
-    endIpAddress: '0.0.0.0'
+    network: {
+      delegatedSubnetResourceId: delegatedSubnetId
+    }
   }
 }
 
