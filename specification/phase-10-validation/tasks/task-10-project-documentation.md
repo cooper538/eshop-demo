@@ -13,22 +13,21 @@ Document testing infrastructure and provide troubleshooting guide for developers
 ## Scope
 
 ### docs/testing.md
-- [ ] Test projects overview and purpose
-- [ ] Running tests by type (unit, integration, E2E)
-- [ ] Manual E2E testing with `/tools/e2e-test/`
-- [ ] Test naming conventions
-- [ ] Guidelines for adding new tests
+- [x] Test projects overview and purpose
+- [x] Running tests by type (unit, integration, E2E)
+- [x] Test naming conventions
+- [x] Guidelines for adding new tests
 
 ### docs/troubleshooting.md
-- [ ] Docker and container issues
-- [ ] Aspire startup problems
-- [ ] Database and migration issues
-- [ ] Messaging connection failures
-- [ ] Test debugging tips
+- [x] Docker and container issues
+- [x] Aspire startup problems
+- [x] Database and migration issues
+- [x] Messaging connection failures
+- [x] Test debugging tips
 
 ### README.md updates
-- [ ] Add testing section
-- [ ] Update "Intentionally Omitted" section
+- [x] Add testing section
+- [x] Update "Intentionally Omitted" section
 
 ## Related Specs
 - → [aspire-orchestration.md](../../high-level-specs/aspire-orchestration.md)

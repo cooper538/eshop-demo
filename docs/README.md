@@ -10,6 +10,8 @@ EShop Demo documentation index.
 | [Spec-Driven Development](spec-driven-development.md) | AI-assisted development methodology used to build this project |
 | [Code Guidelines](code-guidelines.md) | Project-specific C# coding standards |
 | [Aspire Integration](aspire-integration.md) | .NET Aspire orchestration and service configuration |
+| [Testing](testing.md) | Test infrastructure, conventions, and guidelines |
+| [Troubleshooting](troubleshooting.md) | Common issues and solutions |
 
 ## Quick Links
 
