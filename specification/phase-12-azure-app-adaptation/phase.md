@@ -3,7 +3,7 @@
 ## Metadata
 | Key | Value |
 |-----|-------|
-| Status | in_progress |
+| Status | ✅ completed |
 
 ## Objective
 Adapt application code to support Azure deployment alongside existing local Aspire development. Create environment-aware configuration that switches between local PostgreSQL and Azure PostgreSQL Flexible Server, and add Key Vault integration for secrets management.
@@ -12,7 +12,7 @@ Adapt application code to support Azure deployment alongside existing local Aspi
 - [x] Add SSL mode handling for Azure PostgreSQL Flexible Server connections
 - [x] Integrate Azure Key Vault configuration provider with DefaultAzureCredential
 - [x] Configure gRPC clients for Container Apps service discovery (FQDN pattern)
-- [ ] Update all services to use environment-aware configuration
+- [x] Update all services to use environment-aware configuration
 
 ## Tasks
 
@@ -21,7 +21,7 @@ Adapt application code to support Azure deployment alongside existing local Aspi
 | 1 | task-01 | PostgreSQL SSL Configuration | ✅ completed | - |
 | 2 | task-02 | Key Vault Integration | ✅ completed | - |
 | 3 | task-03 | gRPC Service Discovery | ✅ completed | - |
-| 4 | task-04 | Service Configuration Updates | pending | task-01, task-02, task-03 |
+| 4 | task-04 | Service Configuration Updates | ✅ completed | task-01, task-02, task-03 |
 
 ## Related Specs
 - -> [azure-infrastructure.md](../high-level-specs/azure-infrastructure.md) (Section: 11. Aspire Integration)
