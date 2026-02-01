@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-07 |
-| Status | 🔵 in_progress |
+| Status | ✅ completed |
 | Dependencies | task-01, task-05 |
 
 ## Summary
@@ -13,34 +13,34 @@ Unit tests for Order.Application - command handlers, query handlers, and validat
 ## Scope
 
 ### CreateOrderCommandValidator
-- [ ] Test valid command passes
-- [ ] Test required fields (CustomerId, Email, Items)
-- [ ] Test email format validation
+- [x] Test valid command passes
+- [x] Test required fields (CustomerId, Email, Items)
+- [x] Test email format validation
 
 ### CreateOrderItemDtoValidator
-- [ ] Test valid item passes
-- [ ] Test quantity and price validation
+- [x] Test valid item passes
+- [x] Test quantity and price validation
 
 ### CancelOrderCommandValidator
-- [ ] Test valid command passes
-- [ ] Test required OrderId
-- [ ] Test reason max length
+- [x] Test valid command passes
+- [x] Test required OrderId
+- [x] Test reason max length
 
 ### CreateOrderCommandHandler
-- [ ] Test happy path (stock available -> order confirmed)
-- [ ] Test stock unavailable scenario
-- [ ] Test Product Service failure propagation
-- [ ] Test order persistence
+- [x] Test happy path (stock available -> order confirmed)
+- [x] Test stock unavailable scenario
+- [x] Test Product Service failure propagation
+- [x] Test order persistence
 
 ### CancelOrderCommandHandler
-- [ ] Test happy path (cancel confirmed order)
-- [ ] Test order not found scenario
-- [ ] Test invalid state scenario
-- [ ] Test best-effort stock release (doesn't fail on release error)
+- [x] Test happy path (cancel confirmed order)
+- [x] Test order not found scenario
+- [x] Test invalid state scenario
+- [x] Test best-effort stock release (doesn't fail on release error)
 
 ### Query Handlers
-- [ ] Test GetOrderByIdQueryHandler (found, not found)
-- [ ] Test GetOrdersQueryHandler (pagination, filtering)
+- [x] Test GetOrderByIdQueryHandler (found, not found)
+- [x] Test GetOrdersQueryHandler (pagination, filtering)
 
 ## Related Specs
 - → [unit-testing.md](../../high-level-specs/unit-testing.md)
@@ -48,5 +48,6 @@ Unit tests for Order.Application - command handlers, query handlers, and validat
 
 ---
 ## Notes
-- Use AutoFixture + AutoMoq for automatic mocking
-- Mock: IOrderDbContext, IProductServiceClient, IDateTimeProvider
+- Uses EF Core InMemory for handler tests (pragmatic approach)
+- Mock: IProductServiceClient, IDateTimeProvider
+- Validators use TheoryData + MemberData pattern
