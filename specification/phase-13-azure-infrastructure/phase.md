@@ -3,7 +3,7 @@
 ## Metadata
 | Key | Value |
 |-----|-------|
-| Status | in_progress |
+| Status | ✅ completed |
 
 ## Objective
 Create Infrastructure as Code (Bicep) and CI/CD pipelines for deploying the EShop demo to Azure Container Apps with scale-to-zero, cost-optimized configuration.
@@ -16,9 +16,9 @@ Create Infrastructure as Code (Bicep) and CI/CD pipelines for deploying the ESho
 - [x] Create rabbitmq.bicep (RabbitMQ on Azure Container Instance - ephemeral)
 - [x] Create key-vault.bicep (Standard tier + connection string secrets)
 - [x] Create container-apps.bicep (Environment + 5 Container Apps with GHCR)
-- [ ] Create Dockerfiles for all services
-- [ ] Create GitHub Actions workflow for infrastructure deployment (OIDC auth)
-- [ ] Create GitHub Actions workflow for application build and deploy
+- [x] Create Dockerfiles for all services
+- [x] Create GitHub Actions workflow for infrastructure deployment (OIDC auth)
+- [x] Create GitHub Actions workflow for application build and deploy
 
 ## Tasks
 
@@ -29,9 +29,9 @@ Create Infrastructure as Code (Bicep) and CI/CD pipelines for deploying the ESho
 | 3 | task-03 | Data Services Modules | ✅ completed | task-02 |
 | 4 | task-04 | Key Vault Module | ✅ completed | task-03 |
 | 5 | task-05 | Container Apps Module | ✅ completed | task-02, task-03, task-04 |
-| 6 | task-06 | Dockerfiles | pending | - |
-| 7 | task-07 | Infrastructure Workflow | pending | task-01, task-02, task-03, task-04, task-05 |
-| 8 | task-08 | Application Workflow | pending | task-06, task-07 |
+| 6 | task-06 | Dockerfiles | ✅ completed | - |
+| 7 | task-07 | Infrastructure Workflow | ✅ completed | task-01, task-02, task-03, task-04, task-05 |
+| 8 | task-08 | Application Workflow | ✅ completed | task-06, task-07 |
 
 ## Related Specs
 - -> [azure-infrastructure.md](../high-level-specs/azure-infrastructure.md) (primary reference)
