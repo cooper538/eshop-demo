@@ -1,70 +1,59 @@
 // EShop Demo - Azure Infrastructure
-// Entry point for infrastructure deployment
 targetScope = 'subscription'
 
-// ============================================================================
 // Parameters
-// ============================================================================
-
-@description('Environment suffix for resource naming')
+@description('Environment suffix')
 param environment string = 'prod'
 
-@description('Azure region for all resources')
+@description('Azure region')
 param location string = 'westeurope'
 
-@description('Resource naming prefix')
 @minLength(2)
 @maxLength(10)
 param prefix string = 'eshop'
 
-@description('PostgreSQL administrator login')
 param postgresAdminLogin string = 'eshop_admin'
 
-@description('PostgreSQL administrator password')
 @secure()
 param postgresAdminPassword string
 
-@description('RabbitMQ default username')
 param rabbitMqUser string = 'eshop'
 
-@description('RabbitMQ default password')
 @secure()
 param rabbitMqPassword string
 
-@description('GitHub Container Registry username (GitHub username)')
 param ghcrUsername string
 
-@description('GitHub Container Registry token (PAT with read:packages scope)')
 @secure()
 param ghcrToken string
 
-// ============================================================================
 // Variables
-// ============================================================================
-
 var resourceGroupName = '${prefix}-${environment}-rg'
-
 var tags = {
   Environment: environment
   Project: 'EShop Demo'
   ManagedBy: 'Bicep'
 }
 
-// ============================================================================
 // Resource Group
-// ============================================================================
-
 resource rg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   name: resourceGroupName
   location: location
   tags: tags
 }
 
-// ============================================================================
-// Modules
-// ============================================================================
+// Networking (VNet + Subnets + NSG)
+module networking 'modules/networking.bicep' = {
+  scope: rg
+  name: 'networking-${uniqueString(rg.id)}'
+  params: {
+    prefix: prefix
+    location: location
+    tags: tags
+  }
+}
 
-// Module: Identity (User-Assigned Managed Identity + Role Assignments)
+// Identity (Managed Identity)
 module identity 'modules/identity.bicep' = {
   scope: rg
   name: 'identity-${uniqueString(rg.id)}'
@@ -75,7 +64,7 @@ module identity 'modules/identity.bicep' = {
   }
 }
 
-// Module: Monitoring (Log Analytics Workspace)
+// Monitoring (Log Analytics)
 module monitoring 'modules/monitoring.bicep' = {
   scope: rg
   name: 'monitoring-${uniqueString(rg.id)}'
@@ -86,7 +75,7 @@ module monitoring 'modules/monitoring.bicep' = {
   }
 }
 
-// Module: PostgreSQL (Flexible Server + Databases)
+// PostgreSQL with VNet integration
 module postgres 'modules/postgres.bicep' = {
   scope: rg
   name: 'postgres-${uniqueString(rg.id)}'
@@ -96,10 +85,24 @@ module postgres 'modules/postgres.bicep' = {
     tags: tags
     administratorLogin: postgresAdminLogin
     administratorPassword: postgresAdminPassword
+    delegatedSubnetId: networking.outputs.postgresSubnetId
   }
 }
 
-// Module: RabbitMQ (Azure Container Instance)
+// Container Apps Environment with VNet
+module containerAppsEnv 'modules/container-apps-env.bicep' = {
+  scope: rg
+  name: 'containerapps-env-${uniqueString(rg.id)}'
+  params: {
+    prefix: prefix
+    location: location
+    tags: tags
+    logAnalyticsWorkspaceId: monitoring.outputs.workspaceId
+    subnetId: networking.outputs.containerAppsSubnetId
+  }
+}
+
+// RabbitMQ (internal only)
 module rabbitmq 'modules/rabbitmq.bicep' = {
   scope: rg
   name: 'rabbitmq-${uniqueString(rg.id)}'
@@ -107,12 +110,13 @@ module rabbitmq 'modules/rabbitmq.bicep' = {
     prefix: prefix
     location: location
     tags: tags
+    environmentId: containerAppsEnv.outputs.environmentId
     rabbitMqUser: rabbitMqUser
     rabbitMqPassword: rabbitMqPassword
   }
 }
 
-// Module: Key Vault (Secrets storage)
+// Key Vault
 module keyVault 'modules/key-vault.bicep' = {
   scope: rg
   name: 'keyvault-${uniqueString(rg.id)}'
@@ -124,14 +128,13 @@ module keyVault 'modules/key-vault.bicep' = {
     postgresServerFqdn: postgres.outputs.serverFqdn
     postgresAdminLogin: postgresAdminLogin
     postgresAdminPassword: postgresAdminPassword
-    rabbitMqHost: rabbitmq.outputs.rabbitMqIp
+    rabbitMqHost: rabbitmq.outputs.rabbitMqHost
     rabbitMqUser: rabbitMqUser
     rabbitMqPassword: rabbitMqPassword
   }
 }
 
-// Module: Container Apps (Environment + Apps)
-// Uses GitHub Container Registry (ghcr.io)
+// Container Apps
 module containerApps 'modules/container-apps.bicep' = {
   scope: rg
   name: 'containerapps-${uniqueString(rg.id)}'
@@ -141,22 +144,14 @@ module containerApps 'modules/container-apps.bicep' = {
     tags: tags
     identityId: identity.outputs.identityId
     identityClientId: identity.outputs.identityClientId
-    logAnalyticsWorkspaceId: monitoring.outputs.workspaceId
+    environmentId: containerAppsEnv.outputs.environmentId
     keyVaultUri: keyVault.outputs.vaultUri
     ghcrUsername: ghcrUsername
     ghcrToken: ghcrToken
   }
 }
 
-// ============================================================================
 // Outputs
-// ============================================================================
-
-@description('Resource group name')
 output resourceGroupName string = rg.name
-
-@description('Gateway public URL')
 output gatewayUrl string = containerApps.outputs.gatewayFqdn
-
-@description('Key Vault URI')
 output keyVaultUri string = keyVault.outputs.vaultUri
