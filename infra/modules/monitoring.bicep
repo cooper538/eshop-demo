@@ -10,9 +10,6 @@ param location string
 @description('Resource tags')
 param tags object
 
-// TODO: Implement in task-02
-// - Log Analytics Workspace (pay-as-you-go, 30-day retention)
-
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: '${prefix}-logs'
   location: location
