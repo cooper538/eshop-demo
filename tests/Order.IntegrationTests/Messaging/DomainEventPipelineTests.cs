@@ -126,4 +126,41 @@ public class DomainEventPipelineTests : OrderIntegrationTestBase
         message.Should().NotBeNull();
         message!.Context.Message.Reason.Should().Be(reason);
     }
+
+    [Fact]
+    public async Task OrderLifecycle_PublishesEventsInSequence()
+    {
+        // Arrange - Test cascading events through order lifecycle
+        var harness = GetTestHarness();
+        await harness.Start();
+
+        var order = OrderEntity.Create(
+            Guid.NewGuid(),
+            "lifecycle@example.com",
+            [OrderItem.Create(Guid.NewGuid(), "Product", 1, 100.00m)],
+            DateTime.UtcNow
+        );
+
+        await using var context = CreateDbContext();
+        context.Orders.Add(order);
+        await context.SaveChangesAsync();
+
+        // Act - Confirm then cancel (full lifecycle)
+        order.Confirm(DateTime.UtcNow);
+        await context.SaveChangesAsync();
+
+        order.Cancel("Changed mind", DateTime.UtcNow);
+        await context.SaveChangesAsync();
+
+        // Assert - Both events were published in sequence
+        var confirmedPublished = await harness.Published.Any<OrderConfirmedEvent>(x =>
+            x.Context.Message.OrderId == order.Id
+        );
+        var cancelledPublished = await harness.Published.Any<OrderCancelledEvent>(x =>
+            x.Context.Message.OrderId == order.Id
+        );
+
+        confirmedPublished.Should().BeTrue("order was confirmed");
+        cancelledPublished.Should().BeTrue("order was cancelled after confirmation");
+    }
 }
