@@ -495,3 +495,8 @@ CLAUDE.md
 
 # Aspire secrets (use .template files as reference)
 src/AppHost/appsettings.json
+
+# Azure Bicep
+# Compiled ARM templates (generated from .bicep files)
+infra/**/*.json
+!infra/bicepconfig.json
