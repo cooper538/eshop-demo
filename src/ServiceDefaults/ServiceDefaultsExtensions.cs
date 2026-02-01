@@ -7,7 +7,6 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Serilog;
-using Serilog.Events;
 
 // ReSharper disable once CheckNamespace
 #pragma warning disable IDE0130 // Namespace intentionally differs - extension methods for Microsoft.Extensions.Hosting
@@ -117,6 +116,7 @@ public static class ServiceDefaultsExtensions
 
     /// <summary>
     /// Configures Serilog with console and file sinks using human-readable format.
+    /// Reads configuration from Serilog section in appsettings/yaml files.
     /// </summary>
     public static IHostApplicationBuilder AddSerilog(
         this IHostApplicationBuilder builder,
@@ -134,10 +134,7 @@ public static class ServiceDefaultsExtensions
         var timestamp = DateTime.UtcNow.ToString(timestampFormat);
 
         Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Information()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-            .MinimumLevel.Override("System", LogEventLevel.Warning)
+            .ReadFrom.Configuration(builder.Configuration)
             .Enrich.FromLogContext()
             .Enrich.WithProperty("ServiceName", serviceName)
             .WriteTo.Console(outputTemplate: devOutputTemplate)

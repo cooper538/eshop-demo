@@ -1,10 +1,13 @@
 # Product Service - Development Configuration
 # Overrides base product.settings.yaml for local development
 
-Logging:
-  LogLevel:
+Serilog:
+  MinimumLevel:
     Default: "Debug"
-    Microsoft.AspNetCore: "Information"
+    Override:
+      Microsoft.AspNetCore: "Information"
+      Microsoft.AspNetCore.HttpLogging: "Information"
+      EShop.Common.Application.Behaviors: "Debug"
 
 Product:
   Database:

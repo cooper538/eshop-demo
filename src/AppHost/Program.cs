@@ -3,8 +3,10 @@ using EShop.ServiceDefaults;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+var postgresPassword = builder.AddParameter("postgres-password", secret: true);
+
 var postgres = builder
-    .AddPostgres("postgres")
+    .AddPostgres("postgres", password: postgresPassword)
     .WithLifetime(ContainerLifetime.Persistent)
     .WithPgAdmin();
 
