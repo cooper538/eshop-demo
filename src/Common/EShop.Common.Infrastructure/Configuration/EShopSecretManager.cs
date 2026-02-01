@@ -1,4 +1,4 @@
-using Azure.Security.KeyVault.Secrets;
+﻿using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Configuration;
 
 namespace EShop.Common.Infrastructure.Configuration;

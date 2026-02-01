@@ -1,4 +1,4 @@
-using EShop.Order.Infrastructure.Data;
+﻿using EShop.Order.Infrastructure.Data;
 using EShop.Order.IntegrationTests.Fixtures;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;

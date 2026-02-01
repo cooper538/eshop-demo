@@ -1,4 +1,4 @@
-using EShop.Order.Domain.Enums;
+﻿using EShop.Order.Domain.Enums;
 using EShop.Order.Domain.Events;
 using EShop.Order.Domain.Exceptions;
 using EShop.Order.UnitTests.Helpers;

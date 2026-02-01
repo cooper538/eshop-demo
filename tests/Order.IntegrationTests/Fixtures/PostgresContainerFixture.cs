@@ -1,4 +1,4 @@
-using Testcontainers.PostgreSql;
+﻿using Testcontainers.PostgreSql;
 
 namespace EShop.Order.IntegrationTests.Fixtures;
 

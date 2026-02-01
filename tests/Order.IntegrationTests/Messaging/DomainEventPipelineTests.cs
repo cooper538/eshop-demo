@@ -1,4 +1,4 @@
-using EShop.Contracts.IntegrationEvents.Order;
+﻿using EShop.Contracts.IntegrationEvents.Order;
 using EShop.Order.Domain.Entities;
 using EShop.Order.IntegrationTests.Fixtures;
 using EShop.Order.IntegrationTests.Infrastructure;

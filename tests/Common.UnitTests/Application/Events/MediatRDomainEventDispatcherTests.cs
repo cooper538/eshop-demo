@@ -1,4 +1,4 @@
-using EShop.Common.Application.Events;
+﻿using EShop.Common.Application.Events;
 using EShop.Common.UnitTests.SharedKernel.TestDoubles;
 using EShop.SharedKernel.Events;
 using MediatR;

@@ -1,4 +1,4 @@
-using EShop.Contracts.ServiceClients.Product;
+﻿using EShop.Contracts.ServiceClients.Product;
 using EShop.Order.Infrastructure.Data;
 using EShop.Order.IntegrationTests.Fixtures;
 using EShop.ServiceDefaults;

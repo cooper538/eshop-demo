@@ -1,4 +1,4 @@
-using EShop.Order.Infrastructure.Data;
+﻿using EShop.Order.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace EShop.Order.UnitTests.Helpers;

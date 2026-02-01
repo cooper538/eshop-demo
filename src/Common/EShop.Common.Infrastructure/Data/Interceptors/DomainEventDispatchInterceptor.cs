@@ -1,4 +1,4 @@
-using EShop.Common.Application.Events;
+﻿using EShop.Common.Application.Events;
 using EShop.SharedKernel.Domain;
 using EShop.SharedKernel.Events;
 using Microsoft.EntityFrameworkCore;
