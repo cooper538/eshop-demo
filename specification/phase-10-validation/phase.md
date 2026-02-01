@@ -3,7 +3,7 @@
 ## Metadata
 | Key | Value |
 |-----|-------|
-| Status | 🔵 in_progress |
+| Status | ✅ completed |
 
 ## Objective
 Demonstrational test coverage (~80%) for core infrastructure and Order Service - showcasing unit, integration, and E2E testing patterns.
@@ -18,7 +18,7 @@ Demonstrational test coverage (~80%) for core infrastructure and Order Service -
 - [x] Order Application tests (handlers, validators)
 - [x] Order integration tests (API, DB, messaging)
 - [x] E2E order flow tests (including CorrelationId propagation)
-- [ ] Project documentation for developers
+- [x] Project documentation for developers
 
 ## Tasks
 
@@ -33,7 +33,7 @@ Demonstrational test coverage (~80%) for core infrastructure and Order Service -
 | 07 | [Order Application Tests](./tasks/task-07-order-application-tests.md) | ✅ | 01, 05 | ~22 |
 | 08 | [Order Integration Tests](./tasks/task-08-order-integration-tests.md) | ✅ | 04, 05 | ~12 |
 | 09 | [E2E Order Flow Tests](./tasks/task-09-e2e-order-flow-tests.md) | ✅ | 06, 08 | ~11 |
-| 10 | [Project Documentation](./tasks/task-10-project-documentation.md) | 🔵 | 09 | - |
+| 10 | [Project Documentation](./tasks/task-10-project-documentation.md) | ✅ | 09 | - |
 
 **Total estimated tests: ~98**
 
