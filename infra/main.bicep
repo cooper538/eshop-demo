@@ -27,6 +27,12 @@ param ghcrUsername string
 @secure()
 param ghcrToken string
 
+@description('Azure AD Tenant ID for JWT authentication (optional)')
+param azureAdTenantId string = ''
+
+@description('Azure AD Client ID for JWT authentication (optional)')
+param azureAdClientId string = ''
+
 // Variables
 var resourceGroupName = '${prefix}-${environment}-rg'
 var tags = {
@@ -148,6 +154,9 @@ module containerApps 'modules/container-apps.bicep' = {
     keyVaultUri: keyVault.outputs.vaultUri
     ghcrUsername: ghcrUsername
     ghcrToken: ghcrToken
+    appInsightsConnectionString: monitoring.outputs.appInsightsConnectionString
+    azureAdTenantId: azureAdTenantId
+    azureAdClientId: azureAdClientId
   }
 }
 
