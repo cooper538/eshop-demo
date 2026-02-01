@@ -50,6 +50,9 @@ jobs:
           - name: notification
             dockerfile: src/Services/Notification/Dockerfile
             image: notification
+          - name: analytics
+            dockerfile: src/Services/Analytics/Dockerfile
+            image: analytics
           - name: migration
             dockerfile: src/Services/DatabaseMigration/Dockerfile
             image: migration
@@ -167,14 +170,17 @@ jobs:
             app: eshop-gateway
             image: gateway
           - name: products
-            app: eshop-products
+            app: eshop-product-service
             image: products
           - name: order
-            app: eshop-order
+            app: eshop-order-service
             image: order
           - name: notification
-            app: eshop-notification
+            app: eshop-notification-service
             image: notification
+          - name: analytics
+            app: eshop-analytics-service
+            image: analytics
     steps:
       - name: Azure Login (OIDC)
         uses: azure/login@v2
@@ -243,7 +249,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
 
           echo "## Services Status" >> $GITHUB_STEP_SUMMARY
-          for app in eshop-gateway eshop-products eshop-order eshop-notification; do
+          for app in eshop-gateway eshop-product-service eshop-order-service eshop-notification-service eshop-analytics-service; do
             status=$(az containerapp show \
               --name $app \
               --resource-group ${{ env.RESOURCE_GROUP }} \
