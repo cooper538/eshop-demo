@@ -1,13 +1,18 @@
+using System.Text.Json;
+
 namespace EShop.E2E.Tests.Fixtures;
 
 [Collection(E2ETestCollection.Name)]
 public abstract class E2ETestBase : IAsyncLifetime
 {
+    protected static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+    };
+
     protected E2ETestFixture Fixture { get; }
 
     protected HttpClient GatewayClient => Fixture.GatewayClient;
-
-    protected WireMockFixture WireMock => Fixture.WireMock;
 
     protected E2ETestBase(E2ETestFixture fixture)
     {
@@ -16,7 +21,6 @@ public abstract class E2ETestBase : IAsyncLifetime
 
     public virtual Task InitializeAsync()
     {
-        WireMock.Reset();
         return Task.CompletedTask;
     }
 

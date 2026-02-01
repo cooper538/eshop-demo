@@ -45,10 +45,18 @@ public class GetOrdersQueryHandlerTests : IDisposable
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        result
+            .Should()
+            .BeEquivalentTo(
+                new
+                {
+                    TotalCount = 5,
+                    TotalPages = 2,
+                    Page = 1,
+                },
+                options => options.ExcludingMissingMembers()
+            );
         result.Items.Should().HaveCount(3);
-        result.TotalCount.Should().Be(5);
-        result.TotalPages.Should().Be(2);
-        result.Page.Should().Be(1);
     }
 
     [Fact]

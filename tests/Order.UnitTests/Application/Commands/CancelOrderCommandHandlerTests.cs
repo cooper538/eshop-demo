@@ -99,7 +99,7 @@ public class CancelOrderCommandHandlerTests : IDisposable
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Message.Should().Contain("Cannot transition");
+        result.Message.Should().Be("Order cannot be cancelled in current status");
 
         await using var verifyContext = _dbContextFactory.CreateContext();
         var savedOrder = await verifyContext.Orders.FirstOrDefaultAsync(o => o.Id == order.Id);

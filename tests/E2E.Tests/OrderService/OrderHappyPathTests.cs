@@ -80,10 +80,18 @@ public class OrderHappyPathTests : E2ETestBase
 
         var result = await response.Content.ReadFromJsonAsync<GetOrdersResponse>(JsonOptions);
         result.Should().NotBeNull();
-        result!.Items.Should().HaveCount(3);
-        result.TotalCount.Should().Be(3);
-        result.Page.Should().Be(1);
-        result.PageSize.Should().Be(10);
+        result
+            .Should()
+            .BeEquivalentTo(
+                new
+                {
+                    Items = new object[3],
+                    TotalCount = 3,
+                    Page = 1,
+                    PageSize = 10,
+                },
+                options => options.ExcludingMissingMembers()
+            );
     }
 
     [Fact]

@@ -4,6 +4,7 @@ using EShop.Contracts.ServiceClients.Product;
 using EShop.Order.Application.Data;
 using EShop.SharedKernel.Services;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace EShop.Order.Application.Commands.CreateOrder;
 
@@ -13,16 +14,19 @@ public sealed class CreateOrderCommandHandler
     private readonly IOrderDbContext _dbContext;
     private readonly IProductServiceClient _productServiceClient;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly ILogger<CreateOrderCommandHandler> _logger;
 
     public CreateOrderCommandHandler(
         IOrderDbContext dbContext,
         IProductServiceClient productServiceClient,
-        IDateTimeProvider dateTimeProvider
+        IDateTimeProvider dateTimeProvider,
+        ILogger<CreateOrderCommandHandler> logger
     )
     {
         _dbContext = dbContext;
         _productServiceClient = productServiceClient;
         _dateTimeProvider = dateTimeProvider;
+        _logger = logger;
     }
 
     public async Task<CreateOrderResult> Handle(
@@ -49,8 +53,13 @@ public sealed class CreateOrderCommandHandler
         catch (ServiceClientException ex)
         {
             // Technical failure (service unavailable, timeout) - save as Created for retry
+            _logger.LogWarning(ex, "Stock reservation failed for order {OrderId}", order.Id);
             _dbContext.Orders.Add(order);
-            return new CreateOrderResult(order.Id, order.Status.ToString(), ex.Message);
+            return new CreateOrderResult(
+                order.Id,
+                order.Status.ToString(),
+                "Stock reservation pending"
+            );
         }
 
         if (!reservationResult.Success)

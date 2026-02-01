@@ -7,6 +7,7 @@ using EShop.Order.Infrastructure.Data;
 using EShop.Order.UnitTests.Helpers;
 using EShop.SharedKernel.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EShop.Order.UnitTests.Application.Commands;
 
@@ -15,6 +16,7 @@ public class CreateOrderCommandHandlerTests : IDisposable
     private readonly TestDbContextFactory _dbContextFactory;
     private readonly Mock<IProductServiceClient> _productClientMock;
     private readonly Mock<IDateTimeProvider> _dateTimeProviderMock;
+    private readonly Mock<ILogger<CreateOrderCommandHandler>> _loggerMock;
     private readonly DateTime _fixedTime = new(2024, 1, 15, 10, 30, 0, DateTimeKind.Utc);
 
     public CreateOrderCommandHandlerTests()
@@ -22,6 +24,7 @@ public class CreateOrderCommandHandlerTests : IDisposable
         _dbContextFactory = new TestDbContextFactory();
         _productClientMock = new Mock<IProductServiceClient>();
         _dateTimeProviderMock = new Mock<IDateTimeProvider>();
+        _loggerMock = new Mock<ILogger<CreateOrderCommandHandler>>();
         _dateTimeProviderMock.Setup(x => x.UtcNow).Returns(_fixedTime);
     }
 
@@ -36,7 +39,8 @@ public class CreateOrderCommandHandlerTests : IDisposable
         return new CreateOrderCommandHandler(
             context,
             _productClientMock.Object,
-            _dateTimeProviderMock.Object
+            _dateTimeProviderMock.Object,
+            _loggerMock.Object
         );
     }
 
@@ -184,7 +188,7 @@ public class CreateOrderCommandHandlerTests : IDisposable
 
         // Assert
         result.Status.Should().Be(EOrderStatus.Created.ToString());
-        result.Message.Should().Be(errorMessage);
+        result.Message.Should().Be("Stock reservation pending");
 
         // New context bypasses ChangeTracker cache
         await using var verifyContext = _dbContextFactory.CreateContext();
