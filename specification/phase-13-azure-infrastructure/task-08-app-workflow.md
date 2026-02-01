@@ -13,7 +13,7 @@ Create GitHub Actions workflow for building Docker images and deploying to Azure
 ## Scope
 - [ ] Create `.github/workflows/app.yml` workflow file
 - [ ] Configure matrix strategy for parallel service builds
-- [ ] Build Docker images using Azure Container Registry (ACR) Tasks
+- [ ] Build and push Docker images to GitHub Container Registry (GHCR)
 - [ ] Deploy updated images to Container Apps
 - [ ] Configure workflow triggers (push to src/, manual dispatch)
 - [ ] Run database migrations before app deployment
@@ -24,6 +24,6 @@ Create GitHub Actions workflow for building Docker images and deploying to Azure
 
 ---
 ## Notes
-- ACR Tasks build images in Azure (no local Docker needed)
+- Using GHCR instead of ACR Tasks - builds run on GitHub Actions runners
 - Matrix strategy parallelizes builds for faster deployment
 - Deployment order: build images -> run migrations -> deploy services

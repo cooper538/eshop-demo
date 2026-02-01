@@ -3,21 +3,19 @@
 ## Metadata
 | Key | Value |
 |-----|-------|
-| Status | pending |
+| Status | in_progress |
 
 ## Objective
 Create Infrastructure as Code (Bicep) and CI/CD pipelines for deploying the EShop demo to Azure Container Apps with scale-to-zero, cost-optimized configuration.
 
 ## Scope
-- [ ] Set up `infra/` folder structure with Bicep modules
-- [ ] Create identity.bicep (User-Assigned Managed Identity + RBAC)
-- [ ] Create monitoring.bicep (Log Analytics Workspace)
-- [ ] Create storage.bicep (Storage Account + File Share for RabbitMQ)
-- [ ] Create postgres.bicep (Flexible Server B1ms + databases)
-- [ ] Create rabbitmq.bicep (RabbitMQ on Azure Container Instance)
-- [ ] Create key-vault.bicep (Standard tier + connection string secrets)
-- [ ] Create acr.bicep (Basic tier Container Registry)
-- [ ] Create container-apps.bicep (Environment + 6 Container Apps)
+- [x] Set up `infra/` folder structure with Bicep modules
+- [x] Create identity.bicep (User-Assigned Managed Identity + RBAC)
+- [x] Create monitoring.bicep (Log Analytics Workspace)
+- [x] Create postgres.bicep (Flexible Server B1ms + databases)
+- [x] Create rabbitmq.bicep (RabbitMQ on Azure Container Instance - ephemeral)
+- [x] Create key-vault.bicep (Standard tier + connection string secrets)
+- [x] Create container-apps.bicep (Environment + 5 Container Apps with GHCR)
 - [ ] Create Dockerfiles for all services
 - [ ] Create GitHub Actions workflow for infrastructure deployment (OIDC auth)
 - [ ] Create GitHub Actions workflow for application build and deploy
@@ -26,11 +24,11 @@ Create Infrastructure as Code (Bicep) and CI/CD pipelines for deploying the ESho
 
 | # | ID | Task | Status | Dependencies |
 |---|-----|------|--------|--------------|
-| 1 | task-01 | Bicep Project Structure | pending | - |
-| 2 | task-02 | Identity and Monitoring Modules | pending | task-01 |
-| 3 | task-03 | Data Services Modules | pending | task-02 |
-| 4 | task-04 | Key Vault Module | pending | task-03 |
-| 5 | task-05 | Container Apps Module | pending | task-02, task-03, task-04 |
+| 1 | task-01 | Bicep Project Structure | ✅ completed | - |
+| 2 | task-02 | Identity and Monitoring Modules | ✅ completed | task-01 |
+| 3 | task-03 | Data Services Modules | ✅ completed | task-02 |
+| 4 | task-04 | Key Vault Module | ✅ completed | task-03 |
+| 5 | task-05 | Container Apps Module | ✅ completed | task-02, task-03, task-04 |
 | 6 | task-06 | Dockerfiles | pending | - |
 | 7 | task-07 | Infrastructure Workflow | pending | task-01, task-02, task-03, task-04, task-05 |
 | 8 | task-08 | Application Workflow | pending | task-06, task-07 |
@@ -46,3 +44,5 @@ Create Infrastructure as Code (Bicep) and CI/CD pipelines for deploying the ESho
 - PostgreSQL and RabbitMQ support stop/start for additional cost savings
 - GitHub Actions uses OIDC (Workload Identity Federation) - no stored secrets
 - **RabbitMQ on ACI** instead of Service Bus - same config as local dev, full MassTransit support
+- **Using GHCR** instead of ACR - simplifies setup, no acr.bicep needed
+- **RabbitMQ is ephemeral** - no storage.bicep, no persistent storage (simplified for demo)
