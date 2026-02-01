@@ -1,0 +1,7 @@
+# Analytics Service - Production Configuration
+# Overrides base analytics.settings.yaml for production environment
+
+Logging:
+  LogLevel:
+    Default: "Warning"
+    Microsoft.AspNetCore: "Warning"

@@ -28,9 +28,9 @@ Demonstrational test coverage (~80%) for core infrastructure and Order Service -
 | 02 | [SharedKernel Tests](./tasks/task-02-sharedkernel-tests.md) | 🔵 | 01 | ~18 |
 | 03 | [Application Behaviors Tests](./tasks/task-03-application-behaviors-tests.md) | ⚪ | 01 | ~17 |
 | 04 | [Integration Test Infrastructure](./tasks/task-04-integration-test-infrastructure.md) | ✅ | 01 | - |
-| 05 | [Order Domain Tests](./tasks/task-05-order-domain-tests.md) | ⚪ | 01 | ~18 |
+| 05 | [Order Domain Tests](./tasks/task-05-order-domain-tests.md) | ✅ | 01 | ~18 |
 | 06 | [E2E Test Infrastructure](./tasks/task-06-e2e-test-infrastructure.md) | ✅ | 04 | - |
-| 07 | [Order Application Tests](./tasks/task-07-order-application-tests.md) | ⚪ | 01, 05 | ~22 |
+| 07 | [Order Application Tests](./tasks/task-07-order-application-tests.md) | 🔵 | 01, 05 | ~22 |
 | 08 | [Order Integration Tests](./tasks/task-08-order-integration-tests.md) | ⚪ | 04, 05 | ~12 |
 | 09 | [E2E Order Flow Tests](./tasks/task-09-e2e-order-flow-tests.md) | ⚪ | 06, 08 | ~11 |
 | 10 | [Project Documentation](./tasks/task-10-project-documentation.md) | ⚪ | 09 | - |
