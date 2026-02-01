@@ -19,6 +19,15 @@ Gateway:
   Service:
     Name: "Gateway"
 
+  # JWT Bearer authentication (disabled by default for development)
+  Authentication:
+    Enabled: false
+    AzureAd:
+      Instance: "https://login.microsoftonline.com/"
+      TenantId: "{your-tenant-id}"
+      ClientId: "{your-client-id}"
+      Audience: "api://eshop-api"
+
   RateLimiting:
     Enabled: true
     PermitLimit: 100

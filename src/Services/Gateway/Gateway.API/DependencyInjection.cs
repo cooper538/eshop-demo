@@ -2,8 +2,12 @@
 using System.Threading.RateLimiting;
 using EShop.Common.Api.Extensions;
 using EShop.Gateway.API.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Identity.Web;
+using Microsoft.IdentityModel.Tokens;
+using Serilog;
 
 namespace EShop.Gateway.API;
 
@@ -34,7 +38,102 @@ public static class DependencyInjection
 
         builder.Services.AddCorrelationId();
 
+        if (settings.Authentication.Enabled)
+        {
+            builder.Services.AddAuthentication(settings);
+        }
+
+        // HSTS for production - enforce HTTPS
+        if (!builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddHsts(options =>
+            {
+                options.MaxAge = TimeSpan.FromDays(365);
+                options.IncludeSubDomains = true;
+                options.Preload = true;
+            });
+        }
+
         return builder;
+    }
+
+    private static IServiceCollection AddAuthentication(
+        this IServiceCollection services,
+        GatewaySettings settings
+    )
+    {
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddMicrosoftIdentityWebApi(
+                options =>
+                {
+                    options.Audience = settings.Authentication.AzureAd.Audience;
+
+                    // Explicit token validation parameters for security
+                    options.TokenValidationParameters.ValidateIssuer = true;
+                    options.TokenValidationParameters.ValidateAudience = true;
+                    options.TokenValidationParameters.ValidateLifetime = true;
+                    options.TokenValidationParameters.ValidateIssuerSigningKey = true;
+                    options.TokenValidationParameters.RequireSignedTokens = true;
+
+                    // Prevent algorithm confusion attacks - whitelist only RS256
+                    options.TokenValidationParameters.ValidAlgorithms = new[]
+                    {
+                        SecurityAlgorithms.RsaSha256,
+                    };
+
+                    // Security event logging
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            Log.Warning(
+                                "JWT authentication failed for {Path}: {Error}",
+                                context.Request.Path,
+                                context.Exception.Message
+                            );
+                            return Task.CompletedTask;
+                        },
+                        OnTokenValidated = context =>
+                        {
+                            Log.Information(
+                                "JWT token validated for user {User} on {Path}",
+                                context.Principal?.Identity?.Name ?? "unknown",
+                                context.Request.Path
+                            );
+                            return Task.CompletedTask;
+                        },
+                        OnChallenge = context =>
+                        {
+                            Log.Warning(
+                                "JWT challenge issued for {Path}: {Error}",
+                                context.Request.Path,
+                                context.ErrorDescription ?? "No token provided"
+                            );
+                            return Task.CompletedTask;
+                        },
+                        OnForbidden = context =>
+                        {
+                            Log.Warning(
+                                "JWT forbidden for user {User} on {Path}",
+                                context.Principal?.Identity?.Name ?? "unknown",
+                                context.Request.Path
+                            );
+                            return Task.CompletedTask;
+                        },
+                    };
+                },
+                options =>
+                {
+                    options.Instance = settings.Authentication.AzureAd.Instance;
+                    options.TenantId = settings.Authentication.AzureAd.TenantId;
+                    options.ClientId = settings.Authentication.AzureAd.ClientId;
+                }
+            );
+
+        services.AddAuthorization();
+
+        return services;
     }
 
     public static WebApplication MapGatewayEndpoints(
@@ -42,11 +141,23 @@ public static class DependencyInjection
         GatewaySettings settings
     )
     {
+        // HSTS must be first in pipeline for production
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseHsts();
+        }
+
         app.UseCorrelationId();
 
         if (settings.RateLimiting.Enabled)
         {
             app.UseRateLimiter();
+        }
+
+        if (settings.Authentication.Enabled)
+        {
+            app.UseAuthentication();
+            app.UseAuthorization();
         }
 
         app.UseOutputCache();
