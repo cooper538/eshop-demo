@@ -125,13 +125,14 @@ Specification → AI Implementation → Human Review → Commit
 | [Spec-Driven Development](docs/spec-driven-development.md) | AI-assisted development methodology |
 | [Code Guidelines](docs/code-guidelines.md) | Project-specific C# standards |
 | [Aspire Integration](docs/aspire-integration.md) | Service orchestration guide |
+| [Testing](docs/testing.md) | Test infrastructure and conventions |
+| [Troubleshooting](docs/troubleshooting.md) | Common issues and solutions |
 
 ## Intentionally Omitted
 
 This is a demonstration project focused on architectural patterns.
 The following were intentionally left out:
 
-- **Comprehensive tests** - Unit/integration test suites not fully implemented
 - **Production deployment** - No K8s manifests, Terraform, or CI/CD pipelines
 - **Security hardening** - Authentication/authorization simplified
 
