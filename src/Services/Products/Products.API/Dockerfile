@@ -1,16 +1,14 @@
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS base
 WORKDIR /app
 EXPOSE 8080
-USER app
+USER $APP_UID
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-# Copy everything (relies on .dockerignore to exclude bin/obj/etc)
 COPY . .
 
-# Restore and build
 RUN dotnet restore src/Services/Products/Products.API/Products.API.csproj
 WORKDIR /src/src/Services/Products/Products.API
 RUN dotnet build Products.API.csproj -c $BUILD_CONFIGURATION -o /app/build \

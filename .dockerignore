@@ -1,7 +1,33 @@
 **/bin/
 **/obj/
-**/.git
+**/out/
 **/artifacts/
+**/.git
 **/*.user
 **/*.vs
+**/*.suo
 **/logs/
+
+# IDE
+.idea/
+.vs/
+
+# Documentation
+*.md
+docs/
+specification/
+
+# Tests
+**/*Tests/
+**/*.Tests.csproj
+
+# Infrastructure
+infra/
+tools/
+
+# Claude
+.claude/
+
+# Misc
+.DS_Store
+Thumbs.db
