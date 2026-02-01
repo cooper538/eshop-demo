@@ -1,6 +1,6 @@
-using EShop.Common.IntegrationTests.Fixtures;
 using EShop.Order.Domain.Entities;
 using EShop.Order.Domain.Enums;
+using EShop.Order.IntegrationTests.Fixtures;
 using EShop.Order.IntegrationTests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 

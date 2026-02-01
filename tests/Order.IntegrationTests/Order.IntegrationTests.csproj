@@ -27,8 +27,15 @@
     <PackageReference Include="Moq" />
   </ItemGroup>
 
+  <ItemGroup Label="Integration Testing">
+    <PackageReference Include="Testcontainers" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="Respawn" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+
   <ItemGroup Label="Project References">
     <ProjectReference Include="..\..\src\Services\Order\Order.API\EShop.Order.API.csproj" />
-    <ProjectReference Include="..\Common.IntegrationTests\Common.IntegrationTests.csproj" />
   </ItemGroup>
 </Project>

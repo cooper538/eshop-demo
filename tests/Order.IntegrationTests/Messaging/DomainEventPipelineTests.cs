@@ -1,6 +1,6 @@
-using EShop.Common.IntegrationTests.Fixtures;
 using EShop.Contracts.IntegrationEvents.Order;
 using EShop.Order.Domain.Entities;
+using EShop.Order.IntegrationTests.Fixtures;
 using EShop.Order.IntegrationTests.Infrastructure;
 
 namespace EShop.Order.IntegrationTests.Messaging;
