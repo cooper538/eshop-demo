@@ -63,7 +63,7 @@ var analyticsService = builder
 
 var gateway = builder
     .AddProject<Projects.EShop_Gateway_API>(ResourceNames.Services.Gateway)
-    .WithHttpEndpoint()
+    .WithHttpEndpoint(port: 64887)
     .WithHttpsEndpoint()
     .WithReference(productService)
     .WithReference(orderService)
