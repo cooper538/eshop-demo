@@ -4,20 +4,20 @@
 | Key | Value |
 |-----|-------|
 | ID | task-08 |
-| Status | pending |
+| Status | ✅ completed |
 | Dependencies | task-06, task-07 |
 
 ## Summary
 Create GitHub Actions workflow for building Docker images and deploying to Azure Container Apps with parallel service builds.
 
 ## Scope
-- [ ] Create `.github/workflows/app.yml` workflow file
-- [ ] Configure matrix strategy for parallel service builds
-- [ ] Build and push Docker images to GitHub Container Registry (GHCR)
-- [ ] Deploy updated images to Container Apps
-- [ ] Configure workflow triggers (push to src/, manual dispatch)
-- [ ] Run database migrations before app deployment
-- [ ] Output deployment URLs and health check results
+- [x] Create `.github/workflows/app.yml` workflow file
+- [x] Configure matrix strategy for parallel service builds
+- [x] Build and push Docker images to GitHub Container Registry (GHCR)
+- [x] Deploy updated images to Container Apps
+- [x] Configure workflow triggers (push to src/, manual dispatch)
+- [x] Run database migrations before app deployment
+- [x] Output deployment URLs and health check results
 
 ## Related Specs
 - -> [azure-infrastructure.md](../high-level-specs/azure-infrastructure.md) (Section: 9.2 GitHub Actions Workflows, 9.3 Deployment Order)
