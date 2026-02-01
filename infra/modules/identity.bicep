@@ -10,10 +10,6 @@ param location string
 @description('Resource tags')
 param tags object
 
-// TODO: Implement in task-02
-// - User-Assigned Managed Identity
-// - Role assignments (Key Vault Secrets User)
-
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: '${prefix}-identity'
   location: location
