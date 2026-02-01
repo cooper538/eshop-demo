@@ -23,12 +23,12 @@ public sealed class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRe
         var requestName = typeof(TRequest).Name;
         var stopwatch = Stopwatch.StartNew();
 
-        _logger.LogDebug("Handling {RequestName}", requestName);
+        _logger.LogInformation("Handling {RequestName}", requestName);
 
         var response = await next();
 
         stopwatch.Stop();
-        _logger.LogDebug(
+        _logger.LogInformation(
             "Handled {RequestName} in {ElapsedMs}ms",
             requestName,
             stopwatch.ElapsedMilliseconds

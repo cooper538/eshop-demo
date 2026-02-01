@@ -1,8 +1,10 @@
 # Gateway Service - Development Configuration
 # Overrides base gateway.settings.yaml for local development
 
-Logging:
-  LogLevel:
-    Default: "Information"
-    Microsoft.AspNetCore: "Warning"
-    Yarp: "Debug"
+Serilog:
+  MinimumLevel:
+    Default: "Debug"
+    Override:
+      Microsoft.AspNetCore: "Information"
+      Microsoft.AspNetCore.HttpLogging: "Information"
+      Yarp: "Debug"

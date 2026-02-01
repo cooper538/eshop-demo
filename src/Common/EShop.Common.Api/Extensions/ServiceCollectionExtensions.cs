@@ -3,6 +3,7 @@ using EShop.Common.Application.Correlation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace EShop.Common.Api.Extensions;
 
@@ -43,6 +44,7 @@ public static class ServiceCollectionExtensions
     public static IApplicationBuilder UseApiDefaults(this IApplicationBuilder app)
     {
         app.UseCorrelationId();
+        app.UseSerilogRequestLogging();
         app.UseErrorHandling();
         return app;
     }

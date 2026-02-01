@@ -492,3 +492,6 @@ CLAUDE.md
 .claude/logs/
 .claude/plans/
 [Tt]est[Rr]esult*/
+
+# Aspire secrets (use .template files as reference)
+src/AppHost/appsettings.json
