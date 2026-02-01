@@ -10,26 +10,13 @@
 ## Summary
 Setup end-to-end test infrastructure for multi-service integration testing with Aspire.
 
-**Note**: Shell-based E2E tooling already exists in `/tools/e2e-test/` for manual testing. This task adds programmatic .NET test project for CI integration.
-
 ## Scope
 - [x] Create `tests/E2E.Tests/` project
-- [x] Add NuGet packages:
-  - [x] WireMock.Net (for external API mocking)
-  - [x] Aspire.Hosting.Testing (uses Aspire's built-in container management)
-- [x] Create `E2ETestFixture` class
-  - [x] Start all services via DistributedApplicationTestingBuilder
-  - [x] Start Gateway, Product, Order services via Aspire AppHost
-  - [x] Automatic service discovery via Aspire
-  - [x] Setup WireMock for SendGrid
-- [x] Create `E2ETestBase` class
-  - [x] HttpClient configured for Gateway
-  - [x] WireMock reset between tests
-  - [x] Wait utilities for async operations
-- [x] Implement service startup orchestration
-  - [x] Proper startup order via Aspire
-  - [x] Health check verification before tests (WaitForResourceHealthyAsync)
-- [x] Update `EShopDemo.sln`
+- [x] Add NuGet packages (WireMock.Net, Aspire.Hosting.Testing)
+- [x] Create E2ETestFixture with Aspire AppHost startup
+- [x] Create E2ETestBase with HttpClient and WireMock setup
+- [x] Implement service health check verification
+- [x] Update solution
 
 ## Related Specs
 - → [functional-testing.md](../../high-level-specs/functional-testing.md) (Section: E2E Testing)
@@ -37,7 +24,6 @@ Setup end-to-end test infrastructure for multi-service integration testing with 
 
 ---
 ## Notes
-- This is complex - consider using WebApplicationFactory per service
-- May need custom service discovery for test environment
-- Consider timeouts carefully - E2E tests are slower
+- Shell-based E2E tooling exists in `/tools/e2e-test/` for manual testing
+- This task adds programmatic .NET test project for CI integration
 - Use async polling for eventual consistency checks

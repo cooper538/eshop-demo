@@ -12,11 +12,10 @@ Create shared unit testing infrastructure with common test utilities and base cl
 
 ## Scope
 - [x] Create `tests/Common.UnitTests/` project
-- [x] Add NuGet packages: xUnit, FluentAssertions, Moq, AutoFixture
+- [x] Add NuGet packages (xUnit, FluentAssertions, Moq, AutoFixture)
 - [x] Create `TestBase` class with common setup
-- [x] Add test utilities (builders, factories if needed)
-- [x] Update `EShopDemo.sln` with new test project
-- [x] Verify `dotnet test` runs successfully
+- [x] Add test utilities (builders, factories)
+- [x] Update solution and verify tests run
 
 ## Related Specs
 - → [unit-testing.md](../../high-level-specs/unit-testing.md)
@@ -24,5 +23,4 @@ Create shared unit testing infrastructure with common test utilities and base cl
 ---
 ## Notes
 - Use central package management (Directory.Packages.props)
-- Consider adding AutoFixture.AutoMoq for easier mocking
 - Keep infrastructure minimal - add utilities as needed
