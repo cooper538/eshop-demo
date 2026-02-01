@@ -1,4 +1,5 @@
-﻿using EShop.Gateway.API;
+﻿using EShop.Common.Infrastructure.Configuration;
+using EShop.Gateway.API;
 using EShop.Gateway.API.Configuration;
 using EShop.ServiceDefaults;
 
