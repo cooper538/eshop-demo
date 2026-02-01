@@ -18,6 +18,9 @@ if (builder.Environment.IsProduction())
 
 builder.Services.AddHealthChecks().AddPostgresHealthCheck("productdb");
 
+// TODO: Add authentication when needed - currently trusts Gateway
+// User context can be read from X-User-Id, X-User-Email headers if propagated
+
 builder.Services.AddApplication();
 builder.AddInfrastructure();
 builder.AddPresentation();

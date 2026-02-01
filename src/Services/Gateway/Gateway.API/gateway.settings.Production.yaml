@@ -7,6 +7,11 @@ Logging:
     Yarp: "Warning"
 
 Gateway:
+  # Enable authentication in Production
+  # TenantId and ClientId loaded from Key Vault or environment variables
+  Authentication:
+    Enabled: true
+
   RateLimiting:
     PermitLimit: 1000
     WindowSeconds: 60

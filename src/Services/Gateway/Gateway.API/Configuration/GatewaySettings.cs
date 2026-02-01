@@ -13,6 +13,26 @@ public class GatewaySettings
     public RateLimitingSettings RateLimiting { get; init; } = new();
 
     public OutputCacheSettings OutputCache { get; init; } = new();
+
+    public AuthenticationSettings Authentication { get; init; } = new();
+}
+
+public class AuthenticationSettings
+{
+    public bool Enabled { get; init; }
+
+    public AzureAdSettings AzureAd { get; init; } = new();
+}
+
+public class AzureAdSettings
+{
+    public string Instance { get; init; } = "https://login.microsoftonline.com/";
+
+    public string TenantId { get; init; } = string.Empty;
+
+    public string ClientId { get; init; } = string.Empty;
+
+    public string Audience { get; init; } = string.Empty;
 }
 
 public class RateLimitingSettings

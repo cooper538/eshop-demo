@@ -15,6 +15,9 @@ if (builder.Environment.IsProduction())
 
 builder.Services.AddHealthChecks().AddPostgresHealthCheck("notificationdb");
 
+// TODO: Add authentication when needed - currently trusts Gateway
+// User context can be read from message headers if propagated
+
 builder.AddNotificationServices();
 
 var host = builder.Build();

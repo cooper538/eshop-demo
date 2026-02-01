@@ -21,6 +21,9 @@ builder
     .AddPostgresHealthCheck(ResourceNames.Databases.Order)
     .AddServiceHealthCheck(ResourceNames.Services.Product);
 
+// TODO: Add authentication when needed - currently trusts Gateway
+// User context can be read from X-User-Id, X-User-Email headers if propagated
+
 builder.Services.AddApplication();
 builder.AddInfrastructure();
 builder.AddPresentation();
