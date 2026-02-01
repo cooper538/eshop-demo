@@ -12,31 +12,17 @@ Setup shared integration testing infrastructure with Testcontainers, Respawn, an
 
 ## Scope
 - [x] Create `tests/Common.IntegrationTests/` project
-- [x] Add NuGet packages:
-  - [x] Testcontainers, Testcontainers.PostgreSql, Testcontainers.RabbitMq
-  - [x] Respawn
-  - [x] Microsoft.AspNetCore.Mvc.Testing
-- [x] Create `PostgresContainerFixture` class
-  - [x] Spin up PostgreSQL container
-  - [x] Provide connection string
-  - [x] Implement IAsyncLifetime
-- [x] Create `RabbitMqContainerFixture` class
-  - [x] Spin up RabbitMQ container
-  - [x] Provide connection string
-- [x] Create `DatabaseFixture` with Respawn
-  - [x] Reset database between tests
-  - [x] Ignore __EFMigrationsHistory table
-- [x] Create `IntegrationTestBase` class
-  - [x] Common setup/teardown
-  - [x] Database reset helper
-- [x] Update `EShopDemo.sln`
+- [x] Add NuGet packages (Testcontainers, Respawn, Mvc.Testing)
+- [x] Create PostgreSQL container fixture
+- [x] Create RabbitMQ container fixture
+- [x] Create database fixture with Respawn reset
+- [x] Create IntegrationTestBase class
+- [x] Update solution
 
 ## Related Specs
 - → [functional-testing.md](../../high-level-specs/functional-testing.md) (Section: Integration Testing)
 
 ---
 ## Notes
-- Use postgres:16-alpine image for speed
-- Use rabbitmq:3-management-alpine image
-- Consider CollectionFixture for sharing containers across tests
-- Containers should be started once per test run, not per test
+- Use postgres:16-alpine and rabbitmq:3-management-alpine images
+- Containers shared across tests via CollectionFixture
