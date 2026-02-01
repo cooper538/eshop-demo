@@ -1,6 +1,6 @@
-using EShop.Common.IntegrationTests.Fixtures;
 using EShop.Contracts.ServiceClients.Product;
 using EShop.Order.Infrastructure.Data;
+using EShop.Order.IntegrationTests.Fixtures;
 using EShop.ServiceDefaults;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;

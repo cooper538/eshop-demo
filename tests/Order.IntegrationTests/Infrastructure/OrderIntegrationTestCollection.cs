@@ -1,4 +1,4 @@
-using EShop.Common.IntegrationTests.Fixtures;
+using EShop.Order.IntegrationTests.Fixtures;
 
 namespace EShop.Order.IntegrationTests.Infrastructure;
 

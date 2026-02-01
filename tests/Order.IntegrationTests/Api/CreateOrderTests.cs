@@ -1,9 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
-using EShop.Common.IntegrationTests.Fixtures;
 using EShop.Contracts.ServiceClients;
 using EShop.Contracts.ServiceClients.Product;
 using EShop.Order.Application.Commands.CreateOrder;
+using EShop.Order.IntegrationTests.Fixtures;
 using EShop.Order.IntegrationTests.Infrastructure;
 using Moq;
 

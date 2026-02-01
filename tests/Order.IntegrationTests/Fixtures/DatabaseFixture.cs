@@ -2,7 +2,7 @@ using System.Data.Common;
 using Npgsql;
 using Respawn;
 
-namespace EShop.Common.IntegrationTests.Fixtures;
+namespace EShop.Order.IntegrationTests.Fixtures;
 
 #pragma warning disable CA1001 // IAsyncLifetime handles disposal via DisposeAsync
 public sealed class DatabaseFixture : IAsyncLifetime
