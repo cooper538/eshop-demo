@@ -52,11 +52,17 @@ public sealed class CancelOrderCommandHandler
         }
         catch (InvalidOrderStateException ex)
         {
+            _logger.LogWarning(
+                ex,
+                "Cannot cancel order {OrderId} in status {Status}",
+                order.Id,
+                order.Status
+            );
             return new CancelOrderResult(
                 order.Id,
                 order.Status.ToString(),
                 Success: false,
-                Message: ex.Message
+                Message: "Order cannot be cancelled in current status"
             );
         }
 

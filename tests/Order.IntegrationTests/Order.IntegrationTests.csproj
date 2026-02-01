@@ -24,6 +24,7 @@
   <ItemGroup Label="Testing Tools">
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="MassTransit.TestFramework" />
+    <PackageReference Include="Moq" />
   </ItemGroup>
 
   <ItemGroup Label="Project References">

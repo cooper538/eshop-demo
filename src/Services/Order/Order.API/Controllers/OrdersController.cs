@@ -82,6 +82,7 @@ public class OrdersController : ControllerBase
     /// <returns>Cancellation result</returns>
     [HttpPost("{id:guid}/cancel")]
     [ProducesResponseType(typeof(CancelOrderResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CancelOrderResult), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CancelOrderResult>> CancelOrder(
         Guid id,
@@ -91,6 +92,12 @@ public class OrdersController : ControllerBase
     {
         var command = new CancelOrderCommand(id, request.Reason);
         var result = await _mediator.Send(command, ct);
+
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
+
         return Ok(result);
     }
 }

@@ -1,4 +1,5 @@
 using EShop.Common.IntegrationTests.Fixtures;
+using EShop.Contracts.ServiceClients.Product;
 using EShop.Order.Infrastructure.Data;
 using EShop.ServiceDefaults;
 using MassTransit;
@@ -7,8 +8,10 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Moq;
 
 namespace EShop.Order.IntegrationTests.Infrastructure;
 
@@ -16,6 +19,9 @@ public class OrderApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgresContainerFixture _postgres;
     private readonly DatabaseFixture _database;
+    private readonly Mock<IProductServiceClient> _productServiceMock = new();
+
+    public Mock<IProductServiceClient> ProductServiceMock => _productServiceMock;
 
     public OrderApiFactory(PostgresContainerFixture postgres)
     {
@@ -44,6 +50,10 @@ public class OrderApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             {
                 cfg.SetTestTimeouts(TimeSpan.FromSeconds(30));
             });
+
+            // Replace ProductServiceClient with mock for resilience testing
+            services.RemoveAll<IProductServiceClient>();
+            services.AddSingleton(_productServiceMock.Object);
         });
     }
 

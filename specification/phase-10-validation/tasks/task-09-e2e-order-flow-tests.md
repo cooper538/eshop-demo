@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-09 |
-| Status | ⚪ pending |
+| Status | 🔵 in_progress |
 | Dependencies | task-06, task-08 |
 
 ## Summary
@@ -13,25 +13,27 @@ End-to-end tests for complete order flows across all services - Gateway, Order, 
 ## Scope
 
 ### Happy Path - Order Creation
-- [ ] Test create order flow (API -> stock reservation -> confirmation -> notification)
-- [ ] Test get order after creation
-- [ ] Test list orders with pagination
+- [x] Test create order flow (API -> stock reservation -> confirmation -> notification)
+- [x] Test get order after creation
+- [x] Test list orders with pagination
 
 ### Order Cancellation
-- [ ] Test cancel order flow (cancel -> stock release -> notification)
-- [ ] Test cancel already cancelled order
+- [x] Test cancel order flow (cancel -> stock release -> notification)
+- [x] Test cancel already cancelled order
+- [x] Test cancel non-existent order → 404
 
 ### Validation and Errors
-- [ ] Test invalid data returns 400
-- [ ] Test non-existent order returns 404
-- [ ] Test stock unavailable error handling
+- [x] Test invalid data returns 400 (empty items, invalid email)
+- [x] Test non-existent order returns 404
+- [x] Test stock unavailable error handling (insufficient stock → Rejected)
+- [x] Test cancel rejected order → 400
 
 ### Gateway Routing
-- [ ] Test routing to correct services (Order, Product)
+- [x] Test routing to correct services (Order, Product)
 
 ### CorrelationId Propagation
-- [ ] Test provided CorrelationId propagates across all services
-- [ ] Test generated CorrelationId when not provided
+- [x] Test provided CorrelationId propagates across all services
+- [x] Test generated CorrelationId when not provided
 
 ## Related Specs
 - → [functional-testing.md](../../high-level-specs/functional-testing.md)
@@ -43,3 +45,4 @@ End-to-end tests for complete order flows across all services - Gateway, Order, 
 - Uses E2E infrastructure from task-06 (Aspire.Hosting.Testing)
 - WireMock mocks SendGrid API for email verification
 - Use async polling for eventual consistency checks
+- 15 E2E tests implemented in `tests/E2E.Tests/Orders/OrderFlowTests.cs`

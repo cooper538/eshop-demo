@@ -24,9 +24,6 @@
   <ItemGroup Label="Testing Tools">
     <PackageReference Include="Moq" />
     <PackageReference Include="FluentAssertions" />
-    <PackageReference Include="AutoFixture" />
-    <PackageReference Include="AutoFixture.AutoMoq" />
-    <PackageReference Include="AutoFixture.Xunit2" />
   </ItemGroup>
 
   <ItemGroup Label="Project References">
