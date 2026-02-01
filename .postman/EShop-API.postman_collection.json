@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "e-shop-api-collection",
     "name": "EShop API",
-    "description": "Postman collection for E-Shop microservices.\n\n## Usage\n1. Select environment (Development/Production)\n2. Update `baseUrl` from Aspire dashboard\n3. Run requests - IDs are auto-saved",
+    "description": "Postman collection for E-Shop microservices.\n\n## Usage\n1. Select environment (Development/Production)\n2. Update `baseUrl` from Aspire dashboard\n3. For Production: Configure MS Entra credentials (tenantId, clientId, clientSecret)\n4. Run requests - IDs are auto-saved, tokens are auto-refreshed\n\n## Authentication\n- **Development**: No auth required (authEnabled=false)\n- **Production**: OAuth 2.0 Client Credentials flow with MS Entra (authEnabled=true)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -11,20 +11,226 @@
       "value": ""
     }
   ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
   "event": [
     {
       "listen": "prerequest",
       "script": {
         "type": "text/javascript",
         "exec": [
+          "// Generate correlation ID if not set",
           "if (!pm.environment.get('correlationId') || pm.environment.get('correlationId').startsWith('test-')) {",
           "    pm.environment.set('correlationId', 'test-' + Date.now());",
-          "}"
+          "}",
+          "",
+          "// Skip auth if disabled",
+          "const authEnabled = pm.environment.get('authEnabled');",
+          "if (authEnabled !== 'true') {",
+          "    return;",
+          "}",
+          "",
+          "// Check if token is still valid (with 60s buffer)",
+          "const tokenExpiry = pm.environment.get('tokenExpiry');",
+          "const currentTime = Math.floor(Date.now() / 1000);",
+          "if (tokenExpiry && parseInt(tokenExpiry) > currentTime + 60) {",
+          "    return; // Token still valid",
+          "}",
+          "",
+          "// Get MS Entra configuration",
+          "const tenantId = pm.environment.get('tenantId');",
+          "const clientId = pm.environment.get('clientId');",
+          "const clientSecret = pm.environment.get('clientSecret');",
+          "const scope = pm.environment.get('scope') || `api://${clientId}/.default`;",
+          "",
+          "if (!tenantId || !clientId || !clientSecret) {",
+          "    console.warn('MS Entra credentials not configured. Set tenantId, clientId, clientSecret in environment.');",
+          "    return;",
+          "}",
+          "",
+          "// Request new token using Client Credentials flow",
+          "const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;",
+          "",
+          "pm.sendRequest({",
+          "    url: tokenUrl,",
+          "    method: 'POST',",
+          "    header: {",
+          "        'Content-Type': 'application/x-www-form-urlencoded'",
+          "    },",
+          "    body: {",
+          "        mode: 'urlencoded',",
+          "        urlencoded: [",
+          "            { key: 'grant_type', value: 'client_credentials' },",
+          "            { key: 'client_id', value: clientId },",
+          "            { key: 'client_secret', value: clientSecret },",
+          "            { key: 'scope', value: scope }",
+          "        ]",
+          "    }",
+          "}, (err, response) => {",
+          "    if (err) {",
+          "        console.error('Token request failed:', err);",
+          "        return;",
+          "    }",
+          "    ",
+          "    if (response.code !== 200) {",
+          "        console.error('Token request failed:', response.json());",
+          "        return;",
+          "    }",
+          "    ",
+          "    const tokenResponse = response.json();",
+          "    pm.environment.set('accessToken', tokenResponse.access_token);",
+          "    ",
+          "    // Calculate expiry time (current time + expires_in)",
+          "    const expiresIn = tokenResponse.expires_in || 3600;",
+          "    const expiryTime = currentTime + expiresIn;",
+          "    pm.environment.set('tokenExpiry', expiryTime.toString());",
+          "    ",
+          "    console.log(`Token acquired, expires in ${expiresIn}s`);",
+          "});"
         ]
       }
     }
   ],
   "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Get Token (Manual)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/x-www-form-urlencoded"}
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {"key": "grant_type", "value": "client_credentials"},
+                {"key": "client_id", "value": "{{clientId}}"},
+                {"key": "client_secret", "value": "{{clientSecret}}"},
+                {"key": "scope", "value": "{{scope}}"}
+              ]
+            },
+            "url": {
+              "raw": "https://login.microsoftonline.com/{{tenantId}}/oauth2/v2.0/token",
+              "protocol": "https",
+              "host": ["login", "microsoftonline", "com"],
+              "path": ["{{tenantId}}", "oauth2", "v2.0", "token"]
+            },
+            "description": "Manually request an access token from MS Entra. Use this for debugging or when automatic token refresh fails."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('accessToken', response.access_token);",
+                  "    ",
+                  "    const currentTime = Math.floor(Date.now() / 1000);",
+                  "    const expiresIn = response.expires_in || 3600;",
+                  "    pm.environment.set('tokenExpiry', (currentTime + expiresIn).toString());",
+                  "    ",
+                  "    console.log('Token saved to environment');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Validate Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "X-Correlation-Id", "value": "{{correlationId}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products?page=1&pageSize=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "pageSize", "value": "1"}
+              ]
+            },
+            "description": "Simple request to validate the current token is working."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Token valid (Status 200)', () => pm.response.to.have.status(200));",
+                  "",
+                  "if (pm.response.code === 401) {",
+                  "    console.error('Token invalid or expired. Run \"Get Token (Manual)\" or check credentials.');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Clear Token",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://postman-echo.com/get",
+              "protocol": "https",
+              "host": ["postman-echo", "com"],
+              "path": ["get"]
+            },
+            "description": "Clears the stored access token. Useful for testing token refresh."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.unset('accessToken');",
+                  "pm.environment.unset('tokenExpiry');",
+                  "console.log('Token cleared from environment');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Token cleared', () => {",
+                  "    pm.expect(pm.environment.get('accessToken')).to.be.undefined;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Authentication utilities for MS Entra OAuth 2.0"
+    },
     {
       "name": "Products",
       "item": [
