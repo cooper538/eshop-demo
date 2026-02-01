@@ -4,7 +4,7 @@
 | Key | Value |
 |-----|-------|
 | ID | task-07 |
-| Status | ⚪ pending |
+| Status | 🔵 in_progress |
 | Dependencies | task-01, task-05 |
 
 ## Summary
