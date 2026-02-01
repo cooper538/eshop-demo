@@ -1,8 +1,8 @@
 ﻿using EShop.Common.Api.Extensions;
+using EShop.Common.Infrastructure.Configuration;
 using EShop.Products.API;
 using EShop.Products.Application;
 using EShop.Products.Infrastructure;
-using EShop.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
 
