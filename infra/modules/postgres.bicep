@@ -17,11 +17,6 @@ param administratorLogin string
 @secure()
 param administratorPassword string
 
-// TODO: Implement in task-03
-// - PostgreSQL Flexible Server (B1ms)
-// - Databases: productdb, orderdb, notificationdb, catalogdb
-// - Firewall rules
-
 var databases = [
   'productdb'
   'orderdb'

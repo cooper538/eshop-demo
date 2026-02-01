@@ -33,11 +33,6 @@ param rabbitMqUser string
 @secure()
 param rabbitMqPassword string
 
-// TODO: Implement in task-04
-// - Key Vault (Standard, RBAC)
-// - Connection string secrets
-// - Role assignment for managed identity
-
 var databases = ['productdb', 'orderdb', 'notificationdb', 'catalogdb']
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
