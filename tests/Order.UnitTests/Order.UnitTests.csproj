@@ -27,9 +27,12 @@
     <PackageReference Include="AutoFixture" />
     <PackageReference Include="AutoFixture.AutoMoq" />
     <PackageReference Include="AutoFixture.Xunit2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
   </ItemGroup>
 
   <ItemGroup Label="Project References">
     <ProjectReference Include="..\..\src\Services\Order\Order.Domain\EShop.Order.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Order\Order.Application\EShop.Order.Application.csproj" />
+    <ProjectReference Include="..\..\src\Services\Order\Order.Infrastructure\EShop.Order.Infrastructure.csproj" />
   </ItemGroup>
 </Project>
