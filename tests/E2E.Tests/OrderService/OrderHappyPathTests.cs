@@ -85,13 +85,13 @@ public class OrderHappyPathTests : E2ETestBase
             .BeEquivalentTo(
                 new
                 {
-                    Items = new object[3],
                     TotalCount = 3,
                     Page = 1,
                     PageSize = 10,
                 },
                 options => options.ExcludingMissingMembers()
             );
+        result!.Items.Should().HaveCount(3);
     }
 
     [Fact]

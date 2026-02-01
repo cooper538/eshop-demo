@@ -37,12 +37,8 @@ public class OutputCacheSettings
     public int ProductsListCacheMinutes { get; init; } = 5;
 
     [Range(1, 1440)]
-    public int ProductDetailCacheMinutes { get; init; } = 2;
-
-    [Range(1, 1440)]
     public int SwaggerCacheMinutes { get; init; } = 1440;
 
     public TimeSpan ProductsListCacheDuration => TimeSpan.FromMinutes(ProductsListCacheMinutes);
-    public TimeSpan ProductDetailCacheDuration => TimeSpan.FromMinutes(ProductDetailCacheMinutes);
     public TimeSpan SwaggerCacheDuration => TimeSpan.FromMinutes(SwaggerCacheMinutes);
 }

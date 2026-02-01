@@ -27,7 +27,6 @@ Gateway:
 
   OutputCache:
     ProductsListCacheMinutes: 5
-    ProductDetailCacheMinutes: 2
     SwaggerCacheMinutes: 1440  # 24h
 
 ReverseProxy:
@@ -45,13 +44,21 @@ ReverseProxy:
       Match:
         Path: "/api/orders/swagger/{**catch-all}"
 
-    # GET /api/products - list cached 5 min, detail cached 2 min
+    # GET /api/products - list cached 5 min
     products-read-route:
       ClusterId: "product-cluster"
       RateLimiterPolicy: "fixed"
       OutputCachePolicy: "ProductsCache"
       Match:
-        Path: "/api/products{**catch-all}"
+        Path: "/api/products/{**catch-all}"
+        Methods: ["GET"]
+
+    products-read-exact-route:
+      ClusterId: "product-cluster"
+      RateLimiterPolicy: "fixed"
+      OutputCachePolicy: "ProductsCache"
+      Match:
+        Path: "/api/products"
         Methods: ["GET"]
 
     # POST/PUT/DELETE /api/products - no cache
@@ -59,14 +66,27 @@ ReverseProxy:
       ClusterId: "product-cluster"
       RateLimiterPolicy: "fixed"
       Match:
-        Path: "/api/products{**catch-all}"
+        Path: "/api/products/{**catch-all}"
+        Methods: ["POST", "PUT", "DELETE"]
+
+    products-write-exact-route:
+      ClusterId: "product-cluster"
+      RateLimiterPolicy: "fixed"
+      Match:
+        Path: "/api/products"
         Methods: ["POST", "PUT", "DELETE"]
 
     orders-route:
       ClusterId: "order-cluster"
       RateLimiterPolicy: "fixed"
       Match:
-        Path: "/api/orders{**catch-all}"
+        Path: "/api/orders/{**catch-all}"
+
+    orders-exact-route:
+      ClusterId: "order-cluster"
+      RateLimiterPolicy: "fixed"
+      Match:
+        Path: "/api/orders"
 
   Clusters:
     product-cluster:

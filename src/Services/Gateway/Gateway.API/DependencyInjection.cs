@@ -120,15 +120,6 @@ public static class DependencyInjection
             );
 
             options.AddPolicy(
-                "ProductDetailCache",
-                policy =>
-                    policy
-                        .Expire(settings.OutputCache.ProductDetailCacheDuration)
-                        .SetVaryByRouteValue("catch-all")
-                        .Tag("products")
-            );
-
-            options.AddPolicy(
                 "SwaggerCache",
                 policy => policy.Expire(settings.OutputCache.SwaggerCacheDuration).Tag("swagger")
             );
