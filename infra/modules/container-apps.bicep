@@ -164,8 +164,8 @@ resource backendService 'Microsoft.App/containerApps@2024-03-01' = [
               { name: 'OTEL_SERVICE_NAME', value: app.otelName }
               // Order service needs product service URL for gRPC calls
               {
-                name: 'services__product-service__http__0'
-                value: app.name == 'order-service' ? 'http://${prefix}-product-service' : ''
+                name: 'ServiceClients__ProductService__Url'
+                value: app.name == 'order-service' ? 'http://${prefix}-product-service:8080' : ''
               }
             ])
           }

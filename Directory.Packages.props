@@ -99,6 +99,8 @@
   <ItemGroup Label="Authentication">
     <PackageVersion Include="Microsoft.Identity.Web" Version="3.9.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.15.0" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
   </ItemGroup>
 
   <ItemGroup Label="Testing">
