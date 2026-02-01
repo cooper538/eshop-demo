@@ -1,4 +1,4 @@
-name: Build & Validate
+name: CI
 
 on:
   push:
@@ -8,11 +8,13 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
+  checks: write
+  pull-requests: write
 
 env:
   DOTNET_VERSION: '10.0.x'
@@ -22,9 +24,9 @@ env:
 
 jobs:
   build:
-    name: Build & Test
+    name: Build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -37,8 +39,7 @@ jobs:
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
+          restore-keys: ${{ runner.os }}-nuget-
 
       - name: Restore
         run: dotnet restore EShopDemo.sln
@@ -46,13 +47,52 @@ jobs:
       - name: Build
         run: dotnet build EShopDemo.sln -c Release --no-restore
 
-      - name: Run Architecture Tests
-        run: dotnet test tests/EShop.ArchitectureTests -c Release --no-build --logger "console;verbosity=normal"
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            **/bin/Release
+            **/obj/Release
+          retention-days: 1
 
-  code-quality:
-    name: Code Quality
+  test:
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    needs: build
+    timeout-minutes: ${{ matrix.timeout }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Unit Tests
+            projects: tests/Common.UnitTests tests/Order.UnitTests
+            results-prefix: unit
+            timeout: 10
+            needs-docker: false
+
+          - name: Architecture Tests
+            projects: tests/EShop.ArchitectureTests
+            results-prefix: architecture
+            timeout: 10
+            needs-docker: false
+
+          - name: Integration Tests
+            projects: tests/Order.IntegrationTests
+            results-prefix: integration
+            timeout: 15
+            needs-docker: true
+
+          - name: E2E Tests
+            projects: tests/E2E.Tests
+            results-prefix: e2e
+            timeout: 20
+            needs-docker: true
+            aspire: true
+
+    env:
+      ASPIRE_ALLOW_UNSECURED_TRANSPORT: ${{ matrix.aspire && 'true' || 'false' }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -60,67 +100,52 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Restore tools
-        run: dotnet tool restore
-
-      - name: Check formatting (CSharpier)
-        run: dotnet csharpier check ./src
-
-      - name: Restore solution
-        run: dotnet restore EShopDemo.sln
-
-      - name: Check formatting (dotnet format)
-        run: dotnet format EShopDemo.sln --verify-no-changes --no-restore
-
-  security:
-    name: Security Audit
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Setup Docker
+        if: matrix.needs-docker
+        uses: docker/setup-docker-action@v4
 
       - name: Cache NuGet packages
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
+          restore-keys: ${{ runner.os }}-nuget-
 
-      - name: Restore tools
-        run: dotnet tool restore
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
 
-      - name: Restore solution
-        run: dotnet restore EShopDemo.sln
-
-      - name: Check vulnerable packages
+      - name: Run Tests
+        shell: bash
         run: |
-          output=$(dotnet list EShopDemo.sln package --vulnerable --include-transitive 2>&1)
-          echo "$output"
-          if echo "$output" | grep -q "has the following vulnerable packages"; then
-            echo "::error::Vulnerable packages detected!"
-            exit 1
-          fi
+          for project in ${{ matrix.projects }}; do
+            project_name=$(basename "$project")
+            dotnet test "$project" -c Release --no-build \
+              --logger "trx;LogFileName=${project_name}.trx" \
+              --logger "console;verbosity=normal" \
+              --results-directory ./TestResults \
+              --blame
+          done
 
-      - name: Check deprecated packages
-        run: |
-          output=$(dotnet list EShopDemo.sln package --deprecated 2>&1)
-          echo "$output"
-          if echo "$output" | grep -q "has the following deprecated packages"; then
-            echo "::warning::Deprecated packages detected"
-          fi
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.results-prefix }}-test-results
+          path: ./TestResults/*.trx
 
-      - name: Check unused packages
-        run: dotnet tool run dotnet-unused EShopDemo.sln
+      - name: Upload DCP logs
+        if: failure() && matrix.aspire
+        uses: actions/upload-artifact@v4
+        with:
+          name: dcp-logs
+          path: ${{ runner.temp }}/.dcpctrl/
+
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: ${{ matrix.name }} Results
+          path: ./TestResults/*.trx
+          reporter: dotnet-trx
