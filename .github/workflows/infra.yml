@@ -1,0 +1,117 @@
+# Infrastructure Deployment
+# Deploys Azure infrastructure using Bicep with OIDC authentication
+
+name: Infrastructure
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'infra/**'
+  workflow_dispatch:
+    inputs:
+      skip_what_if:
+        description: 'Skip what-if preview and deploy directly'
+        type: boolean
+        default: false
+
+concurrency:
+  group: infra-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AZURE_LOCATION: westeurope
+  BICEP_FILE: ./infra/main.bicep
+  PARAMETERS_FILE: ./infra/parameters/main.bicepparam
+
+jobs:
+  validate:
+    name: Validate Bicep
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bicep Lint
+        run: az bicep build --file ${{ env.BICEP_FILE }} --stdout > /dev/null
+
+  what-if:
+    name: What-If Preview
+    runs-on: ubuntu-latest
+    needs: validate
+    if: ${{ !inputs.skip_what_if }}
+    outputs:
+      changes_detected: ${{ steps.what-if.outputs.changes_detected }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: What-If
+        id: what-if
+        run: |
+          echo "## What-If Results" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          result=$(az deployment sub what-if \
+            --location ${{ env.AZURE_LOCATION }} \
+            --template-file ${{ env.BICEP_FILE }} \
+            --parameters ${{ env.PARAMETERS_FILE }} \
+            --parameters postgresAdminPassword='${{ secrets.POSTGRES_ADMIN_PASSWORD }}' \
+            --parameters rabbitMqPassword='${{ secrets.RABBITMQ_PASSWORD }}' \
+            --parameters ghcrUsername='${{ secrets.GHCR_USERNAME }}' \
+            --parameters ghcrToken='${{ secrets.GHCR_TOKEN }}' \
+            --no-pretty-print 2>&1) || true
+
+          echo "$result" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          if echo "$result" | grep -q "Resource changes"; then
+            echo "changes_detected=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes_detected=false" >> $GITHUB_OUTPUT
+          fi
+
+  deploy:
+    name: Deploy Infrastructure
+    runs-on: ubuntu-latest
+    needs: [validate, what-if]
+    if: ${{ always() && needs.validate.result == 'success' && (needs.what-if.result == 'success' || needs.what-if.result == 'skipped') }}
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy Bicep
+        run: |
+          az deployment sub create \
+            --location ${{ env.AZURE_LOCATION }} \
+            --template-file ${{ env.BICEP_FILE }} \
+            --parameters ${{ env.PARAMETERS_FILE }} \
+            --parameters postgresAdminPassword='${{ secrets.POSTGRES_ADMIN_PASSWORD }}' \
+            --parameters rabbitMqPassword='${{ secrets.RABBITMQ_PASSWORD }}' \
+            --parameters ghcrUsername='${{ secrets.GHCR_USERNAME }}' \
+            --parameters ghcrToken='${{ secrets.GHCR_TOKEN }}' \
+            --name "eshop-$(date +%Y%m%d-%H%M%S)"
+
+      - name: Show Outputs
+        run: |
+          echo "## Deployment Outputs" >> $GITHUB_STEP_SUMMARY
+          az deployment sub show \
+            --name "$(az deployment sub list --location ${{ env.AZURE_LOCATION }} --query '[0].name' -o tsv)" \
+            --query 'properties.outputs' \
+            -o json >> $GITHUB_STEP_SUMMARY
