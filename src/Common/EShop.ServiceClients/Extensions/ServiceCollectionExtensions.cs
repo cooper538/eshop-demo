@@ -65,8 +65,10 @@ public static class ServiceCollectionExtensions
             grpcClientBuilder.ConfigurePrimaryHttpMessageHandler(() =>
                 new HttpClientHandler
                 {
+#pragma warning disable CA5399 // Enable server certificate validation
                     ServerCertificateCustomValidationCallback =
                         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+#pragma warning restore CA5399
                 }
             );
         }
