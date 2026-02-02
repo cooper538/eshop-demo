@@ -500,3 +500,6 @@ src/AppHost/appsettings.json
 # Compiled ARM templates (generated from .bicep files)
 infra/**/*.json
 !infra/bicepconfig.json
+
+# act (GitHub Actions local runner)
+.secrets

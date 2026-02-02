@@ -1,0 +1,13 @@
+{
+  "ref": "refs/heads/main",
+  "repository": {
+    "full_name": "cooper538/eshop-demo",
+    "owner": {
+      "login": "cooper538"
+    }
+  },
+  "head_commit": {
+    "id": "local-development",
+    "message": "Local act run"
+  }
+}

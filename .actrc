@@ -1,0 +1,17 @@
+# act configuration for eshop-demo
+# https://github.com/nektos/act
+
+# Use larger Ubuntu image with more tools (needed for .NET)
+-P ubuntu-latest=catthehacker/ubuntu:act-latest
+
+# Reuse containers between runs (faster)
+--reuse
+
+# Apple Silicon compatibility
+--container-architecture linux/amd64
+
+# Use local artifacts directory
+--artifact-server-path /tmp/act-artifacts
+
+# Default event (push to main)
+--eventpath .github/act/push-event.json

@@ -97,7 +97,11 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy Bicep
+        id: deploy
         run: |
+          DEPLOYMENT_NAME="eshop-$(date +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}"
+          echo "deployment_name=$DEPLOYMENT_NAME" >> $GITHUB_OUTPUT
+
           az deployment sub create \
             --location ${{ env.AZURE_LOCATION }} \
             --template-file ${{ env.BICEP_FILE }} \
@@ -106,12 +110,12 @@ jobs:
             --parameters rabbitMqPassword='${{ secrets.RABBITMQ_PASSWORD }}' \
             --parameters ghcrUsername='${{ secrets.GHCR_USERNAME }}' \
             --parameters ghcrToken='${{ secrets.GHCR_TOKEN }}' \
-            --name "eshop-$(date +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}"
+            --name "$DEPLOYMENT_NAME"
 
       - name: Show Outputs
         run: |
           echo "## Deployment Outputs" >> $GITHUB_STEP_SUMMARY
           az deployment sub show \
-            --name "$(az deployment sub list --location ${{ env.AZURE_LOCATION }} --query '[0].name' -o tsv)" \
+            --name "${{ steps.deploy.outputs.deployment_name }}" \
             --query 'properties.outputs' \
             -o json >> $GITHUB_STEP_SUMMARY
