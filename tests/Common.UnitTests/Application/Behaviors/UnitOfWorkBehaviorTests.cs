@@ -30,7 +30,7 @@ public class UnitOfWorkBehaviorTests
             .Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ThrowsAsync(new DbUpdateConcurrencyException("Concurrency conflict"));
 
-        RequestHandlerDelegate<string> next = () => Task.FromResult("result");
+        RequestHandlerDelegate<string> next = _ => Task.FromResult("result");
 
         // Act
         var act = () => behavior.Handle(new TestCommand(), next, CancellationToken.None);
@@ -47,7 +47,7 @@ public class UnitOfWorkBehaviorTests
         // Arrange
         var behavior = new UnitOfWorkBehavior<TestCommand, string>(_logger, unitOfWork: null);
 
-        RequestHandlerDelegate<string> next = () => Task.FromResult("result");
+        RequestHandlerDelegate<string> next = _ => Task.FromResult("result");
 
         // Act
         var result = await behavior.Handle(new TestCommand(), next, CancellationToken.None);
@@ -62,7 +62,7 @@ public class UnitOfWorkBehaviorTests
         // Arrange
         var behavior = new UnitOfWorkBehavior<TestCommand, string>(_logger, _unitOfWorkMock.Object);
 
-        RequestHandlerDelegate<string> next = () => Task.FromResult("success");
+        RequestHandlerDelegate<string> next = _ => Task.FromResult("success");
 
         // Act
         var result = await behavior.Handle(new TestCommand(), next, CancellationToken.None);
@@ -78,7 +78,7 @@ public class UnitOfWorkBehaviorTests
         // Arrange
         var behavior = new UnitOfWorkBehavior<TestCommand, string>(_logger, _unitOfWorkMock.Object);
 
-        RequestHandlerDelegate<string> next = () =>
+        RequestHandlerDelegate<string> next = _ =>
             throw new InvalidOperationException("Handler failed");
 
         // Act

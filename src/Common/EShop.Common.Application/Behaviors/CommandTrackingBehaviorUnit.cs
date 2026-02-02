@@ -29,6 +29,6 @@ public sealed class CommandTrackingBehaviorUnit<TRequest, TResponse>
                 QueryTrackingBehavior.TrackAll;
         }
 
-        return await next();
+        return await next(cancellationToken);
     }
 }
