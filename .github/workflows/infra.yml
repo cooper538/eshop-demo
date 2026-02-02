@@ -106,7 +106,7 @@ jobs:
             --parameters rabbitMqPassword='${{ secrets.RABBITMQ_PASSWORD }}' \
             --parameters ghcrUsername='${{ secrets.GHCR_USERNAME }}' \
             --parameters ghcrToken='${{ secrets.GHCR_TOKEN }}' \
-            --name "eshop-$(date +%Y%m%d-%H%M%S)"
+            --name "eshop-$(date +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}"
 
       - name: Show Outputs
         run: |
