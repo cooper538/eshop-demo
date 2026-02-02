@@ -387,7 +387,7 @@
           "request": {
             "method": "POST",
             "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
-            "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"productName\": \"Test Product\",\n      \"quantity\": 2,\n      \"unitPrice\": 99.99\n    }\n  ]\n}"},
+            "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 2\n    }\n  ]\n}"},
             "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
           },
           "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
@@ -400,7 +400,7 @@
           "request": {
             "method": "POST",
             "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
-            "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [\n    {\"productId\": \"{{productId}}\", \"productName\": \"Product 1\", \"quantity\": 1, \"unitPrice\": 99.99},\n    {\"productId\": \"{{lowStockProductId}}\", \"productName\": \"Product 2\", \"quantity\": 2, \"unitPrice\": 49.99}\n  ]\n}"},
+            "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [\n    {\"productId\": \"{{productId}}\", \"quantity\": 1},\n    {\"productId\": \"{{lowStockProductId}}\", \"quantity\": 2}\n  ]\n}"},
             "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
           },
           "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
@@ -413,7 +413,7 @@
           "request": {
             "method": "POST",
             "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
-            "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [\n    {\"productId\": \"{{limitedStockProductId}}\", \"productName\": \"Limited Product\", \"quantity\": 999, \"unitPrice\": 199.99}\n  ]\n}"},
+            "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [\n    {\"productId\": \"{{limitedStockProductId}}\", \"quantity\": 999}\n  ]\n}"},
             "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
           },
           "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
@@ -426,7 +426,7 @@
           "request": {
             "method": "POST",
             "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
-            "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [\n    {\"productId\": \"00000000-0000-0000-0000-000000000000\", \"productName\": \"Non-existent Product\", \"quantity\": 1, \"unitPrice\": 99.99}\n  ]\n}"},
+            "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [\n    {\"productId\": \"00000000-0000-0000-0000-000000000000\", \"quantity\": 1}\n  ]\n}"},
             "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
           },
           "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
@@ -466,9 +466,7 @@
                 {"listen": "test", "script": {"type": "text/javascript", "exec": [
                   "pm.test('Status 201', () => pm.response.to.have.status(201));",
                   "var json = pm.response.json();",
-                  "pm.environment.set('e2eProductId', json.id);",
-                  "pm.environment.set('e2eProductName', json.name);",
-                  "pm.environment.set('e2eProductPrice', json.price);"
+                  "pm.environment.set('e2eProductId', json.id);"
                 ]}}
               ]
             },
@@ -477,7 +475,7 @@
               "request": {
                 "method": "POST",
                 "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
-                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{e2eProductId}}\", \"productName\": \"{{e2eProductName}}\", \"quantity\": 3, \"unitPrice\": {{e2eProductPrice}}}]\n}"},
+                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{e2eProductId}}\", \"quantity\": 3}]\n}"},
                 "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
               },
               "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
@@ -525,9 +523,7 @@
                 {"listen": "test", "script": {"type": "text/javascript", "exec": [
                   "pm.test('Status 201', () => pm.response.to.have.status(201));",
                   "var json = pm.response.json();",
-                  "pm.environment.set('cancelProductId', json.id);",
-                  "pm.environment.set('cancelProductName', json.name);",
-                  "pm.environment.set('cancelProductPrice', json.price);"
+                  "pm.environment.set('cancelProductId', json.id);"
                 ]}}
               ]
             },
@@ -536,7 +532,7 @@
               "request": {
                 "method": "POST",
                 "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
-                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{cancelProductId}}\", \"productName\": \"{{cancelProductName}}\", \"quantity\": 5, \"unitPrice\": {{cancelProductPrice}}}]\n}"},
+                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{cancelProductId}}\", \"quantity\": 5}]\n}"},
                 "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
               },
               "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
@@ -596,9 +592,7 @@
                 {"listen": "test", "script": {"type": "text/javascript", "exec": [
                   "pm.test('Status 201', () => pm.response.to.have.status(201));",
                   "var json = pm.response.json();",
-                  "pm.environment.set('rejectProductId', json.id);",
-                  "pm.environment.set('rejectProductName', json.name);",
-                  "pm.environment.set('rejectProductPrice', json.price);"
+                  "pm.environment.set('rejectProductId', json.id);"
                 ]}}
               ]
             },
@@ -607,7 +601,7 @@
               "request": {
                 "method": "POST",
                 "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
-                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{rejectProductId}}\", \"productName\": \"{{rejectProductName}}\", \"quantity\": 10, \"unitPrice\": {{rejectProductPrice}}}]\n}"},
+                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{rejectProductId}}\", \"quantity\": 10}]\n}"},
                 "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
               },
               "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
@@ -655,9 +649,7 @@
                 {"listen": "test", "script": {"type": "text/javascript", "exec": [
                   "pm.test('Status 201', () => pm.response.to.have.status(201));",
                   "var json = pm.response.json();",
-                  "pm.environment.set('alertProductId', json.id);",
-                  "pm.environment.set('alertProductName', json.name);",
-                  "pm.environment.set('alertProductPrice', json.price);"
+                  "pm.environment.set('alertProductId', json.id);"
                 ]}}
               ]
             },
@@ -666,7 +658,7 @@
               "request": {
                 "method": "POST",
                 "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
-                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{alertProductId}}\", \"productName\": \"{{alertProductName}}\", \"quantity\": 5, \"unitPrice\": {{alertProductPrice}}}]\n}"},
+                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{alertProductId}}\", \"quantity\": 5}]\n}"},
                 "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
               },
               "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
@@ -715,7 +707,7 @@
               "request": {
                 "method": "POST",
                 "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Correlation-Id", "value": "{{correlationId}}"}],
-                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{traceProductId}}\", \"productName\": \"Correlation Test\", \"quantity\": 2, \"unitPrice\": 10.00}]\n}"},
+                "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"items\": [{\"productId\": \"{{traceProductId}}\", \"quantity\": 2}]\n}"},
                 "url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
               },
               "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
