@@ -25,7 +25,7 @@ var databases = [
   'notificationdb'
 ]
 
-resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' = {
+resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
   name: '${prefix}-postgres'
   location: location
   tags: tags
@@ -53,7 +53,7 @@ resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-pr
   }
 }
 
-resource db 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2023-12-01-preview' = [
+resource db 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2024-08-01' = [
   for dbName in databases: {
     parent: postgresServer
     name: dbName

@@ -10,10 +10,10 @@ param location string
 param tags object
 
 var vnetAddressPrefix = '10.0.0.0/16'
-var containerAppsSubnetPrefix = '10.0.1.0/23'
+var containerAppsSubnetPrefix = '10.0.0.0/23'
 var postgresSubnetPrefix = '10.0.4.0/24'
 
-resource nsg 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
+resource nsg 'Microsoft.Network/networkSecurityGroups@2024-05-01' = {
   name: '${prefix}-nsg'
   location: location
   tags: tags
@@ -36,7 +36,7 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   }
 }
 
-resource vnet 'Microsoft.Network/virtualNetworks@2024-01-01' = {
+resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
   name: '${prefix}-vnet'
   location: location
   tags: tags

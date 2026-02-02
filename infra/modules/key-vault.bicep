@@ -35,7 +35,7 @@ param rabbitMqPassword string
 
 var databases = ['productdb', 'orderdb', 'notificationdb']
 
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
+resource keyVault 'Microsoft.KeyVault/vaults@2024-11-01' = {
   name: '${prefix}-kv'
   location: location
   tags: tags
@@ -67,7 +67,7 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
 }
 
 // PostgreSQL connection strings
-resource postgresSecrets 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = [
+resource postgresSecrets 'Microsoft.KeyVault/vaults/secrets@2024-11-01' = [
   for db in databases: {
     parent: keyVault
     name: 'ConnectionStrings--${db}'
@@ -78,7 +78,7 @@ resource postgresSecrets 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = [
 ]
 
 // RabbitMQ connection string
-resource rabbitMqSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+resource rabbitMqSecret 'Microsoft.KeyVault/vaults/secrets@2024-11-01' = {
   parent: keyVault
   name: 'ConnectionStrings--messaging'
   properties: {

@@ -98,7 +98,9 @@ jobs:
   sonarqube:
     name: SonarQube Analysis
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    env:
+      ASPIRE_ALLOW_UNSECURED_TRANSPORT: true
     steps:
       - uses: actions/checkout@v4
         with:
@@ -113,6 +115,9 @@ jobs:
         with:
           java-version: 17
           distribution: 'zulu'
+
+      - name: Setup Docker
+        uses: docker/setup-docker-action@v4
 
       - name: Install SonarScanner
         run: dotnet tool install --global dotnet-sonarscanner
