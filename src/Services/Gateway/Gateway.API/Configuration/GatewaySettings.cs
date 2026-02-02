@@ -21,6 +21,10 @@ public class AuthenticationSettings
 {
     public bool Enabled { get; init; }
 
+    public bool UseTestScheme { get; init; }
+
+    public string TestSecretKey { get; init; } = string.Empty;
+
     public AzureAdSettings AzureAd { get; init; } = new();
 }
 

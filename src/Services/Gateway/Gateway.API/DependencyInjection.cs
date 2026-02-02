@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 using System.Threading.RateLimiting;
 using EShop.Common.Api.Extensions;
 using EShop.Gateway.API.Configuration;
@@ -62,6 +63,56 @@ public static class DependencyInjection
         GatewaySettings settings
     )
     {
+        if (settings.Authentication.UseTestScheme)
+        {
+            services.AddTestAuthentication(settings);
+        }
+        else
+        {
+            services.AddAzureAdAuthentication(settings);
+        }
+
+        services.AddAuthorization(options =>
+        {
+            options.FallbackPolicy = options.DefaultPolicy;
+        });
+
+        return services;
+    }
+
+    private static void AddTestAuthentication(
+        this IServiceCollection services,
+        GatewaySettings settings
+    )
+    {
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = "https://test-issuer.local",
+                    ValidateAudience = true,
+                    ValidAudience = "api://eshop-api",
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(settings.Authentication.TestSecretKey)
+                    ),
+                    ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha256 },
+                    ClockSkew = TimeSpan.Zero,
+                };
+
+                options.Events = CreateJwtBearerEvents();
+            });
+    }
+
+    private static void AddAzureAdAuthentication(
+        this IServiceCollection services,
+        GatewaySettings settings
+    )
+    {
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApi(
@@ -69,59 +120,18 @@ public static class DependencyInjection
                 {
                     options.Audience = settings.Authentication.AzureAd.Audience;
 
-                    // Explicit token validation parameters for security
                     options.TokenValidationParameters.ValidateIssuer = true;
                     options.TokenValidationParameters.ValidateAudience = true;
                     options.TokenValidationParameters.ValidateLifetime = true;
                     options.TokenValidationParameters.ValidateIssuerSigningKey = true;
                     options.TokenValidationParameters.RequireSignedTokens = true;
 
-                    // Prevent algorithm confusion attacks - whitelist only RS256
                     options.TokenValidationParameters.ValidAlgorithms = new[]
                     {
                         SecurityAlgorithms.RsaSha256,
                     };
 
-                    // Security event logging
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnAuthenticationFailed = context =>
-                        {
-                            Log.Warning(
-                                "JWT authentication failed for {Path}: {Error}",
-                                context.Request.Path,
-                                context.Exception.Message
-                            );
-                            return Task.CompletedTask;
-                        },
-                        OnTokenValidated = context =>
-                        {
-                            Log.Information(
-                                "JWT token validated for user {User} on {Path}",
-                                context.Principal?.Identity?.Name ?? "unknown",
-                                context.Request.Path
-                            );
-                            return Task.CompletedTask;
-                        },
-                        OnChallenge = context =>
-                        {
-                            Log.Warning(
-                                "JWT challenge issued for {Path}: {Error}",
-                                context.Request.Path,
-                                context.ErrorDescription ?? "No token provided"
-                            );
-                            return Task.CompletedTask;
-                        },
-                        OnForbidden = context =>
-                        {
-                            Log.Warning(
-                                "JWT forbidden for user {User} on {Path}",
-                                context.Principal?.Identity?.Name ?? "unknown",
-                                context.Request.Path
-                            );
-                            return Task.CompletedTask;
-                        },
-                    };
+                    options.Events = CreateJwtBearerEvents();
                 },
                 options =>
                 {
@@ -130,10 +140,49 @@ public static class DependencyInjection
                     options.ClientId = settings.Authentication.AzureAd.ClientId;
                 }
             );
+    }
 
-        services.AddAuthorization();
-
-        return services;
+    private static JwtBearerEvents CreateJwtBearerEvents()
+    {
+        return new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Log.Warning(
+                    "JWT authentication failed for {Path}: {Error}",
+                    context.Request.Path,
+                    context.Exception.Message
+                );
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Log.Information(
+                    "JWT token validated for user {User} on {Path}",
+                    context.Principal?.Identity?.Name ?? "unknown",
+                    context.Request.Path
+                );
+                return Task.CompletedTask;
+            },
+            OnChallenge = context =>
+            {
+                Log.Warning(
+                    "JWT challenge issued for {Path}: {Error}",
+                    context.Request.Path,
+                    context.ErrorDescription ?? "No token provided"
+                );
+                return Task.CompletedTask;
+            },
+            OnForbidden = context =>
+            {
+                Log.Warning(
+                    "JWT forbidden for user {User} on {Path}",
+                    context.Request.Path,
+                    context.Principal?.Identity?.Name ?? "unknown"
+                );
+                return Task.CompletedTask;
+            },
+        };
     }
 
     public static WebApplication MapGatewayEndpoints(

@@ -5,7 +5,7 @@ Overview of all implementation phases for the EShop microservices demo.
 ## Progress
 
 ```
-[#########-] 9/11 phases completed (82%)
+[##############] 14/14 phases completed (100%)
 ```
 
 ## Phases
@@ -21,8 +21,11 @@ Overview of all implementation phases for the EShop microservices demo.
 | 07 | [Messaging](#phase-07-messaging-) | ✅ Done |
 | 08 | [Notification](#phase-08-notification-) | ✅ Done |
 | 09 | [Gateway](#phase-09-gateway-) | ✅ Done |
-| 10 | [Testing & Validation](#phase-10-testing--validation-) | ⚪ Pending |
-| 11 | [Improvements & Refactoring](#phase-11-improvements--refactoring-) | 🔵 In Progress |
+| 10 | [Testing & Validation](#phase-10-testing--validation-) | ✅ Done |
+| 11 | [Improvements & Refactoring](#phase-11-improvements--refactoring-) | ✅ Done |
+| 12 | [Azure App Adaptation](#phase-12-azure-app-adaptation-) | ✅ Done |
+| 13 | [Azure Infrastructure](#phase-13-azure-infrastructure-) | ✅ Done |
+| 14 | [Authentication](#phase-14-authentication-) | ✅ Done |
 
 ---
 
@@ -165,51 +168,77 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ---
 
-## Phase 10: Testing & Validation ⚪
+## Phase 10: Testing & Validation ✅
 
-**Comprehensive testing across all layers and E2E validation**
+**Demonstrational test coverage (~80%) for core infrastructure and Order Service - showcasing unit, integration, and E2E testing patterns**
 
-### Unit Tests
-- SharedKernel tests (Entity, ValueObject, Guard)
-- EShop.Common tests (behaviors, middleware)
-- Product Service domain + stock operations tests
-- Order Service domain + lifecycle tests
-- Notification consumers tests
-
-### Integration Tests
-- Product Service with mocked dependencies
-- Order-Product integration with mocked Product Service
-- MassTransit Test Harness tests
-
-### Functional/E2E Tests
-- WebApplicationFactory + Testcontainers setup
-- Respawn for database cleanup
-- Complete order flow (Gateway → Order → Product → Notification)
-- CorrelationId propagation end-to-end
-- Document project startup
+- Unit test infrastructure and shared test utilities
+- SharedKernel DDD building blocks tests
+- Application behaviors tests (pipeline, correlation, domain events)
+- Integration test infrastructure (Testcontainers, Respawn)
+- Order Domain tests (state machine, entities)
+- E2E test infrastructure (Aspire.Hosting.Testing)
+- Order Application tests (handlers, validators)
+- Order integration tests (API, DB, messaging)
+- E2E order flow tests (including CorrelationId propagation)
 
 → [Details](./phase-10-validation/phase.md)
 
 ---
 
-## Phase 11: Improvements & Refactoring 🔵
+## Phase 11: Improvements & Refactoring ✅
 
-**Technical debt, refactoring, and domain model improvements**
+**Technical debt, refactoring, domain model improvements, and E2E validation**
 
-This phase contains improvements and refactoring that emerged during development. These enhancements improve code quality and DDD alignment.
-
-### Completed Tasks
-- **Task 01: Product Domain Refactoring** - Separate Product catalog from Stock inventory into distinct aggregates
-- **Task 02: Architecture Tests** - NetArchTest.Rules tests for Clean Architecture and DDD compliance
-- **Task 03: UnitOfWork Behavior** - Refactor domain event dispatch to run before SaveChangesAsync
-- **Task 04: IDateTimeProvider** - Introduce IDateTimeProvider abstraction for testability
-- **Task 05: Analytics Service** - New microservice demonstrating pub-sub pattern
-
-### Pending Tasks
-- **Task 06: E2E Happy Flow Validation** - Complete E2E validation of all Order flows
-- **Task 07: E2E Error Flow Validation** - Complete E2E validation of error flows
+- Separate Product catalog from Stock inventory (distinct aggregates)
+- Architecture tests for Clean Architecture and DDD compliance
+- UnitOfWork behavior refactoring (domain events before SaveChanges)
+- IDateTimeProvider abstraction for testability
+- Analytics Service (pub-sub pattern demonstration)
+- E2E happy flow validation (Order flows, Stock Low Alert, CorrelationId)
+- E2E error flow validation (404, 400, service unavailable)
 
 → [Details](./phase-11-improvements/phase.md)
+
+---
+
+## Phase 12: Azure App Adaptation ✅
+
+**Environment-aware configuration for Azure deployment**
+
+- Add SSL mode handling for Azure PostgreSQL Flexible Server connections
+- Integrate Azure Key Vault configuration provider with DefaultAzureCredential
+- Configure gRPC clients for Container Apps service discovery (FQDN pattern)
+- Update all services to use environment-aware configuration
+
+→ [Details](./phase-12-azure-app-adaptation/phase.md)
+
+---
+
+## Phase 13: Azure Infrastructure ✅
+
+**Infrastructure as Code (Bicep) and CI/CD pipelines for Azure Container Apps**
+
+- Set up `infra/` folder structure with Bicep modules
+- Create identity, monitoring, postgres, rabbitmq, key-vault modules
+- Create container-apps.bicep (Environment + 5 Container Apps with GHCR)
+- Create Dockerfiles for all services
+- Create GitHub Actions workflows for infrastructure and application deployment (OIDC auth)
+
+→ [Details](./phase-13-azure-infrastructure/phase.md)
+
+---
+
+## Phase 14: Authentication ✅
+
+**JWT Bearer authentication at API Gateway level**
+
+- Configure JWT Bearer authentication in Gateway
+- Add authorization policies for YARP routes
+- Document Azure AD (Entra ID) setup for token acquisition
+- Security hardening (RS256 algorithm whitelist, HSTS)
+
+→ [Details](./phase-14-authentication/phase.md)
 
 ---
 
@@ -228,8 +257,11 @@ Phase 05-06: Order Service
 Phase 07-08: Messaging
     └── RabbitMQ → Integration Events → Notification Worker
 
-Phase 09-10: Gateway & Validation
-    └── YARP Gateway → E2E Tests
+Phase 09-11: Gateway, Validation & Improvements
+    └── YARP Gateway → E2E Tests → Analytics Service
+
+Phase 12-14: Azure & Security
+    └── App Adaptation → Bicep IaC → JWT Authentication
 ```
 
 ## Quick Commands

@@ -46,4 +46,3 @@ Create Infrastructure as Code (Bicep) and CI/CD pipelines for deploying the ESho
 - **RabbitMQ as Container App** instead of Service Bus - same config as local dev, full MassTransit support, simpler networking than ACI
 - **Using GHCR** instead of ACR - simplifies setup, no acr.bicep needed
 - **RabbitMQ is ephemeral** - no persistent storage (queues/messages lost on restart - demo limitation)
-- **Catalog service** not implemented - Analytics service used instead

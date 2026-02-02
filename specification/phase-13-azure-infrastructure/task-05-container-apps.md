@@ -30,4 +30,3 @@ Create Bicep module for Container Apps Environment with 5 Container Apps configu
 - Scale-to-zero provides cost savings when idle
 - External ingress on gateway only; all services internal
 - DatabaseMigration runs as a job (separate from Container Apps)
-- Catalog service not implemented - Analytics service used instead

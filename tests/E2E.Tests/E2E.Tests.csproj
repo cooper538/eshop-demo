@@ -27,9 +27,14 @@
 
   <ItemGroup Label="E2E Testing">
     <PackageReference Include="Aspire.Hosting.Testing" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
   </ItemGroup>
 
   <ItemGroup Label="Project References">
     <ProjectReference Include="..\..\src\AppHost\EShop.AppHost.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Label="xUnit Config">
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

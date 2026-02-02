@@ -88,16 +88,21 @@ src/
 ├── AppHost/                      # .NET Aspire orchestration
 ├── ServiceDefaults/              # Shared Aspire configuration
 ├── Common/
-│   ├── EShop.SharedKernel/       # DDD building blocks (zero deps)
+│   ├── EShop.Common.Api/         # Shared API utilities
+│   ├── EShop.Common.Application/ # Shared application layer
+│   ├── EShop.Common.Infrastructure/ # Shared infrastructure
 │   ├── EShop.Contracts/          # Integration events, shared DTOs
 │   ├── EShop.Grpc/               # Proto definitions
-│   └── EShop.ServiceClients/     # gRPC client abstraction
+│   ├── EShop.RoslynAnalyzers/    # Custom Roslyn analyzers
+│   ├── EShop.ServiceClients/     # gRPC client abstraction
+│   └── EShop.SharedKernel/       # DDD building blocks (zero deps)
 └── Services/
+    ├── Analytics/                # Business analytics
+    ├── DatabaseMigration/        # Database migration worker
     ├── Gateway/                  # YARP API Gateway
-    ├── Product/                  # Product catalog + inventory
-    ├── Order/                    # Order lifecycle
     ├── Notification/             # Notification worker
-    └── Analytics/                # Business analytics
+    ├── Order/                    # Order lifecycle
+    └── Products/                 # Product catalog + inventory
 ```
 
 ## Specification-Driven AI Development
