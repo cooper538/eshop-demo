@@ -6,11 +6,13 @@ EShop Demo documentation index.
 
 | Document | Description |
 |----------|-------------|
-| [Architecture](architecture.md) | System architecture, patterns, services, and design decisions |
-| [Spec-Driven Development](spec-driven-development.md) | AI-assisted development methodology used to build this project |
-| [Code Guidelines](code-guidelines.md) | Project-specific C# coding standards |
-| [Aspire Integration](aspire-integration.md) | .NET Aspire orchestration and service configuration |
-| [Testing](testing.md) | Test infrastructure, conventions, and guidelines |
+| [Architecture](architecture.md) | System patterns and design decisions |
+| [Deployment](deployment.md) | Azure deployment with Bicep |
+| [Spec-Driven Development](spec-driven-development.md) | AI-assisted development methodology |
+| [Code Guidelines](code-guidelines.md) | Project-specific C# standards |
+| [Aspire Integration](aspire-integration.md) | Local development orchestration |
+| [Azure Setup](azure-setup.md) | Azure AD and GitHub Actions configuration |
+| [Testing](testing.md) | Test infrastructure and conventions |
 | [Troubleshooting](troubleshooting.md) | Common issues and solutions |
 
 ## Quick Links

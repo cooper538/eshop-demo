@@ -1,100 +1,61 @@
-# Service Aspire Integration Guide
+# Aspire Integration
 
-This guide documents how to integrate services with .NET Aspire orchestration.
+Local development orchestration with .NET Aspire.
 
-## Overview
+## Running the Application
 
-Each service in the EShop solution uses:
-- **ServiceDefaults** - Shared configuration (OpenTelemetry, health checks, resilience)
-- **AppHost** - Orchestration and resource management
-- **Aspire components** - Database and messaging integrations
+```bash
+dotnet run --project src/AppHost
+# Dashboard opens automatically with links to all services
+```
 
-## Service Program.cs Pattern
+Aspire Dashboard provides:
+- Service endpoints and logs
+- Distributed tracing
+- Resource health status
+
+## Adding a New Service
+
+### 1. Add ServiceDefaults Reference
+
+```xml
+<!-- YourService.csproj -->
+<ProjectReference Include="..\..\ServiceDefaults\EShop.ServiceDefaults.csproj" />
+```
+
+### 2. Configure Program.cs
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
 
-// ═══════════════════════════════════════════════════════════════
-// ASPIRE INTEGRATION
-// ═══════════════════════════════════════════════════════════════
+builder.AddServiceDefaults();                              // OpenTelemetry, health checks, resilience
+builder.AddNpgsqlDbContext<YourDbContext>("yourdb");       // If using PostgreSQL
+builder.AddRabbitMQClient("messaging");                    // If using RabbitMQ
 
-// Add shared defaults (OpenTelemetry, health checks, service discovery, resilience)
-builder.AddServiceDefaults();
-
-// Aspire-managed PostgreSQL (connection string injected automatically)
-builder.AddNpgsqlDbContext<ProductDbContext>("productdb");
-
-// Aspire-managed RabbitMQ (connection string injected automatically)
-builder.AddRabbitMQClient("messaging");
-
-// ═══════════════════════════════════════════════════════════════
-// SERVICE CONFIGURATION
-// ═══════════════════════════════════════════════════════════════
-
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
-// ... additional service configuration
+// Your service configuration...
 
 var app = builder.Build();
 
-// ═══════════════════════════════════════════════════════════════
-// ASPIRE ENDPOINTS
-// ═══════════════════════════════════════════════════════════════
-
-// Map health check endpoints (/health, /alive)
-app.MapDefaultEndpoints();
-
-// ═══════════════════════════════════════════════════════════════
-// MIDDLEWARE & ENDPOINTS
-// ═══════════════════════════════════════════════════════════════
-
-app.UseExceptionHandler();
-// ... middleware pipeline
+app.MapDefaultEndpoints();  // Exposes /health and /alive
 app.MapControllers();
-
 app.Run();
 ```
 
-## AppHost Service Registration
-
-Register services in `src/AppHost/Program.cs`:
+### 3. Register in AppHost
 
 ```csharp
-var builder = DistributedApplication.CreateBuilder(args);
-
-// Infrastructure
-var postgres = builder.AddPostgres("postgres")
-    .WithLifetime(ContainerLifetime.Persistent)
-    .WithPgAdmin();
-
-var productDb = postgres.AddDatabase("productdb");
-var rabbitmq = builder.AddRabbitMQ("messaging")
-    .WithLifetime(ContainerLifetime.Persistent)
-    .WithManagementPlugin();
-
-// Services
-var productService = builder.AddProject<Projects.EShop_ProductService>("product-service")
-    .WithReference(productDb)
+// src/AppHost/Program.cs
+builder.AddProject<Projects.YourService>("your-service")
+    .WithReference(yourDb)
     .WithReference(rabbitmq)
-    .WithHttpsEndpoint(port: 5001, name: "https")
-    .WithHttpsEndpoint(port: 5051, name: "grpc");
-
-var orderService = builder.AddProject<Projects.EShop_OrderService>("order-service")
-    .WithReference(orderDb)
-    .WithReference(rabbitmq)
-    .WithReference(productService);  // gRPC dependency
-
-builder.Build().Run();
+    .WithReference(otherService);  // If calling another service
 ```
 
-## Service Discovery
+## Service Communication
 
-Services reference each other using Aspire service discovery URLs:
+Aspire handles service discovery automatically:
 
 ```csharp
-// Service discovery URL format
-// "https+http://service-name" - Aspire resolves this automatically
-
 services.AddGrpcClient<ProductService.ProductServiceClient>(options =>
 {
     options.Address = new Uri("https+http://product-service");
@@ -102,74 +63,11 @@ services.AddGrpcClient<ProductService.ProductServiceClient>(options =>
 .AddServiceDiscovery();
 ```
 
-## Database Integration
+## Quick Reference
 
-Use Aspire's `AddNpgsqlDbContext<T>()` for automatic connection string injection:
-
-```csharp
-// In service Program.cs
-builder.AddNpgsqlDbContext<ProductDbContext>("productdb");
-
-// Connection string is automatically read from:
-// - Environment variable: ConnectionStrings__productdb
-// - Injected by Aspire at runtime
-```
-
-## Messaging Integration
-
-Use Aspire's `AddRabbitMQClient()` for automatic connection:
-
-```csharp
-// In service Program.cs
-builder.AddRabbitMQClient("messaging");
-
-// Connection string is automatically read from:
-// - Environment variable: ConnectionStrings__messaging
-// - Injected by Aspire at runtime
-```
-
-## Health Checks
-
-`MapDefaultEndpoints()` exposes two endpoints:
-
-| Endpoint | Purpose | Checks |
-|----------|---------|--------|
-| `/health` | Readiness probe | All registered health checks |
-| `/alive` | Liveness probe | Only checks tagged with "live" |
-
-## Required Project References
-
-### Service Project (.csproj)
-
-```xml
-<ItemGroup>
-  <ProjectReference Include="..\..\ServiceDefaults\EShop.ServiceDefaults.csproj" />
-</ItemGroup>
-
-<ItemGroup>
-  <!-- For PostgreSQL -->
-  <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
-
-  <!-- For RabbitMQ -->
-  <PackageReference Include="Aspire.RabbitMQ.Client" />
-</ItemGroup>
-```
-
-### AppHost Project (.csproj)
-
-```xml
-<ItemGroup>
-  <ProjectReference Include="..\Services\Product\EShop.ProductService.csproj" />
-</ItemGroup>
-```
-
-## Running with Aspire
-
-```bash
-# Start all services with Aspire dashboard
-dotnet run --project src/AppHost
-
-# Access points:
-# - Aspire Dashboard: https://localhost:17225
-# - Services: Configured ports in AppHost
-```
+| What | AppHost | Service |
+|------|---------|---------|
+| PostgreSQL | `postgres.AddDatabase("name")` | `builder.AddNpgsqlDbContext<T>("name")` |
+| RabbitMQ | `AddRabbitMQ("name")` | `builder.AddRabbitMQClient("name")` |
+| Service ref | `WithReference(service)` | Use service discovery URL |
+| Health checks | Automatic | `app.MapDefaultEndpoints()` |

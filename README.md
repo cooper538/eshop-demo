@@ -66,6 +66,7 @@ dotnet run --project src/AppHost
 | **Notification** | Event-driven email notifications | MassTransit consumer |
 | **Analytics** | Business metrics aggregation | MassTransit consumer |
 | **Gateway** | Request routing, rate limiting | YARP reverse proxy |
+| **DatabaseMigration** | EF Core migrations at startup | Background worker |
 
 ## Key Patterns Demonstrated
 
@@ -122,26 +123,44 @@ Specification → AI Implementation → Human Review → Commit
 - Full traceability from specs to code
 - Reproducible development workflow
 
-→ [Learn more about this methodology](docs/spec-driven-development.md)
+## Deployment
+
+Infrastructure as Code using Azure Bicep:
+
+```
+infra/
+├── main.bicep              # Entry point
+└── modules/
+    ├── container-apps.bicep    # Azure Container Apps
+    ├── postgres.bicep          # PostgreSQL Flexible Server
+    ├── rabbitmq.bicep          # RabbitMQ on Container Apps
+    └── ...
+```
+
+Deploy via GitHub Actions (CI/CD) or manually with Azure CLI.
+Code quality analysis via SonarCloud (see badge above).
 
 ## Documentation
 
 | Document | Description |
 |----------|-------------|
-| [Architecture](docs/architecture.md) | Detailed patterns, services, design decisions |
+| [Architecture](docs/architecture.md) | System patterns and design decisions |
+| [Deployment](docs/deployment.md) | Azure deployment with Bicep |
 | [Spec-Driven Development](docs/spec-driven-development.md) | AI-assisted development methodology |
 | [Code Guidelines](docs/code-guidelines.md) | Project-specific C# standards |
 | [Aspire Integration](docs/aspire-integration.md) | Service orchestration guide |
 | [Testing](docs/testing.md) | Test infrastructure and conventions |
 | [Troubleshooting](docs/troubleshooting.md) | Common issues and solutions |
 
-## Intentionally Omitted
+## Intentionally Simplified
 
-This is a demonstration project focused on architectural patterns.
-The following were intentionally left out:
+This is a demonstration project focused on architectural patterns:
 
-- **Production deployment** - No K8s manifests, Terraform, or CI/CD pipelines
-- **Security hardening** - Authentication/authorization simplified
+- **Authentication/authorization** - simplified for demo purposes
+- **Test coverage** - not 100%, tests demonstrate patterns on Order Service only
+- **Error handling** - basic implementation, production would need more robust handling
+- **Infrastructure** - single region, no geo-redundancy or WAF
+- **Deployment** - basic CI/CD, no release management
 
 ## Commands
 
