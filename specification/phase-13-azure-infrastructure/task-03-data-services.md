@@ -8,13 +8,13 @@
 | Dependencies | task-02 |
 
 ## Summary
-Create Bicep modules for PostgreSQL Flexible Server with multiple databases and RabbitMQ on Azure Container Instance for messaging.
+Create Bicep modules for PostgreSQL Flexible Server with multiple databases and RabbitMQ as internal Container App for messaging.
 
 ## Scope
 - [x] Create `postgres.bicep` module with Flexible Server B1ms tier
 - [x] Configure 4 databases: productdb, orderdb, notificationdb, catalogdb
 - [x] Add firewall rules for Azure services access
-- [x] Create `rabbitmq.bicep` module with Azure Container Instance
+- [x] Create `rabbitmq.bicep` module as internal Container App (same environment)
 - [x] Output connection strings for Key Vault storage
 
 ## Related Specs
@@ -23,6 +23,7 @@ Create Bicep modules for PostgreSQL Flexible Server with multiple databases and 
 ---
 ## Notes
 - PostgreSQL B1ms: ~$12/month running, ~$3.68/month stopped (storage only)
-- RabbitMQ ACI (0.5 vCPU, 1GB): ~$10/month running, $0 stopped
+- RabbitMQ runs as internal Container App (0.5 vCPU, 1GB) - simpler networking than ACI
 - RabbitMQ uses same MassTransit config as local development (no code changes)
-- RabbitMQ is ephemeral (no persistent storage) - simplified for demo purposes
+- RabbitMQ is ephemeral (no persistent storage) - queues/messages lost on restart
+- **Demo limitation**: For production, add Azure Files volume for RabbitMQ persistence
