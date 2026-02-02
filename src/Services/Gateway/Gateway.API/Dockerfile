@@ -9,17 +9,17 @@ WORKDIR /src
 
 COPY . .
 
-RUN dotnet restore src/Services/Gateway/Gateway.API/Gateway.API.csproj
+RUN dotnet restore src/Services/Gateway/Gateway.API/EShop.Gateway.API.csproj
 WORKDIR /src/src/Services/Gateway/Gateway.API
-RUN dotnet build Gateway.API.csproj -c $BUILD_CONFIGURATION -o /app/build \
+RUN dotnet build EShop.Gateway.API.csproj -c $BUILD_CONFIGURATION -o /app/build \
     -p:EnforceCodeStyleInBuild=false
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish Gateway.API.csproj -c $BUILD_CONFIGURATION -o /app/publish \
+RUN dotnet publish EShop.Gateway.API.csproj -c $BUILD_CONFIGURATION -o /app/publish \
     /p:UseAppHost=false -p:EnforceCodeStyleInBuild=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Gateway.API.dll"]
+ENTRYPOINT ["dotnet", "EShop.Gateway.API.dll"]

@@ -9,17 +9,17 @@ WORKDIR /src
 
 COPY . .
 
-RUN dotnet restore src/Services/Order/Order.API/Order.API.csproj
+RUN dotnet restore src/Services/Order/Order.API/EShop.Order.API.csproj
 WORKDIR /src/src/Services/Order/Order.API
-RUN dotnet build Order.API.csproj -c $BUILD_CONFIGURATION -o /app/build \
+RUN dotnet build EShop.Order.API.csproj -c $BUILD_CONFIGURATION -o /app/build \
     -p:EnforceCodeStyleInBuild=false
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish Order.API.csproj -c $BUILD_CONFIGURATION -o /app/publish \
+RUN dotnet publish EShop.Order.API.csproj -c $BUILD_CONFIGURATION -o /app/publish \
     /p:UseAppHost=false -p:EnforceCodeStyleInBuild=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Order.API.dll"]
+ENTRYPOINT ["dotnet", "EShop.Order.API.dll"]
