@@ -96,12 +96,16 @@ Controller → Query → Handler → DB (projection)
 
 ### Synchronous: gRPC
 
-Used when immediate response is required (stock checks before order placement).
+Used when immediate response is required (product lookup and stock checks before order placement).
 
 ```
-Order Service ──CheckStock──► Product Service
+Order Service ──GetProducts──► Product Service
+              ◄──ProductInfo──
+              ──ReserveStock──►
               ◄──Response────
 ```
+
+The Order Service first fetches product information (name, price) via `GetProducts`, then reserves stock via `ReserveStock`. This ensures consistent pricing and validated product existence.
 
 ### Asynchronous: Integration Events
 

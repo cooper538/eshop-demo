@@ -21,11 +21,10 @@ Implement CreateOrder command that creates order in "Created" state.
       IReadOnlyList<CreateOrderItemDto> Items
   ) : ICommand<CreateOrderResult>;
 
+  // Note: ProductName and UnitPrice are fetched from Product Service
   public sealed record CreateOrderItemDto(
       Guid ProductId,
-      string ProductName,
-      int Quantity,
-      decimal UnitPrice
+      int Quantity
   );
   ```
 
@@ -44,22 +43,26 @@ Implement CreateOrder command that creates order in "Created" state.
   ```csharp
   public async Task<CreateOrderResult> Handle(CreateOrderCommand request, CancellationToken ct)
   {
-      // 1. Map items to domain objects
-      var items = request.Items.Select(i => OrderItem.Create(
-          i.ProductId, i.ProductName, i.Quantity, i.UnitPrice)).ToList();
+      // 1. Get product info from Product Service
+      var productIds = request.Items.Select(i => i.ProductId).ToList();
+      var productsResult = await _productServiceClient.GetProductsAsync(productIds, ct);
+      var productLookup = productsResult.Products.ToDictionary(p => p.ProductId);
 
-      // 2. Create order via factory method (status = Created)
+      // 2. Map items to domain objects (with product info from service)
+      var items = request.Items.Select(i =>
+      {
+          var product = productLookup[i.ProductId];
+          return OrderItem.Create(i.ProductId, product.Name, i.Quantity, product.Price);
+      });
+
+      // 3. Create order via factory method (status = Created)
       var order = OrderEntity.Create(
           request.CustomerId,
           request.CustomerEmail,
-          items);
+          items,
+          _dateTimeProvider.UtcNow);
 
-      // 3. Persist
-      _dbContext.Orders.Add(order);
-      await _dbContext.SaveChangesAsync(ct);
-
-      // 4. Return result
-      return new CreateOrderResult(order.Id, order.Status.ToString());
+      // 4. Reserve stock, confirm/reject order, persist...
   }
   ```
 
@@ -70,9 +73,7 @@ Implement CreateOrder command that creates order in "Created" state.
   - Items: NotEmpty (at least 1 item)
   - Each Item:
     - ProductId: NotEmpty
-    - ProductName: NotEmpty, MaxLength(200)
     - Quantity: GreaterThan(0)
-    - UnitPrice: GreaterThanOrEqualTo(0)
 
 ## Important Notes
 
@@ -94,10 +95,13 @@ See `CreateProductCommand` in Products.Application
 **ACTUAL IMPLEMENTATION DIFFERS FROM ORIGINAL PLAN:**
 
 The actual implementation includes Product Service integration (originally planned for Phase 6):
-- `CreateOrderCommandHandler` calls `IProductServiceClient.ReserveStockAsync()` to reserve stock
+- `CreateOrderCommandHandler` first calls `IProductServiceClient.GetProductsAsync()` to fetch product names and prices
+- Then calls `IProductServiceClient.ReserveStockAsync()` to reserve stock
 - On successful reservation, order is automatically confirmed (not left in "Created" state)
-- On failed reservation, throws `InvalidOperationException`
+- On failed reservation, throws `ValidationException` or rejects order
 - Publishes `OrderConfirmedDomainEvent` which triggers `OrderConfirmedEvent` integration event via MassTransit
+
+**Note:** `CreateOrderItemDto` only contains `ProductId` and `Quantity`. The `ProductName` and `UnitPrice` are fetched from Product Service at order creation time to ensure consistent pricing.
 
 **Files:**
 - `Order.Application/Commands/CreateOrder/CreateOrderCommand.cs`

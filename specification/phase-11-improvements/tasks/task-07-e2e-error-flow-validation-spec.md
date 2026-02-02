@@ -364,26 +364,3 @@ Use this template to document validation results:
 - Notes: ...
 ```
 
----
-
-## 10. Troubleshooting
-
-### 404 not returned for non-existent resources
-- Check if exception handling middleware is configured
-- Verify `NotFoundException` is properly thrown
-- Check Gateway routing forwards errors correctly
-
-### 400 validation not working
-- Verify FluentValidation is registered
-- Check validation rules in command validators
-- Verify API uses `[ApiController]` attribute (enables automatic model validation)
-
-### Service unavailable not handled gracefully
-- Check gRPC retry policies
-- Verify circuit breaker is configured
-- Check Polly resilience policies
-
-### Order created despite error
-- Check transaction boundaries
-- Verify UnitOfWork pattern is applied
-- Check for missing `await` on async operations

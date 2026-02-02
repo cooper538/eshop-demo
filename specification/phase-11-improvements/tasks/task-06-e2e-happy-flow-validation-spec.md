@@ -31,7 +31,7 @@ curl -X POST http://localhost:5000/api/products \
   }'
 # Save the returned productId
 
-# 2. Create order
+# 2. Create order (productName and unitPrice are fetched from Product Service)
 curl -X POST http://localhost:5000/api/orders \
   -H "Content-Type: application/json" \
   -d '{
@@ -40,9 +40,7 @@ curl -X POST http://localhost:5000/api/orders \
     "items": [
       {
         "productId": "<PRODUCT_ID>",
-        "productName": "Test Product",
-        "quantity": 2,
-        "unitPrice": 149.99
+        "quantity": 2
       }
     ]
   }'
@@ -152,9 +150,7 @@ curl -X POST http://localhost:5000/api/orders \
     "items": [
       {
         "productId": "<PRODUCT_ID>",
-        "productName": "Limited Item",
-        "quantity": 10,
-        "unitPrice": 99.99
+        "quantity": 10
       }
     ]
   }'
@@ -224,6 +220,7 @@ curl -X POST http://localhost:5000/api/orders \
       }
     ]
   }'
+# Note: productName and unitPrice are automatically fetched from Product Service
 ```
 
 ### Expected Results
@@ -277,6 +274,7 @@ curl -X POST http://localhost:5000/api/orders \
       }
     ]
   }'
+# Note: The GetProducts gRPC call will also carry this correlation ID
 ```
 
 ### Expected Results
@@ -362,30 +360,3 @@ Use this template to document validation results:
 - Notes: ...
 ```
 
----
-
-## 7. Troubleshooting
-
-### Order not confirmed
-- Check if product exists and has sufficient stock
-- Verify gRPC communication between Order and Product service
-- Check Product Service logs for ReserveStock handler
-
-### Order not rejected
-- Check if product exists and has correct stock quantity
-- Verify the requested quantity exceeds available stock
-
-### Stock not released on cancel
-- Check if order was in Confirmed state
-- Verify gRPC ReleaseStock call in logs
-- Check Stock Reservation status in database
-
-### StockLowEvent not published
-- Verify `lowStockThreshold` is set on product
-- Check if outbox processor is running in Product Service
-- Check RabbitMQ for exchange bindings
-
-### Correlation ID missing
-- Verify `X-Correlation-Id` header is passed
-- Check if `UseCorrelationIdFilters` is registered in MassTransit config
-- Verify Gateway YARP configuration forwards headers

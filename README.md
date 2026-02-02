@@ -150,7 +150,6 @@ Code quality analysis via SonarCloud (see badge above).
 | [Code Guidelines](docs/code-guidelines.md) | Project-specific C# standards |
 | [Aspire Integration](docs/aspire-integration.md) | Service orchestration guide |
 | [Testing](docs/testing.md) | Test infrastructure and conventions |
-| [Troubleshooting](docs/troubleshooting.md) | Common issues and solutions |
 
 ## Intentionally Simplified
 

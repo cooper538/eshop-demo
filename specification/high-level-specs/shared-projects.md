@@ -253,6 +253,7 @@ EShop.ServiceClients/
 │   └── Product/
 │       ├── GrpcProductServiceClient.cs
 │       └── Mappers/
+│           ├── GetProductsResponseMapper.cs
 │           ├── ReserveStockRequestMapper.cs
 │           ├── ReleaseStockRequestMapper.cs
 │           ├── StockReservationResultMapper.cs

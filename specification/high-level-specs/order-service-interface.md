@@ -63,6 +63,11 @@ Content-Type: application/json
 }
 ```
 
+**Note:** Product name and price are not included in the request. The Order Service fetches product information from Product Service via gRPC `GetProducts` call before creating the order. This ensures:
+- Consistent pricing (always uses current product price)
+- Validated product existence
+- Accurate product names
+
 **Success Response (stock reserved):**
 ```json
 HTTP/1.1 201 Created
@@ -324,33 +329,18 @@ Order Service depends on Product Service for stock operations. Communication use
 ### 7.1 Product Service Client Interface
 
 ```csharp
-namespace EShop.ServiceClients.Abstractions;
+namespace EShop.Contracts.ServiceClients.Product;
 
-/// <summary>
-/// Internal API abstraction for Product Service communication.
-/// Uses gRPC for inter-service communication.
-/// </summary>
 public interface IProductServiceClient
 {
-    /// <summary>
-    /// Get product information for multiple products (batch).
-    /// Use for cart refresh, price validation, etc.
-    /// </summary>
     Task<GetProductsResult> GetProductsAsync(
-        GetProductsRequest request,
+        IReadOnlyList<Guid> productIds,
         CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Reserve stock for an order.
-    /// Single responsibility: only reserves stock, doesn't return prices.
-    /// </summary>
     Task<StockReservationResult> ReserveStockAsync(
         ReserveStockRequest request,
         CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Release previously reserved stock (e.g., on order cancellation).
-    /// </summary>
     Task<StockReleaseResult> ReleaseStockAsync(
         ReleaseStockRequest request,
         CancellationToken cancellationToken = default);
@@ -360,15 +350,33 @@ public interface IProductServiceClient
 ### 7.2 Request/Response Models
 
 ```csharp
+// === GetProducts ===
+
+public sealed record GetProductsResult(
+    IReadOnlyList<ProductInfo> Products);
+
+public sealed record ProductInfo(
+    Guid ProductId,
+    string Name,
+    string Description,
+    decimal Price,
+    int StockQuantity);
+
 // === ReserveStock ===
 
 public sealed record ReserveStockRequest(
     Guid OrderId,
-    IReadOnlyList<OrderItemDto> Items);
+    IReadOnlyList<OrderItemRequest> Items);
+
+public sealed record OrderItemRequest(
+    Guid ProductId,
+    int Quantity);
 
 public sealed record StockReservationResult(
     bool Success,
-    string? FailureReason = null);
+    EStockReservationErrorCode? ErrorCode = null,
+    string? FailureReason = null,
+    IReadOnlyList<Guid>? FailedProductIds = null);
 
 // === ReleaseStock ===
 
@@ -378,12 +386,6 @@ public sealed record ReleaseStockRequest(
 public sealed record StockReleaseResult(
     bool Success,
     string? FailureReason = null);
-
-// === Shared ===
-
-public sealed record OrderItemDto(
-    Guid ProductId,
-    int Quantity);
 ```
 
 ### 7.3 Client Configuration
@@ -413,64 +415,51 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Cre
 {
     private readonly IOrderDbContext _db;
     private readonly IProductServiceClient _productClient;
-    private readonly IOutboxRepository _outbox;
-
-    public CreateOrderCommandHandler(
-        IOrderDbContext db,
-        IProductServiceClient productClient,
-        IOutboxRepository outbox)
-    {
-        _db = db;
-        _productClient = productClient;
-        _outbox = outbox;
-    }
+    private readonly IDateTimeProvider _dateTimeProvider;
 
     public async Task<CreateOrderResult> Handle(CreateOrderCommand request, CancellationToken ct)
     {
-        // Get product info (prices)
-        var productsResult = await _productClient.GetProductsAsync(
-            new GetProductsRequest(request.Items.Select(i => i.ProductId).ToList()),
-            ct);
+        // 1. Get product info (name, price) from Product Service
+        var productIds = request.Items.Select(i => i.ProductId).ToList();
+        var productsResult = await _productClient.GetProductsAsync(productIds, ct);
+        var productLookup = productsResult.Products.ToDictionary(p => p.ProductId);
 
-        // Create order in Created state
+        // 2. Create order items with product info
+        var orderItems = request.Items.Select(i =>
+        {
+            var product = productLookup[i.ProductId];
+            return OrderItem.Create(i.ProductId, product.Name, i.Quantity, product.Price);
+        });
+
+        // 3. Create order
         var order = OrderEntity.Create(
             request.CustomerId,
             request.CustomerEmail,
-            request.Items.Select(i => new OrderItemEntity(
-                i.ProductId,
-                productsResult.Products.First(p => p.ProductId == i.ProductId).Name,
-                i.Quantity,
-                productsResult.Products.First(p => p.ProductId == i.ProductId).Price)));
+            orderItems,
+            _dateTimeProvider.UtcNow);
 
-        _db.Orders.Add(order);
-
-        // Reserve stock via Internal API
+        // 4. Reserve stock via Internal API
+        var stockItems = request.Items
+            .Select(i => new OrderItemRequest(i.ProductId, i.Quantity))
+            .ToList();
         var reserveResult = await _productClient.ReserveStockAsync(
-            new ReserveStockRequest(order.Id, request.Items),
-            ct);
+            new ReserveStockRequest(order.Id, stockItems), ct);
 
+        // 5. Handle result
         if (reserveResult.Success)
         {
-            order.Confirm();
-            await _outbox.AddAsync(new OrderConfirmedEvent
-            {
-                OrderId = order.Id,
-                CustomerId = order.CustomerId,
-                CustomerEmail = order.CustomerEmail,
-                TotalAmount = order.TotalAmount,
-                Items = order.Items.Select(i => new OrderItemInfo(
-                    i.ProductId, i.ProductName, i.Quantity, i.UnitPrice)).ToList()
-            }, ct);
+            order.Confirm(_dateTimeProvider.UtcNow);
+            // ... publish OrderConfirmedEvent
         }
         else
         {
-            order.Reject(reserveResult.FailureReason!);
-            await _outbox.AddAsync(new OrderRejectedEvent(
-                order.Id, order.CustomerId, reserveResult.FailureReason!), ct);
+            order.Reject(reserveResult.FailureReason!, _dateTimeProvider.UtcNow);
+            // ... publish OrderRejectedEvent
         }
 
+        _db.Orders.Add(order);
         await _db.SaveChangesAsync(ct);
-        return new CreateOrderResult(order.Id, order.Status, reserveResult.FailureReason);
+        return new CreateOrderResult(order.Id, order.Status.ToString(), reserveResult.FailureReason);
     }
 }
 ```
@@ -596,47 +585,7 @@ public class OrderDbContext : DbContext, IOrderDbContext
 
 ### 9.2 Handler Example (using DbContext)
 
-```csharp
-public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, CreateOrderResult>
-{
-    private readonly IOrderDbContext _db;
-    private readonly IProductServiceClient _productClient;
-    private readonly IOutboxRepository _outbox;
-
-    public async Task<CreateOrderResult> Handle(CreateOrderCommand request, CancellationToken ct)
-    {
-        // Create order in Created state
-        var order = OrderEntity.Create(request.CustomerId, request.CustomerEmail, request.Items);
-        _db.Orders.Add(order);
-
-        // Reserve stock via gRPC
-        var reserveResult = await _productClient.ReserveStockAsync(
-            new ReserveStockRequest(order.Id, request.Items), ct);
-
-        if (reserveResult.Success)
-        {
-            order.Confirm();
-            await _outbox.AddAsync(new OrderConfirmedEvent
-            {
-                OrderId = order.Id,
-                CustomerId = order.CustomerId,
-                CustomerEmail = order.CustomerEmail,
-                TotalAmount = order.TotalAmount,
-                Items = order.Items.Select(i => new OrderItemInfo(
-                    i.ProductId, i.ProductName, i.Quantity, i.UnitPrice)).ToList()
-            }, ct);
-        }
-        else
-        {
-            order.Reject(reserveResult.FailureReason);
-            await _outbox.AddAsync(new OrderRejectedEvent(order.Id, order.CustomerId, reserveResult.FailureReason), ct);
-        }
-
-        await _db.SaveChangesAsync(ct);
-        return new CreateOrderResult(order.Id, order.Status, reserveResult.FailureReason);
-    }
-}
-```
+See Section 7.5 for the complete handler implementation with `GetProductsAsync` call.
 
 **Note**: `IProductServiceClient` comes from `EShop.ServiceClients` - it's the gRPC client abstraction for internal service communication.
 

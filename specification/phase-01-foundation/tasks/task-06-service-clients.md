@@ -15,6 +15,7 @@ Implement gRPC client abstraction for inter-service communication.
 - [x] Implement Product client:
   - `Clients/Product/GrpcProductServiceClient.cs` - gRPC implementation of IProductServiceClient
   - `Clients/Product/Mappers/` - Mapperly mappers for request/result conversion:
+    - `GetProductsResponseMapper.cs`
     - `ReserveStockRequestMapper.cs`
     - `StockReservationResultMapper.cs`
     - `ReleaseStockRequestMapper.cs`

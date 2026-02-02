@@ -13,7 +13,6 @@ EShop Demo documentation index.
 | [Aspire Integration](aspire-integration.md) | Local development orchestration |
 | [Azure Setup](azure-setup.md) | Azure AD and GitHub Actions configuration |
 | [Testing](testing.md) | Test infrastructure and conventions |
-| [Troubleshooting](troubleshooting.md) | Common issues and solutions |
 
 ## Quick Links
 

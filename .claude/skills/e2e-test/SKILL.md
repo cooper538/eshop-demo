@@ -145,9 +145,7 @@ All API calls via Gateway (`$GATEWAY_PORT`):
   "customerEmail": "email@example.com",
   "items": [{
     "productId": "guid",
-    "productName": "required!",
-    "quantity": 2,
-    "unitPrice": 149.99
+    "quantity": 2
   }]
 }
 ```
@@ -413,15 +411,6 @@ order-cancelled     - OrderCancelledEvent consumers
 stock-low           - StockLowEvent consumers
 ```
 
-### Troubleshooting RabbitMQ
-
-| Symptom | Possible Cause | Debug Command |
-|---------|---------------|---------------|
-| Messages stuck in queue | Consumer crashed | `rabbitmq.sh consumers` |
-| No queues created | No consumers started | `rabbitmq.sh connections` |
-| Messages in DLQ | Repeated processing failures | Check consumer logs |
-| Missing connections | Service startup failed | Check service health |
-
 ## gRPC Diagnostics
 
 Use `./tools/e2e-test/grpc.sh` for inter-service communication debugging:
@@ -446,30 +435,6 @@ Use `./tools/e2e-test/grpc.sh` for inter-service communication debugging:
 | Product service reachable | `grpc.sh status` | HTTP 200 on health, gRPC port open |
 | Service discovery | `grpc.sh discovery` | `AddServiceDiscovery()` configured |
 | Proto matches | Compare proto file | Same version client/server |
-
-### Common gRPC Issues
-
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `No address resolver for https+http` | Service discovery not configured | Add `.AddServiceDiscovery()` to gRPC client |
-| `Connection refused` | Product service not running | Check Product.API health |
-| `Deadline exceeded` | Service too slow or unreachable | Check network, increase timeout |
-| `Unavailable` | Service crashed mid-request | Check Product.API logs |
-
-### Service Discovery Fix
-
-If you see "No address resolver" error, fix in:
-`src/Common/EShop.ServiceClients/Extensions/ServiceCollectionExtensions.cs`
-
-```csharp
-services
-    .AddGrpcClient<ProductServiceClient>(o =>
-    {
-        o.Address = new Uri(options.ProductService.Url);
-    })
-    .AddServiceDiscovery()  // <-- ADD THIS LINE
-    .ConfigureChannel(...)
-```
 
 ## Cleanup After Testing
 

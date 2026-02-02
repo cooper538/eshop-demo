@@ -8,7 +8,7 @@
 | Dependencies | task-09 |
 
 ## Summary
-Document testing infrastructure and provide troubleshooting guide for developers.
+Document testing infrastructure for developers.
 
 ## Scope
 
@@ -17,13 +17,6 @@ Document testing infrastructure and provide troubleshooting guide for developers
 - [x] Running tests by type (unit, integration, E2E)
 - [x] Test naming conventions
 - [x] Guidelines for adding new tests
-
-### docs/troubleshooting.md
-- [x] Docker and container issues
-- [x] Aspire startup problems
-- [x] Database and migration issues
-- [x] Messaging connection failures
-- [x] Test debugging tips
 
 ### README.md updates
 - [x] Add testing section

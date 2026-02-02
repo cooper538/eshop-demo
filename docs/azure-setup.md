@@ -121,25 +121,6 @@ gh workflow run infra.yml
 
 Or push a change to the `infra/` directory.
 
-## Troubleshooting
-
-### AADSTS70021: No matching federated identity record found
-
-Check the subject claim matches your repository and branch:
-- Subject format: `repo:OWNER/REPO:ref:refs/heads/BRANCH`
-- For environments: `repo:OWNER/REPO:environment:ENV_NAME`
-
-### Authorization failed
-
-Verify the service principal has required roles:
-```bash
-az role assignment list --assignee $SP_OBJECT_ID --all
-```
-
-### Deployment fails with permission error
-
-Ensure `User Access Administrator` role is assigned for Bicep role assignments to work.
-
 ## Security Best Practices
 
 1. **Use environments** - Protect production deployments with required reviewers
