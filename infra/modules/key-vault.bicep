@@ -33,10 +33,12 @@ param rabbitMqUser string
 @secure()
 param rabbitMqPassword string
 
+// Unique suffix to avoid global name conflicts
+var uniqueSuffix = uniqueString(resourceGroup().id)
 var databases = ['productdb', 'orderdb', 'notificationdb']
 
 resource keyVault 'Microsoft.KeyVault/vaults@2024-11-01' = {
-  name: '${prefix}-kv'
+  name: '${prefix}-kv-${uniqueSuffix}'
   location: location
   tags: tags
   properties: {
