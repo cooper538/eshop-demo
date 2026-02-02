@@ -1,5 +1,7 @@
 # EShop Demo
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=cooper538_eshop-demo&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=cooper538_eshop-demo)
+
 > Demonstrational microservices project
 > Clean Architecture + DDD + CQRS
 > Built with Specification-Driven AI Development
