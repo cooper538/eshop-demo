@@ -92,6 +92,7 @@ module postgres 'modules/postgres.bicep' = {
     administratorLogin: postgresAdminLogin
     administratorPassword: postgresAdminPassword
     delegatedSubnetId: networking.outputs.postgresSubnetId
+    privateDnsZoneId: networking.outputs.postgresDnsZoneId
   }
 }
 

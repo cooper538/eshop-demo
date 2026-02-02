@@ -81,6 +81,23 @@ resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
   }
 }
 
+// Private DNS Zone for PostgreSQL
+resource postgresDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: 'privatelink.postgres.database.azure.com'
+  location: 'global'
+  tags: tags
+}
+
+resource postgresDnsVnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
+  parent: postgresDnsZone
+  name: '${prefix}-postgres-vnet-link'
+  location: 'global'
+  properties: {
+    virtualNetwork: { id: vnet.id }
+    registrationEnabled: false
+  }
+}
+
 @description('VNet ID')
 output vnetId string = vnet.id
 
@@ -89,3 +106,6 @@ output containerAppsSubnetId string = vnet.properties.subnets[0].id
 
 @description('PostgreSQL subnet ID')
 output postgresSubnetId string = vnet.properties.subnets[1].id
+
+@description('PostgreSQL Private DNS Zone ID')
+output postgresDnsZoneId string = postgresDnsZone.id

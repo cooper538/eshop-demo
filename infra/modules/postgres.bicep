@@ -19,6 +19,9 @@ param administratorPassword string
 @description('Delegated subnet ID for PostgreSQL')
 param delegatedSubnetId string
 
+@description('Private DNS Zone ID for PostgreSQL')
+param privateDnsZoneId string
+
 var databases = [
   'productdb'
   'orderdb'
@@ -49,6 +52,7 @@ resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' =
     }
     network: {
       delegatedSubnetResourceId: delegatedSubnetId
+      privateDnsZoneArmResourceId: privateDnsZoneId
     }
   }
 }
