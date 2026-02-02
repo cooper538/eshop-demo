@@ -21,7 +21,7 @@ public static class TestDataSeeder
         var testProducts = new[]
         {
             ProductEntity.Create(
-                "Test Product 1",
+                "Available Product A",
                 "Test product for E2E tests",
                 99.99m,
                 initialStockQuantity: 100,
@@ -30,7 +30,7 @@ public static class TestDataSeeder
                 now
             ),
             ProductEntity.Create(
-                "Test Product 2",
+                "Available Product B",
                 "Another test product",
                 49.99m,
                 initialStockQuantity: 50,
@@ -39,8 +39,8 @@ public static class TestDataSeeder
                 now
             ),
             ProductEntity.Create(
-                "Out of Stock Product",
-                "Product with zero stock",
+                "Unavailable Product",
+                "Product with zero stock for testing insufficient stock scenarios",
                 29.99m,
                 initialStockQuantity: 0,
                 lowStockThreshold: 10,
