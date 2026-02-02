@@ -1,6 +1,8 @@
 ﻿using EShop.Contracts.ServiceClients.Product;
 using EShop.ServiceClients.Clients.Product.Mappers;
 using EShop.ServiceClients.Configuration;
+using EShop.ServiceClients.Infrastructure.Grpc;
+using Grpc.Core;
 using Microsoft.Extensions.Options;
 using GrpcProduct = EShop.Grpc.Product;
 
@@ -18,6 +20,30 @@ public sealed class GrpcProductServiceClient : IProductServiceClient
     {
         _client = client;
         _options = options.Value;
+    }
+
+    public async Task<GetProductsResult> GetProductsAsync(
+        IReadOnlyList<Guid> productIds,
+        CancellationToken cancellationToken = default
+    )
+    {
+        try
+        {
+            var request = new GrpcProduct.GetProductsRequest();
+            request.ProductIds.AddRange(productIds.Select(id => id.ToString()));
+
+            var response = await _client.GetProductsAsync(
+                request,
+                deadline: DateTime.UtcNow.AddSeconds(_options.TimeoutSeconds),
+                cancellationToken: cancellationToken
+            );
+
+            return response.ToResult();
+        }
+        catch (RpcException ex)
+        {
+            throw ex.ToServiceClientException("get products");
+        }
     }
 
     public async Task<StockReservationResult> ReserveStockAsync(

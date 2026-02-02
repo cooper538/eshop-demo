@@ -66,7 +66,7 @@ public class CreateOrderCommandValidatorTests
         return new CreateOrderCommand(
             customerId ?? Guid.NewGuid(),
             email,
-            items ?? [new CreateOrderItemDto(Guid.NewGuid(), "Product", 1, 10.00m)]
+            items ?? [new CreateOrderItemDto(Guid.NewGuid(), 1)]
         );
     }
 }

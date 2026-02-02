@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Http.Json;
 using EShop.Contracts.ServiceClients;
 using EShop.Contracts.ServiceClients.Product;
@@ -11,13 +11,29 @@ namespace EShop.Order.IntegrationTests.Api;
 
 public class CreateOrderTests : OrderIntegrationTestBase
 {
+    private static readonly Guid TestProductId = Guid.NewGuid();
+
     public CreateOrderTests(PostgresContainerFixture postgres)
         : base(postgres) { }
+
+    private void SetupGetProductsMock()
+    {
+        Factory
+            .ProductServiceMock.Setup(x =>
+                x.GetProductsAsync(It.IsAny<IReadOnlyList<Guid>>(), It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync(
+                new GetProductsResult([
+                    new ProductInfo(TestProductId, "Test Product", "Description", 99.99m, 100),
+                ])
+            );
+    }
 
     [Fact]
     public async Task CreateOrder_ProductServiceUnavailable_ReturnsCreatedWithMessage()
     {
-        // Arrange - mock throws ServiceClientException (service unavailable)
+        // Arrange
+        SetupGetProductsMock();
         Factory
             .ProductServiceMock.Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())
@@ -47,7 +63,8 @@ public class CreateOrderTests : OrderIntegrationTestBase
     [Fact]
     public async Task CreateOrder_ProductServiceTimeout_ReturnsCreatedWithMessage()
     {
-        // Arrange - mock throws ServiceClientException (timeout)
+        // Arrange
+        SetupGetProductsMock();
         Factory
             .ProductServiceMock.Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())
@@ -77,7 +94,8 @@ public class CreateOrderTests : OrderIntegrationTestBase
     [Fact]
     public async Task CreateOrder_InsufficientStock_ReturnsCreatedWithRejectedStatus()
     {
-        // Arrange - mock returns insufficient stock
+        // Arrange
+        SetupGetProductsMock();
         Factory
             .ProductServiceMock.Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())
@@ -107,7 +125,8 @@ public class CreateOrderTests : OrderIntegrationTestBase
     [Fact]
     public async Task CreateOrder_ProductNotFound_ReturnsBadRequest()
     {
-        // Arrange - mock returns product not found (validation error)
+        // Arrange
+        SetupGetProductsMock();
         Factory
             .ProductServiceMock.Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())
@@ -132,7 +151,8 @@ public class CreateOrderTests : OrderIntegrationTestBase
     [Fact]
     public async Task CreateOrder_StockReserved_ReturnsCreatedWithConfirmedStatus()
     {
-        // Arrange - mock returns success
+        // Arrange
+        SetupGetProductsMock();
         Factory
             .ProductServiceMock.Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())
@@ -157,6 +177,6 @@ public class CreateOrderTests : OrderIntegrationTestBase
         new(
             Guid.NewGuid(),
             "resilience-test@example.com",
-            [new CreateOrderItemDto(Guid.NewGuid(), "Test Product", 1, 99.99m)]
+            [new CreateOrderItemDto(TestProductId, 1)]
         );
 }

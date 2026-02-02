@@ -1,7 +1,8 @@
-﻿using EShop.Common.Application.Exceptions;
+using EShop.Common.Application.Exceptions;
 using EShop.Contracts.ServiceClients;
 using EShop.Contracts.ServiceClients.Product;
 using EShop.Order.Application.Data;
+using EShop.Order.Domain.Entities;
 using EShop.SharedKernel.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -34,13 +35,44 @@ public sealed class CreateOrderCommandHandler
         CancellationToken cancellationToken
     )
     {
-        var order = request.ToEntity(_dateTimeProvider.UtcNow);
+        var productIds = request.Items.Select(i => i.ProductId).ToList();
 
-        var orderItems = request
+        GetProductsResult productsResult;
+        try
+        {
+            productsResult = await _productServiceClient.GetProductsAsync(
+                productIds,
+                cancellationToken
+            );
+        }
+        catch (ServiceClientException ex) when (ex.ErrorCode == EServiceClientErrorCode.NotFound)
+        {
+            throw new ValidationException("One or more products not found");
+        }
+
+        var productLookup = productsResult.Products.ToDictionary(p => p.ProductId);
+
+        var orderItems = request.Items.Select(i =>
+        {
+            if (!productLookup.TryGetValue(i.ProductId, out var product))
+            {
+                throw new ValidationException($"Product {i.ProductId} not found");
+            }
+            return OrderItem.Create(i.ProductId, product.Name, i.Quantity, product.Price);
+        });
+
+        var order = OrderEntity.Create(
+            request.CustomerId,
+            request.CustomerEmail,
+            orderItems,
+            _dateTimeProvider.UtcNow
+        );
+
+        var stockItems = request
             .Items.Select(i => new OrderItemRequest(i.ProductId, i.Quantity))
             .ToList();
 
-        var reservationRequest = new ReserveStockRequest(order.Id, orderItems);
+        var reservationRequest = new ReserveStockRequest(order.Id, stockItems);
 
         StockReservationResult reservationResult;
         try
@@ -52,7 +84,6 @@ public sealed class CreateOrderCommandHandler
         }
         catch (ServiceClientException ex)
         {
-            // Technical failure (service unavailable, timeout) - save as Created for retry
             _logger.LogWarning(ex, "Stock reservation failed for order {OrderId}", order.Id);
             _dbContext.Orders.Add(order);
             return new CreateOrderResult(
@@ -64,7 +95,6 @@ public sealed class CreateOrderCommandHandler
 
         if (!reservationResult.Success)
         {
-            // Validation error (product not found) - throw validation exception for 400 response
             if (reservationResult.ErrorCode == EStockReservationErrorCode.ProductNotFound)
             {
                 throw new ValidationException(
@@ -72,7 +102,6 @@ public sealed class CreateOrderCommandHandler
                 );
             }
 
-            // Business rejection (insufficient stock) - reject order
             order.Reject(
                 reservationResult.FailureReason ?? "Stock reservation failed",
                 _dateTimeProvider.UtcNow

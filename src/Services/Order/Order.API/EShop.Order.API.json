@@ -375,18 +375,13 @@
       "CreateOrderItemDto": {
         "required": [
           "productId",
-          "productName",
-          "quantity",
-          "unitPrice"
+          "quantity"
         ],
         "type": "object",
         "properties": {
           "productId": {
             "type": "string",
             "format": "uuid"
-          },
-          "productName": {
-            "type": "string"
           },
           "quantity": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -395,14 +390,6 @@
               "string"
             ],
             "format": "int32"
-          },
-          "unitPrice": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-            "type": [
-              "number",
-              "string"
-            ],
-            "format": "double"
           }
         }
       },

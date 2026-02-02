@@ -3,6 +3,11 @@
 // Protocol-agnostic abstraction (gRPC/HTTP based on config)
 public interface IProductServiceClient
 {
+    Task<GetProductsResult> GetProductsAsync(
+        IReadOnlyList<Guid> productIds,
+        CancellationToken cancellationToken = default
+    );
+
     Task<StockReservationResult> ReserveStockAsync(
         ReserveStockRequest request,
         CancellationToken cancellationToken = default

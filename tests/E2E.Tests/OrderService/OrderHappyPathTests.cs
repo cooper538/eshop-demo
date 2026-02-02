@@ -14,7 +14,7 @@ public class OrderHappyPathTests : E2ETestBase
     public async Task CreateOrder_WithValidData_ReturnsConfirmed()
     {
         var product = await GatewayClient.GetFirstAvailableProductAsync();
-        var request = CreateOrderRequest(product.Id, product.Name, product.Price, quantity: 1);
+        var request = CreateOrderRequest(product.Id, quantity: 1);
 
         var response = await GatewayClient.PostAsJsonAsync("/api/orders", request);
 
@@ -30,12 +30,7 @@ public class OrderHappyPathTests : E2ETestBase
     public async Task GetOrder_AfterCreation_ReturnsOrderDetails()
     {
         var product = await GatewayClient.GetFirstAvailableProductAsync();
-        var createRequest = CreateOrderRequest(
-            product.Id,
-            product.Name,
-            product.Price,
-            quantity: 2
-        );
+        var createRequest = CreateOrderRequest(product.Id, quantity: 2);
         var createResponse = await GatewayClient.PostAsJsonAsync("/api/orders", createRequest);
         var created = await createResponse.Content.ReadFromJsonAsync<CreateOrderResponse>(
             JsonOptions
@@ -62,13 +57,7 @@ public class OrderHappyPathTests : E2ETestBase
 
         for (var i = 0; i < 3; i++)
         {
-            var request = CreateOrderRequest(
-                product.Id,
-                product.Name,
-                product.Price,
-                quantity: 1,
-                customerId: customerId
-            );
+            var request = CreateOrderRequest(product.Id, quantity: 1, customerId: customerId);
             await GatewayClient.PostAsJsonAsync("/api/orders", request);
         }
 
@@ -98,12 +87,7 @@ public class OrderHappyPathTests : E2ETestBase
     public async Task CancelOrder_ConfirmedOrder_ReturnsCancelled()
     {
         var product = await GatewayClient.GetFirstAvailableProductAsync();
-        var createRequest = CreateOrderRequest(
-            product.Id,
-            product.Name,
-            product.Price,
-            quantity: 1
-        );
+        var createRequest = CreateOrderRequest(product.Id, quantity: 1);
         var createResponse = await GatewayClient.PostAsJsonAsync("/api/orders", createRequest);
         var created = await createResponse.Content.ReadFromJsonAsync<CreateOrderResponse>(
             JsonOptions

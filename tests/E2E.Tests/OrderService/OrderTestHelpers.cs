@@ -23,8 +23,6 @@ public static class OrderTestHelpers
 
     public static object CreateOrderRequest(
         Guid productId,
-        string productName,
-        decimal unitPrice,
         int quantity,
         Guid? customerId = null,
         string customerEmail = "test@example.com"
@@ -33,15 +31,6 @@ public static class OrderTestHelpers
         {
             CustomerId = customerId ?? Guid.NewGuid(),
             CustomerEmail = customerEmail,
-            Items = new[]
-            {
-                new
-                {
-                    ProductId = productId,
-                    ProductName = productName,
-                    Quantity = quantity,
-                    UnitPrice = unitPrice,
-                },
-            },
+            Items = new[] { new { ProductId = productId, Quantity = quantity } },
         };
 }

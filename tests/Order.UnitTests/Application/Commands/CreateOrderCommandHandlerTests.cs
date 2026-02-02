@@ -31,7 +31,7 @@ public class CreateOrderCommandHandlerTests : IDisposable
     public void Dispose()
     {
         _dbContextFactory.Dispose();
-        GC.SuppressFinalize(this); // CA1816: required for IDisposable pattern
+        GC.SuppressFinalize(this);
     }
 
     private CreateOrderCommandHandler CreateHandler(OrderDbContext context)
@@ -44,14 +44,33 @@ public class CreateOrderCommandHandlerTests : IDisposable
         );
     }
 
+    private void SetupGetProductsMock(
+        Guid productId,
+        string productName = "Test Product",
+        decimal price = 50.00m
+    )
+    {
+        _productClientMock
+            .Setup(x =>
+                x.GetProductsAsync(It.IsAny<IReadOnlyList<Guid>>(), It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync(
+                new GetProductsResult([
+                    new ProductInfo(productId, productName, "Description", price, 100),
+                ])
+            );
+    }
+
     [Fact]
     public async Task Handle_WhenStockAvailable_ReturnsConfirmedOrder()
     {
         // Arrange
         await using var context = _dbContextFactory.CreateContext();
         var handler = CreateHandler(context);
-        var command = CreateValidCommand();
+        var productId = Guid.NewGuid();
+        var command = CreateValidCommand(productId);
 
+        SetupGetProductsMock(productId);
         _productClientMock
             .Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())
@@ -73,8 +92,10 @@ public class CreateOrderCommandHandlerTests : IDisposable
         // Arrange
         await using var context = _dbContextFactory.CreateContext();
         var handler = CreateHandler(context);
-        var command = CreateValidCommand();
+        var productId = Guid.NewGuid();
+        var command = CreateValidCommand(productId);
 
+        SetupGetProductsMock(productId);
         _productClientMock
             .Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())
@@ -85,7 +106,7 @@ public class CreateOrderCommandHandlerTests : IDisposable
         var result = await handler.Handle(command, CancellationToken.None);
         await context.SaveChangesAsync();
 
-        // Assert - new context bypasses ChangeTracker cache, reads from actual DB
+        // Assert
         await using var verifyContext = _dbContextFactory.CreateContext();
         var savedOrder = await verifyContext
             .Orders.Include(o => o.Items)
@@ -95,6 +116,8 @@ public class CreateOrderCommandHandlerTests : IDisposable
         savedOrder!.Status.Should().Be(EOrderStatus.Confirmed);
         savedOrder.CustomerEmail.Should().Be(command.CustomerEmail);
         savedOrder.Items.Should().HaveCount(1);
+        savedOrder.Items[0].ProductName.Should().Be("Test Product");
+        savedOrder.Items[0].UnitPrice.Should().Be(50.00m);
     }
 
     [Fact]
@@ -103,9 +126,11 @@ public class CreateOrderCommandHandlerTests : IDisposable
         // Arrange
         await using var context = _dbContextFactory.CreateContext();
         var handler = CreateHandler(context);
-        var command = CreateValidCommand();
+        var productId = Guid.NewGuid();
+        var command = CreateValidCommand(productId);
         const string reason = "Insufficient stock for Product A";
 
+        SetupGetProductsMock(productId);
         _productClientMock
             .Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())
@@ -126,7 +151,6 @@ public class CreateOrderCommandHandlerTests : IDisposable
         result.Status.Should().Be(EOrderStatus.Rejected.ToString());
         result.Message.Should().Be(reason);
 
-        // New context bypasses ChangeTracker cache
         await using var verifyContext = _dbContextFactory.CreateContext();
         var savedOrder = await verifyContext.Orders.FirstOrDefaultAsync(o =>
             o.Id == result.OrderId
@@ -135,13 +159,45 @@ public class CreateOrderCommandHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task Handle_WhenProductNotFound_ThrowsValidationException()
+    public async Task Handle_WhenProductNotFoundInGetProducts_ThrowsValidationException()
     {
         // Arrange
         await using var context = _dbContextFactory.CreateContext();
         var handler = CreateHandler(context);
-        var command = CreateValidCommand();
+        var productId = Guid.NewGuid();
+        var command = CreateValidCommand(productId);
 
+        _productClientMock
+            .Setup(x =>
+                x.GetProductsAsync(It.IsAny<IReadOnlyList<Guid>>(), It.IsAny<CancellationToken>())
+            )
+            .ThrowsAsync(
+                new ServiceClientException(
+                    "Product not found",
+                    null,
+                    EServiceClientErrorCode.NotFound
+                )
+            );
+
+        // Act
+        var act = () => handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<ValidationException>()
+            .WithMessage("One or more products not found");
+    }
+
+    [Fact]
+    public async Task Handle_WhenProductNotFoundInReserveStock_ThrowsValidationException()
+    {
+        // Arrange
+        await using var context = _dbContextFactory.CreateContext();
+        var handler = CreateHandler(context);
+        var productId = Guid.NewGuid();
+        var command = CreateValidCommand(productId);
+
+        SetupGetProductsMock(productId);
         _productClientMock
             .Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())
@@ -162,14 +218,46 @@ public class CreateOrderCommandHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task Handle_WhenServiceClientThrows_ReturnsCreatedOrderWithError()
+    public async Task Handle_WhenGetProductsServiceUnavailable_ThrowsServiceClientException()
     {
         // Arrange
         await using var context = _dbContextFactory.CreateContext();
         var handler = CreateHandler(context);
-        var command = CreateValidCommand();
+        var productId = Guid.NewGuid();
+        var command = CreateValidCommand(productId);
+
+        _productClientMock
+            .Setup(x =>
+                x.GetProductsAsync(It.IsAny<IReadOnlyList<Guid>>(), It.IsAny<CancellationToken>())
+            )
+            .ThrowsAsync(
+                new ServiceClientException(
+                    "Service unavailable",
+                    null,
+                    EServiceClientErrorCode.ServiceUnavailable
+                )
+            );
+
+        // Act
+        var act = () => handler.Handle(command, CancellationToken.None);
+
+        // Assert - exception should propagate, not be swallowed
+        await act.Should()
+            .ThrowAsync<ServiceClientException>()
+            .Where(ex => ex.ErrorCode == EServiceClientErrorCode.ServiceUnavailable);
+    }
+
+    [Fact]
+    public async Task Handle_WhenReserveStockServiceUnavailable_ReturnsCreatedOrderWithError()
+    {
+        // Arrange
+        await using var context = _dbContextFactory.CreateContext();
+        var handler = CreateHandler(context);
+        var productId = Guid.NewGuid();
+        var command = CreateValidCommand(productId);
         const string errorMessage = "Service unavailable";
 
+        SetupGetProductsMock(productId);
         _productClientMock
             .Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())
@@ -190,7 +278,6 @@ public class CreateOrderCommandHandlerTests : IDisposable
         result.Status.Should().Be(EOrderStatus.Created.ToString());
         result.Message.Should().Be("Stock reservation pending");
 
-        // New context bypasses ChangeTracker cache
         await using var verifyContext = _dbContextFactory.CreateContext();
         var savedOrder = await verifyContext.Orders.FirstOrDefaultAsync(o =>
             o.Id == result.OrderId
@@ -198,12 +285,12 @@ public class CreateOrderCommandHandlerTests : IDisposable
         savedOrder!.Status.Should().Be(EOrderStatus.Created);
     }
 
-    private static CreateOrderCommand CreateValidCommand()
+    private static CreateOrderCommand CreateValidCommand(Guid? productId = null)
     {
         return new CreateOrderCommand(
             Guid.NewGuid(),
             "customer@example.com",
-            [new CreateOrderItemDto(Guid.NewGuid(), "Test Product", 2, 50.00m)]
+            [new CreateOrderItemDto(productId ?? Guid.NewGuid(), 2)]
         );
     }
 }
