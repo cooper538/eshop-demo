@@ -25,7 +25,9 @@ public sealed class E2ETestFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         var appHost =
-            await DistributedApplicationTestingBuilder.CreateAsync<Projects.EShop_AppHost>();
+            await DistributedApplicationTestingBuilder.CreateAsync<Projects.EShop_AppHost>([
+                "--Parameters:postgres-password=test-password-e2e",
+            ]);
 
         appHost.Services.AddLogging(logging =>
         {

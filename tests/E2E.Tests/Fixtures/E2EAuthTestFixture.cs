@@ -20,6 +20,7 @@ public sealed class E2EAuthTestFixture : IAsyncLifetime
     {
         var appHost =
             await DistributedApplicationTestingBuilder.CreateAsync<Projects.EShop_AppHost>([
+                "--Parameters:postgres-password=test-password-e2e",
                 "--Gateway:Authentication:Enabled=true",
                 "--Gateway:Authentication:UseTestScheme=true",
                 $"--Gateway:Authentication:TestSecretKey={MockJwtTokenGenerator.TestSecretKey}",
