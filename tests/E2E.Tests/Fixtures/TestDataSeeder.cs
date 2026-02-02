@@ -1,4 +1,4 @@
-using EShop.Products.Domain.Entities;
+﻿using EShop.Products.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace EShop.E2E.Tests.Fixtures;
