@@ -28,4 +28,4 @@ Create optimized multi-stage Dockerfiles for all services with .NET 10 runtime a
 - Using Alpine images for smaller size (mcr.microsoft.com/dotnet/aspnet:10.0-alpine)
 - Multi-stage build minimizes final image size
 - Build context is solution root for shared project access
-- Analytics service included; Catalog service not implemented
+- Analytics service included

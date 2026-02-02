@@ -19,11 +19,8 @@ public static class ConfigurationExtensions
                 optional: false,
                 reloadOnChange: true
             )
-            .AddYamlFile(
-                $"{serviceName}.settings.{env}.yaml",
-                optional: true,
-                reloadOnChange: true
-            );
+            .AddYamlFile($"{serviceName}.settings.{env}.yaml", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables();
 
         return builder;
     }

@@ -4,19 +4,19 @@
 | Key | Value |
 |-----|-------|
 | ID | task-03 |
-| Status | ⚪ pending |
+| Status | ✅ completed |
 | Dependencies | - |
 
 ## Summary
 Document the Azure AD (Entra ID) setup required for obtaining access tokens.
 
 ## Scope
-- [ ] Create `docs/entra-id-setup.md` documentation
-- [ ] Document API app registration steps (eshop-api)
-- [ ] Document client app registration steps (eshop-client)
-- [ ] Document how to obtain access token (curl/Postman example)
-- [ ] Document required appsettings configuration values
-- [ ] Document security requirements (RS256 algorithm, token expiration best practices)
+- [x] Create `docs/entra-id-setup.md` documentation
+- [x] Document API app registration steps (eshop-api)
+- [x] Document client app registration steps (eshop-client)
+- [x] Document how to obtain access token (curl/Postman example)
+- [x] Document required appsettings configuration values
+- [x] Document security requirements (RS256 algorithm, token expiration best practices)
 
 ## Related Specs
 - -> [azure-infrastructure.md](../high-level-specs/azure-infrastructure.md) (Section: 5.3 Entra ID App Registrations)

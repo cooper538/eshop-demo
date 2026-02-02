@@ -12,7 +12,7 @@ Create Bicep modules for PostgreSQL Flexible Server with multiple databases and 
 
 ## Scope
 - [x] Create `postgres.bicep` module with Flexible Server B1ms tier
-- [x] Configure 4 databases: productdb, orderdb, notificationdb, catalogdb
+- [x] Configure 3 databases: productdb, orderdb, notificationdb
 - [x] Add firewall rules for Azure services access
 - [x] Create `rabbitmq.bicep` module as internal Container App (same environment)
 - [x] Output connection strings for Key Vault storage

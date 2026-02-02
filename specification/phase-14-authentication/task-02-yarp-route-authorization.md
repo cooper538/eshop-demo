@@ -4,18 +4,18 @@
 | Key | Value |
 |-----|-------|
 | ID | task-02 |
-| Status | ⚪ pending |
+| Status | ✅ completed |
 | Dependencies | task-01 |
 
 ## Summary
 Add authorization policies to YARP routes, allowing some routes to be public and others to require authentication.
 
 ## Scope
-- [ ] Define authorization policies (e.g., "authenticated", "anonymous")
-- [ ] Configure YARP routes with AuthorizationPolicy metadata
-- [ ] Make health endpoints public (no auth required)
-- [ ] Require authentication for API endpoints
-- [ ] Test with valid/invalid tokens
+- [x] Define authorization policies (e.g., "authenticated", "anonymous")
+- [x] Configure YARP routes with AuthorizationPolicy metadata
+- [x] Make health endpoints public (no auth required)
+- [x] Require authentication for API endpoints
+- [x] Test with valid/invalid tokens
 
 ## Related Specs
 - -> [azure-infrastructure.md](../high-level-specs/azure-infrastructure.md) (Section: 5.3 Entra ID App Registrations)
