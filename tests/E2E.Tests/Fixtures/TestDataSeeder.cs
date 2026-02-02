@@ -1,0 +1,68 @@
+using EShop.Products.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace EShop.E2E.Tests.Fixtures;
+
+public static class TestDataSeeder
+{
+    public static async Task SeedProductsAsync(
+        TestProductDbContext context,
+        CancellationToken cancellationToken = default
+    )
+    {
+        if (await context.Products.AnyAsync(cancellationToken))
+        {
+            return;
+        }
+
+        var now = DateTime.UtcNow;
+
+        var testProducts = new[]
+        {
+            ProductEntity.Create(
+                "Test Product 1",
+                "Test product for E2E tests",
+                99.99m,
+                initialStockQuantity: 100,
+                lowStockThreshold: 10,
+                "Electronics",
+                now
+            ),
+            ProductEntity.Create(
+                "Test Product 2",
+                "Another test product",
+                49.99m,
+                initialStockQuantity: 50,
+                lowStockThreshold: 5,
+                "Accessories",
+                now
+            ),
+            ProductEntity.Create(
+                "Out of Stock Product",
+                "Product with zero stock",
+                29.99m,
+                initialStockQuantity: 0,
+                lowStockThreshold: 10,
+                "Electronics",
+                now
+            ),
+        };
+
+        context.Products.AddRange(testProducts);
+
+        var stocks = testProducts
+            .Select(
+                (p, i) =>
+                    StockEntity.Create(
+                        p.Id,
+                        initialQuantity: i == 2 ? 0 : (i + 1) * 50,
+                        lowStockThreshold: 10
+                    )
+            )
+            .ToArray();
+
+        context.Stocks.AddRange(stocks);
+
+        await context.SaveChangesAsync(cancellationToken);
+    }
+}

@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Aspire.Hosting;
 using Aspire.Hosting.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -51,7 +52,21 @@ public sealed class E2ETestFixture : IAsyncLifetime
             _app.ResourceNotifications.WaitForResourceHealthyAsync("order-service", cts.Token)
         );
 
+        await SeedProductDatabaseAsync(cts.Token);
+
         GatewayClient = _app.CreateHttpClient("gateway");
+    }
+
+    private async Task SeedProductDatabaseAsync(CancellationToken cancellationToken)
+    {
+        var connectionString = await _app!.GetConnectionStringAsync("productdb", cancellationToken);
+
+        var options = new DbContextOptionsBuilder<TestProductDbContext>()
+            .UseNpgsql(connectionString)
+            .Options;
+
+        await using var context = new TestProductDbContext(options);
+        await TestDataSeeder.SeedProductsAsync(context, cancellationToken);
     }
 
     public async Task DisposeAsync()
