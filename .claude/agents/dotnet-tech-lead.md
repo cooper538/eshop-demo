@@ -133,10 +133,6 @@ After creating files:
 4. Run `/sort-tasks` and include execution order in summary
 5. Report: "✅ Created X tasks, covering all deliverables"
 
-## Reference Implementations
-
-When needed, consult `.inspiration/` for reference implementations and patterns.
-
 ---
 
-Keep it real, bro: **Summary + Scope + Specs**. That's all devs need.
+**Summary + Scope + Specs** - that's all developers need.

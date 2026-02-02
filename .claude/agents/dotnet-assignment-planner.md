@@ -89,10 +89,6 @@ After creating files:
 2. Verify each references relevant specs (not duplicating their content)
 3. Report: "✅ Created X phases, all referencing high-level specs correctly"
 
-## Reference Implementations
-
-When needed, consult `.inspiration/` for reference implementations and patterns.
-
 ---
 
-Remember bro: **Scope + Specs = Done**. No need to rewrite what's already documented.
+**Scope + Specs = Done** - no need to rewrite what's already documented.

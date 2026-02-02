@@ -161,6 +161,8 @@ This is a demonstration project focused on architectural patterns:
 - **Error handling** - basic implementation, production would need more robust handling
 - **Infrastructure** - single region, no geo-redundancy or WAF
 - **Deployment** - basic CI/CD, no release management
+- **API versioning** - no versioning strategy implemented
+- **Shared libraries** - project references instead of NuGet packages
 
 ## Commands
 

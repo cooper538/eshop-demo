@@ -58,7 +58,8 @@ Development uses self-signed certificates. If issues persist:
 # Check container is running
 docker ps | grep rabbitmq
 
-# Access management UI (guest/guest)
+# Management UI runs on port 15672 (credentials: guest/guest in dev)
+# When running via Aspire, check Dashboard for the actual mapped port
 open http://localhost:15672
 ```
 
@@ -79,4 +80,4 @@ docker exec <rabbitmq-container> rabbitmqctl purge_queue <queue-name>
 | Service logs | Aspire Dashboard → Logs |
 | Distributed traces | Aspire Dashboard → Traces |
 | Request tracing | `./tools/e2e-test/trace-correlation.sh <id>` |
-| RabbitMQ queues | http://localhost:15672 |
+| RabbitMQ queues | RabbitMQ Management UI (port 15672 or check Aspire Dashboard) |
