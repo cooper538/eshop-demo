@@ -25,7 +25,7 @@ public sealed class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRe
 
         _logger.LogInformation("Handling {RequestName}", requestName);
 
-        var response = await next();
+        var response = await next(cancellationToken);
 
         stopwatch.Stop();
         _logger.LogInformation(

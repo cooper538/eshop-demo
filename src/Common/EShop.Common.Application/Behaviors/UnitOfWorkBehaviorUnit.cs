@@ -34,7 +34,7 @@ public sealed class UnitOfWorkBehaviorUnit<TRequest, TResponse>
         CancellationToken cancellationToken
     )
     {
-        var response = await next();
+        var response = await next(cancellationToken);
 
         await SaveChangesAsync(cancellationToken);
 

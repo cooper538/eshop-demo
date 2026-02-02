@@ -32,7 +32,7 @@ public sealed class UnitOfWorkBehavior<TRequest, TResponse> : IPipelineBehavior<
         CancellationToken cancellationToken
     )
     {
-        var response = await next();
+        var response = await next(cancellationToken);
 
         await SaveChangesAsync(cancellationToken);
 
