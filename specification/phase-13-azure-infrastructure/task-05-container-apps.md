@@ -13,7 +13,7 @@ Create Bicep module for Container Apps Environment with 5 Container Apps configu
 ## Scope
 - [x] Create `container-apps.bicep` module with Container Apps Environment
 - [x] Configure Consumption workload profile (serverless)
-- [x] Create 5 Container Apps: gateway, product-service, order-service, notification-service, catalog-service
+- [x] Create 5 Container Apps: gateway, product-service, order-service, notification-service, analytics-service
 - [x] Configure scale-to-zero (min replicas: 0, max: 2)
 - [x] Assign User-Assigned Managed Identity to all apps
 - [x] Configure internal ingress for services, external for gateway
@@ -30,3 +30,4 @@ Create Bicep module for Container Apps Environment with 5 Container Apps configu
 - Scale-to-zero provides cost savings when idle
 - External ingress on gateway only; all services internal
 - DatabaseMigration runs as a job (separate from Container Apps)
+- Catalog service not implemented - Analytics service used instead

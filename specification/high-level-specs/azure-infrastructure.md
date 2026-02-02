@@ -58,26 +58,30 @@ This document describes the Azure infrastructure for deploying the EShop demo mi
 │          │  ┌──────────────────────────┘                                     │
 │          │  │                                                                │
 │          ▼  ▼                                                                │
-│   ┌─────────────┐               ┌─────────────┐      ┌─────────────┐         │
-│   │  Catalog    │               │   Payment   │      │Notification │         │
-│   │  Service    │               │   Service   │      │  Service    │         │
-│   └─────────────┘               └─────────────┘      └──────┬──────┘         │
-│                                                             │                │
-│   All services use User-Assigned Managed Identity           │                │
-│                                                             │                │
-└─────────────────────────────────────────────────────────────┼────────────────┘
-                    │                                         │
-                    │                                         │
-                    ▼                                         ▼
-    ┌───────────────────────────┐              ┌───────────────────────────┐
-    │   PostgreSQL Flexible     │              │   RabbitMQ on ACI         │
-    │   Server (B1ms)           │              │   ┌─────────────────┐     │
-    │   ┌─────────┐ ┌─────────┐ │              │   │ AMQP: 5672      │     │
-    │   │productdb│ │ orderdb │ │              │   │ Mgmt: 15672     │     │
-    │   └─────────┘ └─────────┘ │              │   └─────────────────┘     │
-    │   ┌─────────┐ ┌─────────┐ │              │   Storage: Azure Files    │
-    │   │notifydb │ │catalogdb│ │              │                           │
-    │   └─────────┘ └─────────┘ │              └───────────────────────────┘
+│   ┌─────────────┐               ┌─────────────┐                              │
+│   │Notification │               │  Analytics  │                              │
+│   │  Service    │               │   Service   │                              │
+│   └──────┬──────┘               └─────────────┘                              │
+│          │                                                                │
+│   All services use User-Assigned Managed Identity                         │
+│                                                                           │
+│   ┌─────────────────────────────────────────────────────────────────┐     │
+│   │                      RabbitMQ (internal)                         │     │
+│   │   AMQP: 5672 (TCP ingress) | Ephemeral (no persistent storage)  │     │
+│   └─────────────────────────────────────────────────────────────────┘     │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+                    │
+                    ▼
+    ┌───────────────────────────┐
+    │   PostgreSQL Flexible     │
+    │   Server (B1ms)           │
+    │   ┌─────────┐ ┌─────────┐ │
+    │   │productdb│ │ orderdb │ │
+    │   └─────────┘ └─────────┘ │
+    │   ┌─────────┐ ┌─────────┐ │
+    │   │notifydb │ │analytdb │ │
+    │   └─────────┘ └─────────┘ │
     └───────────────────────────┘
                     │
                     ▼
@@ -127,9 +131,8 @@ All services share the same configuration:
 | API Gateway (YARP) | External | HTTPS public |
 | Product Service | Internal | HTTP internal only |
 | Order Service | Internal | HTTP internal only |
-| Catalog Service | Internal | HTTP internal only |
-| Payment Service | Internal | HTTP internal only |
 | Notification Service | Internal | HTTP internal only |
+| Analytics Service | Internal | HTTP internal only |
 
 ### 2.3 Free Grant Allowance
 
@@ -166,7 +169,7 @@ Container Apps Consumption tier includes generous free grants:
 | productdb | Product Service | Products, Categories, StockReservations |
 | orderdb | Order Service | Orders, OrderItems, OutboxMessages |
 | notificationdb | Notification Service | ProcessedMessages (Inbox) |
-| catalogdb | Catalog Service | SearchableProducts |
+| analyticsdb | Analytics Service | Events, Metrics |
 
 ### 3.3 Cost Optimization: Stop/Start
 
@@ -193,19 +196,19 @@ az postgres flexible-server start \
 
 ## 4. Messaging Resources
 
-### 4.1 RabbitMQ on Azure Container Instance
+### 4.1 RabbitMQ as Internal Container App
 
 > **Decision:** Azure Service Bus Basic tier is not supported by MassTransit (requires topics for pub/sub).
-> Standard tier costs ~$10/month. RabbitMQ on ACI provides full MassTransit compatibility at similar cost
-> while keeping the same configuration as local development.
+> Standard tier costs ~$10/month. RabbitMQ as internal Container App provides full MassTransit compatibility
+> with simpler networking (same Container Apps Environment) and same configuration as local development.
 
 | Setting | Value | Rationale |
 |---------|-------|-----------|
 | Container Image | rabbitmq:3-management-alpine | Official image with management UI |
 | vCPU | 0.5 | Minimum for stable operation |
 | Memory | 1 GB | Sufficient for demo workload |
-| Storage | Azure File Share (1 GB) | Persistent queue data |
-| Restart Policy | Always | Auto-restart on failure |
+| Storage | None (ephemeral) | Demo limitation - messages lost on restart |
+| Min/Max Replicas | 1/1 | Always running (no scale-to-zero) |
 
 ### 4.2 RabbitMQ Configuration
 
@@ -235,9 +238,12 @@ MassTransit automatically creates topology:
 |--------|--------------|---------------------|
 | Service Bus Basic | ~$0.05 | Not supported |
 | Service Bus Standard | ~$10 | Full support |
-| **RabbitMQ on ACI** | **~$8-12** | **Full support** |
+| **RabbitMQ Container App** | **~$5-8** | **Full support** |
 
-**Chosen:** RabbitMQ on ACI - same configuration as local dev, full MassTransit support.
+**Chosen:** RabbitMQ as Container App - same configuration as local dev, full MassTransit support, simpler networking.
+
+> **Demo Limitation:** RabbitMQ runs without persistent storage. Queues and messages are lost on container restart.
+> For production, add Azure Files volume mount for persistence.
 
 ---
 
@@ -330,23 +336,27 @@ GitHub Actions authenticates to Azure using OIDC (no stored secrets):
 
 ## 6. Container Registry
 
-### 6.1 Azure Container Registry
+### 6.1 GitHub Container Registry (GHCR)
 
 | Setting | Value | Rationale |
 |---------|-------|-----------|
-| SKU | Basic | 10 GB storage, no replication |
-| Admin User | Disabled | Use managed identity |
-| Public Network | Enabled | Required for GitHub Actions |
+| Registry | ghcr.io | Free for public repos, integrated with GitHub Actions |
+| Authentication | PAT or GITHUB_TOKEN | Stored as Container App secret |
+| Visibility | Public | No pull authentication needed in Azure |
+
+> **Decision:** Using GHCR instead of ACR saves ~$5/month and simplifies CI/CD (no separate registry resource).
 
 ### 6.2 Image Naming Convention
 
 ```
-eshopacr.azurecr.io/eshop/<service>:<tag>
+ghcr.io/<owner>/eshop-<service>:<tag>
 
 Examples:
-eshopacr.azurecr.io/eshop/gateway:1.0.0
-eshopacr.azurecr.io/eshop/product-service:1.0.0
-eshopacr.azurecr.io/eshop/order-service:1.0.0
+ghcr.io/username/eshop-gateway:1.0.0
+ghcr.io/username/eshop-product-service:1.0.0
+ghcr.io/username/eshop-order-service:1.0.0
+ghcr.io/username/eshop-notification-service:1.0.0
+ghcr.io/username/eshop-analytics-service:1.0.0
 ```
 
 ---
@@ -455,19 +465,18 @@ Infrastructure deployed via Bicep/ARM templates:
 
 ```
 infra/
-├── main.bicep                 # Entry point
+├── main.bicep                   # Entry point (subscription scope)
 ├── modules/
-│   ├── container-apps.bicep   # Container Apps Environment + Apps
-│   ├── postgres.bicep         # PostgreSQL Flexible Server
-│   ├── rabbitmq.bicep         # RabbitMQ on Azure Container Instance
-│   ├── storage.bicep          # Storage Account + File Share (for RabbitMQ)
-│   ├── key-vault.bicep        # Key Vault + Secrets
-│   ├── acr.bicep              # Container Registry
-│   ├── identity.bicep         # Managed Identity + Role Assignments
-│   └── monitoring.bicep       # Log Analytics
+│   ├── container-apps.bicep     # Container Apps (gateway, product, order, notification, analytics)
+│   ├── container-apps-env.bicep # Container Apps Environment
+│   ├── postgres.bicep           # PostgreSQL Flexible Server
+│   ├── rabbitmq.bicep           # RabbitMQ as internal Container App
+│   ├── key-vault.bicep          # Key Vault + Secrets
+│   ├── identity.bicep           # Managed Identity + Role Assignments
+│   ├── monitoring.bicep         # Log Analytics
+│   └── networking.bicep         # VNet (optional)
 └── parameters/
-    ├── dev.bicepparam         # Development parameters
-    └── prod.bicepparam        # Production parameters
+    └── main.bicepparam          # Environment parameters
 ```
 
 ### 9.2 GitHub Actions Workflows
@@ -571,34 +580,32 @@ jobs:
 
 | Resource | Tier | Running | Stopped |
 |----------|------|---------|---------|
-| Container Apps (5x) | Consumption | ~$0* | ~$0 |
+| Container Apps (5x + RabbitMQ) | Consumption | ~$0* | ~$0 |
 | PostgreSQL | B1ms | ~$12 | ~$3.68 |
-| RabbitMQ (ACI) | 0.5 vCPU, 1GB | ~$10 | ~$0 |
-| Storage (RabbitMQ) | Standard LRS | ~$0.10 | ~$0.10 |
 | Key Vault | Standard | ~$0.03 | ~$0.03 |
-| Container Registry | Basic | ~$5 | ~$5 |
 | Log Analytics | Pay-as-you-go | ~$0** | ~$0 |
 
-*Free grant covers typical demo usage
+*Free grant covers typical demo usage (RabbitMQ runs as Container App, included in grant)
 **5 GB/month free ingestion
 
 ### 10.2 Monthly Cost Scenarios
 
 | Scenario | Cost |
 |----------|------|
-| **Active Development** | ~$27/month |
-| **Demo/Showcase** | ~$15/month (stop PG + RabbitMQ when idle) |
-| **Hibernated** | ~$9/month (PG + RabbitMQ stopped) |
+| **Active Development** | ~$12-15/month |
+| **Demo/Showcase** | ~$5/month (stop PostgreSQL when idle) |
+| **Hibernated** | ~$4/month (PostgreSQL stopped, only storage) |
 
 ### 10.3 Further Cost Optimization
 
 | Option | Savings | Trade-off |
 |--------|---------|-----------|
 | Neon Free Tier | -$12 | External PostgreSQL, 0.5 GB storage |
-| GitHub Container Registry | -$5 | Different registry, manual setup |
-| Stop PG when unused | -$8 | Manual start/stop |
+| Stop PostgreSQL when unused | -$8 | Manual start/stop |
 
-**Minimum Viable Cost:** ~$0-5/month with Neon + GHCR
+**Current setup:** Using GHCR (free for public repos) instead of ACR saves ~$5/month.
+
+**Minimum Viable Cost:** ~$0-5/month with Neon PostgreSQL
 
 ---
 
@@ -609,11 +616,11 @@ jobs:
 | Aspect | Local (Aspire) | Azure |
 |--------|----------------|-------|
 | PostgreSQL | Docker container | Flexible Server |
-| RabbitMQ | Docker container | RabbitMQ on ACI |
-| Container Registry | Local images | ACR |
+| RabbitMQ | Docker container | Internal Container App |
+| Container Registry | Local images | GHCR (GitHub Container Registry) |
 | Service Discovery | Aspire built-in | Container Apps built-in |
 
-> **Advantage:** Using RabbitMQ on Azure (instead of Service Bus) means **zero code changes** for messaging.
+> **Advantage:** Using RabbitMQ as Container App (instead of Service Bus) means **zero code changes** for messaging.
 > The same MassTransit configuration works in both environments.
 
 ### 11.2 Configuration Strategy

@@ -15,6 +15,7 @@ Create optimized multi-stage Dockerfiles for all services with .NET 10 runtime a
 - [x] Create `Dockerfile` for Products.API
 - [x] Create `Dockerfile` for Order.API
 - [x] Create `Dockerfile` for NotificationService
+- [x] Create `Dockerfile` for Analytics service
 - [x] Create `Dockerfile` for DatabaseMigration job
 - [x] Create `.dockerignore` file for build optimization
 - [x] Configure non-root user ($APP_UID) for security
@@ -27,4 +28,4 @@ Create optimized multi-stage Dockerfiles for all services with .NET 10 runtime a
 - Using Alpine images for smaller size (mcr.microsoft.com/dotnet/aspnet:10.0-alpine)
 - Multi-stage build minimizes final image size
 - Build context is solution root for shared project access
-- Catalog.API skipped (service doesn't exist yet)
+- Analytics service included; Catalog service not implemented

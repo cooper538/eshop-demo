@@ -13,9 +13,9 @@ Create Infrastructure as Code (Bicep) and CI/CD pipelines for deploying the ESho
 - [x] Create identity.bicep (User-Assigned Managed Identity + RBAC)
 - [x] Create monitoring.bicep (Log Analytics Workspace)
 - [x] Create postgres.bicep (Flexible Server B1ms + databases)
-- [x] Create rabbitmq.bicep (RabbitMQ on Azure Container Instance - ephemeral)
+- [x] Create rabbitmq.bicep (RabbitMQ as internal Container App - ephemeral)
 - [x] Create key-vault.bicep (Standard tier + connection string secrets)
-- [x] Create container-apps.bicep (Environment + 5 Container Apps with GHCR)
+- [x] Create container-apps.bicep (Environment + 5 Container Apps with GHCR: gateway, product, order, notification, analytics)
 - [x] Create Dockerfiles for all services
 - [x] Create GitHub Actions workflow for infrastructure deployment (OIDC auth)
 - [x] Create GitHub Actions workflow for application build and deploy
@@ -41,8 +41,9 @@ Create Infrastructure as Code (Bicep) and CI/CD pipelines for deploying the ESho
 ## Notes
 - Target monthly cost: ~$9-27 (hibernated to active usage)
 - All Container Apps use scale-to-zero (min replicas: 0)
-- PostgreSQL and RabbitMQ support stop/start for additional cost savings
+- PostgreSQL supports stop/start for additional cost savings
 - GitHub Actions uses OIDC (Workload Identity Federation) - no stored secrets
-- **RabbitMQ on ACI** instead of Service Bus - same config as local dev, full MassTransit support
+- **RabbitMQ as Container App** instead of Service Bus - same config as local dev, full MassTransit support, simpler networking than ACI
 - **Using GHCR** instead of ACR - simplifies setup, no acr.bicep needed
-- **RabbitMQ is ephemeral** - no storage.bicep, no persistent storage (simplified for demo)
+- **RabbitMQ is ephemeral** - no persistent storage (queues/messages lost on restart - demo limitation)
+- **Catalog service** not implemented - Analytics service used instead
