@@ -1,6 +1,6 @@
 # Gateway - Production
 
-AllowedHosts: "${ALLOWED_HOSTS:-eshop-gateway.azurecontainerapps.io}"
+AllowedHosts: "${ALLOWED_HOSTS:-*.azurecontainerapps.io}"
 
 Logging:
   LogLevel:
