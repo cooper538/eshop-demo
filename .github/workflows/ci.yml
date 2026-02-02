@@ -51,9 +51,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: |
-            **/bin/Release
-            **/obj/Release
+          path: artifacts
           retention-days: 1
 
   test:
@@ -115,7 +113,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-output
-          path: .
+          path: artifacts
 
       - name: Run Tests
         shell: bash
