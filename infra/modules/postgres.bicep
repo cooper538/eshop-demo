@@ -22,6 +22,9 @@ param delegatedSubnetId string
 @description('Private DNS Zone ID for PostgreSQL')
 param privateDnsZoneId string
 
+// Unique suffix to avoid global name conflicts
+var uniqueSuffix = uniqueString(resourceGroup().id)
+
 var databases = [
   'productdb'
   'orderdb'
@@ -29,7 +32,7 @@ var databases = [
 ]
 
 resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
-  name: '${prefix}-postgres'
+  name: '${prefix}-postgres-${uniqueSuffix}'
   location: location
   tags: tags
   sku: {
