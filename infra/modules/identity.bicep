@@ -10,7 +10,7 @@ param location string
 @description('Resource tags')
 param tags object
 
-resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' = {
   name: '${prefix}-identity'
   location: location
   tags: tags

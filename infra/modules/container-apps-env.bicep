@@ -15,7 +15,7 @@ param logAnalyticsWorkspaceId string
 @description('Container Apps subnet ID for VNet integration')
 param subnetId string
 
-resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2025-02-01' existing = {
   name: last(split(logAnalyticsWorkspaceId, '/'))
 }
 
