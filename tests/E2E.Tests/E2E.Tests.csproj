@@ -33,7 +33,7 @@
 
   <ItemGroup Label="Project References">
     <ProjectReference Include="..\..\src\AppHost\EShop.AppHost.csproj" />
-    <ProjectReference Include="..\..\src\Services\Products\Products.Domain\EShop.Products.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Products\Products.Infrastructure\EShop.Products.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup Label="xUnit Config">

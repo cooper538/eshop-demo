@@ -1,4 +1,5 @@
 ﻿using EShop.Products.Domain.Entities;
+using EShop.Products.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace EShop.E2E.Tests.Fixtures;
@@ -6,7 +7,7 @@ namespace EShop.E2E.Tests.Fixtures;
 public static class TestDataSeeder
 {
     public static async Task SeedProductsAsync(
-        TestProductDbContext context,
+        ProductDbContext context,
         CancellationToken cancellationToken = default
     )
     {

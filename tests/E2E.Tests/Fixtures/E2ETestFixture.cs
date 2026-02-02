@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Aspire.Hosting;
 using Aspire.Hosting.Testing;
+using EShop.Products.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -61,11 +62,11 @@ public sealed class E2ETestFixture : IAsyncLifetime
     {
         var connectionString = await _app!.GetConnectionStringAsync("productdb", cancellationToken);
 
-        var options = new DbContextOptionsBuilder<TestProductDbContext>()
+        var options = new DbContextOptionsBuilder<ProductDbContext>()
             .UseNpgsql(connectionString)
             .Options;
 
-        await using var context = new TestProductDbContext(options);
+        await using var context = new ProductDbContext(options);
         await TestDataSeeder.SeedProductsAsync(context, cancellationToken);
     }
 
