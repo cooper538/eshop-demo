@@ -1,4 +1,4 @@
-namespace EShop.Contracts.ServiceClients.Product;
+﻿namespace EShop.Contracts.ServiceClients.Product;
 
 public sealed record ProductInfo(
     Guid ProductId,

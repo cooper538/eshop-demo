@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using EShop.Contracts.ServiceClients.Product;
 using GrpcProduct = EShop.Grpc.Product;
 
