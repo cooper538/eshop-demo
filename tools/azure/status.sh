@@ -30,7 +30,7 @@ echo "  State: $RMQ_STATE"
 # Container Apps
 echo ""
 echo "[Container Apps]"
-APPS="gateway product-service order-service notification-service catalog-service"
+APPS="gateway product-service order-service notification-service analytics-service"
 for app in $APPS; do
   REPLICAS=$(az containerapp show \
     --name "$app" \
