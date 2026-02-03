@@ -33,7 +33,7 @@ jobs:
     name: Validate Bicep
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Bicep Lint
         run: az bicep build --file ${{ env.BICEP_FILE }} --stdout > /dev/null
@@ -46,7 +46,7 @@ jobs:
     outputs:
       changes_detected: ${{ steps.what-if.outputs.changes_detected }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Azure Login (OIDC)
         uses: azure/login@v2
@@ -87,7 +87,7 @@ jobs:
     if: ${{ always() && needs.validate.result == 'success' && (needs.what-if.result == 'success' || needs.what-if.result == 'skipped') }}
     environment: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Azure Login (OIDC)
         uses: azure/login@v2
