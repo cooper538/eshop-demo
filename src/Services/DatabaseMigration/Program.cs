@@ -1,6 +1,6 @@
 ﻿using EShop.Common.Infrastructure.Configuration;
 using EShop.DatabaseMigration;
-using EShop.Notification.Data;
+using EShop.NotificationService.Data;
 using EShop.Order.Infrastructure.Data;
 using EShop.Products.Infrastructure.Data;
 using EShop.ServiceDefaults;
