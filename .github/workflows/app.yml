@@ -105,59 +105,53 @@ jobs:
 
       - name: Run Migration Job
         run: |
-          # Create or update migration job
-          az containerapp job create \
-            --name eshop-migration \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --environment ${{ env.CONTAINER_ENV }} \
-            --trigger-type Manual \
-            --replica-timeout 300 \
-            --replica-retry-limit 1 \
-            --replica-completion-count 1 \
-            --parallelism 1 \
-            --image ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/migration:${{ github.sha }} \
-            --registry-server ${{ env.REGISTRY }} \
-            --registry-username ${{ secrets.GHCR_USERNAME }} \
-            --registry-password ${{ secrets.GHCR_TOKEN }} \
-            --cpu 0.25 \
-            --memory 0.5Gi \
-            --secrets "postgres-connection=secretref:postgres-connection-string" \
-            --env-vars "ConnectionStrings__DefaultConnection=secretref:postgres-connection" \
-            2>/dev/null || \
-          az containerapp job update \
-            --name eshop-migration \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --image ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/migration:${{ github.sha }}
+          MIGRATION_JOB="eshop-migration"
+          MIGRATION_IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/migration:${{ github.sha }}"
 
-          # Start migration job and wait for completion
+          echo "Updating migration job image to $MIGRATION_IMAGE"
+          az containerapp job update \
+            --name "$MIGRATION_JOB" \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image "$MIGRATION_IMAGE"
+
           echo "Starting migration job..."
           execution=$(az containerapp job start \
-            --name eshop-migration \
+            --name "$MIGRATION_JOB" \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --query name -o tsv)
+          echo "Execution: $execution"
 
           echo "Waiting for migration to complete..."
           for i in {1..30}; do
             status=$(az containerapp job execution show \
-              --name eshop-migration \
+              --name "$MIGRATION_JOB" \
               --resource-group ${{ env.RESOURCE_GROUP }} \
               --job-execution-name "$execution" \
               --query properties.status -o tsv 2>/dev/null || echo "Running")
 
-            echo "Status: $status"
+            echo "[$i/30] Status: $status"
 
             if [[ "$status" == "Succeeded" ]]; then
               echo "Migration completed successfully"
               exit 0
             elif [[ "$status" == "Failed" ]]; then
-              echo "Migration failed"
+              echo "::error::Migration failed"
+              echo "Fetching execution details..."
+              az containerapp job execution show \
+                --name "$MIGRATION_JOB" \
+                --resource-group ${{ env.RESOURCE_GROUP }} \
+                --job-execution-name "$execution" || true
               exit 1
             fi
 
             sleep 10
           done
 
-          echo "Migration timed out"
+          echo "::error::Migration timed out after 300s"
+          az containerapp job execution show \
+            --name "$MIGRATION_JOB" \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --job-execution-name "$execution" || true
           exit 1
 
   deploy:

@@ -52,6 +52,25 @@ resource rabbitMq 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'RABBITMQ_DEFAULT_USER', value: rabbitMqUser }
             { name: 'RABBITMQ_DEFAULT_PASS', secretRef: 'rabbitmq-password' }
           ]
+          probes: [
+            {
+              type: 'Startup'
+              tcpSocket: {
+                port: 5672
+              }
+              initialDelaySeconds: 10
+              periodSeconds: 5
+              failureThreshold: 12
+            }
+            {
+              type: 'Liveness'
+              tcpSocket: {
+                port: 5672
+              }
+              periodSeconds: 30
+              failureThreshold: 3
+            }
+          ]
         }
       ]
       scale: {

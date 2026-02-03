@@ -34,13 +34,34 @@ var commonEnv = [
   { name: 'OTEL_EXPORTER_OTLP_PROTOCOL', value: 'grpc' }
 ]
 
-// Backend services (internal)
-var backendApps = [
+// Web API services (with ingress + health probes)
+var webApiApps = [
   { name: 'product-service', otelName: 'product-service' }
   { name: 'order-service', otelName: 'order-service' }
+]
+
+// Worker services (no ingress, no health probes)
+var workerApps = [
   { name: 'notification-service', otelName: 'notification-service' }
   { name: 'analytics-service', otelName: 'analytics-service' }
 ]
+
+// Common registry configuration
+var registryConfig = {
+  secrets: [
+    {
+      name: 'ghcr-token'
+      value: ghcrToken
+    }
+  ]
+  registries: [
+    {
+      server: 'ghcr.io'
+      username: ghcrUsername
+      passwordSecretRef: 'ghcr-token'
+    }
+  ]
+}
 
 // Gateway (external) - deployed first so we can reference backend FQDNs
 resource gateway 'Microsoft.App/containerApps@2024-03-01' = {
@@ -63,19 +84,8 @@ resource gateway 'Microsoft.App/containerApps@2024-03-01' = {
         targetPort: 8080
         transport: 'http'
       }
-      secrets: [
-        {
-          name: 'ghcr-token'
-          value: ghcrToken
-        }
-      ]
-      registries: [
-        {
-          server: 'ghcr.io'
-          username: ghcrUsername
-          passwordSecretRef: 'ghcr-token'
-        }
-      ]
+      secrets: registryConfig.secrets
+      registries: registryConfig.registries
     }
     template: {
       containers: [
@@ -95,10 +105,31 @@ resource gateway 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'Gateway__Authentication__AzureAd__TenantId', value: azureAdTenantId }
             { name: 'Gateway__Authentication__AzureAd__ClientId', value: azureAdClientId }
           ])
+          probes: [
+            {
+              type: 'Startup'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              initialDelaySeconds: 5
+              periodSeconds: 5
+              failureThreshold: 12
+            }
+            {
+              type: 'Liveness'
+              httpGet: {
+                path: '/alive'
+                port: 8080
+              }
+              periodSeconds: 30
+              failureThreshold: 3
+            }
+          ]
         }
       ]
       scale: {
-        minReplicas: 0
+        minReplicas: 1
         maxReplicas: 2
         rules: [
           {
@@ -115,9 +146,9 @@ resource gateway 'Microsoft.App/containerApps@2024-03-01' = {
   }
 }
 
-// Backend services
-resource backendService 'Microsoft.App/containerApps@2024-03-01' = [
-  for app in backendApps: {
+// Web API backend services (with ingress + health probes)
+resource webApiService 'Microsoft.App/containerApps@2024-03-01' = [
+  for app in webApiApps: {
     name: '${prefix}-${app.name}'
     location: location
     tags: tags
@@ -137,19 +168,8 @@ resource backendService 'Microsoft.App/containerApps@2024-03-01' = [
           targetPort: 8080
           transport: 'http'
         }
-        secrets: [
-          {
-            name: 'ghcr-token'
-            value: ghcrToken
-          }
-        ]
-        registries: [
-          {
-            server: 'ghcr.io'
-            username: ghcrUsername
-            passwordSecretRef: 'ghcr-token'
-          }
-        ]
+        secrets: registryConfig.secrets
+        registries: registryConfig.registries
       }
       template: {
         containers: [
@@ -168,10 +188,31 @@ resource backendService 'Microsoft.App/containerApps@2024-03-01' = [
                 value: app.name == 'order-service' ? 'http://${prefix}-product-service:8080' : ''
               }
             ])
+            probes: [
+              {
+                type: 'Startup'
+                httpGet: {
+                  path: '/health'
+                  port: 8080
+                }
+                initialDelaySeconds: 5
+                periodSeconds: 5
+                failureThreshold: 12
+              }
+              {
+                type: 'Liveness'
+                httpGet: {
+                  path: '/alive'
+                  port: 8080
+                }
+                periodSeconds: 30
+                failureThreshold: 3
+              }
+            ]
           }
         ]
         scale: {
-          minReplicas: 0
+          minReplicas: 1
           maxReplicas: 2
           rules: [
             {
@@ -188,5 +229,85 @@ resource backendService 'Microsoft.App/containerApps@2024-03-01' = [
     }
   }
 ]
+
+// Worker backend services (no ingress, no health probes)
+resource workerService 'Microsoft.App/containerApps@2024-03-01' = [
+  for app in workerApps: {
+    name: '${prefix}-${app.name}'
+    location: location
+    tags: tags
+    identity: {
+      type: 'UserAssigned'
+      userAssignedIdentities: {
+        '${identityId}': {}
+      }
+    }
+    properties: {
+      environmentId: environmentId
+      workloadProfileName: 'Consumption'
+      configuration: {
+        activeRevisionsMode: 'Single'
+        secrets: registryConfig.secrets
+        registries: registryConfig.registries
+      }
+      template: {
+        containers: [
+          {
+            name: app.name
+            image: 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+            resources: {
+              cpu: json('0.25')
+              memory: '0.5Gi'
+            }
+            env: union(commonEnv, [
+              { name: 'OTEL_SERVICE_NAME', value: app.otelName }
+            ])
+          }
+        ]
+        scale: {
+          minReplicas: 1
+          maxReplicas: 2
+        }
+      }
+    }
+  }
+]
+
+// Database migration job
+resource migrationJob 'Microsoft.App/jobs@2024-03-01' = {
+  name: '${prefix}-migration'
+  location: location
+  tags: tags
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${identityId}': {}
+    }
+  }
+  properties: {
+    environmentId: environmentId
+    workloadProfileName: 'Consumption'
+    configuration: {
+      triggerType: 'Manual'
+      replicaTimeout: 300
+      replicaRetryLimit: 1
+      secrets: registryConfig.secrets
+      registries: registryConfig.registries
+    }
+    template: {
+      containers: [
+        {
+          name: 'migration'
+          image: 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+          resources: {
+            cpu: json('0.25')
+            memory: '0.5Gi'
+          }
+          env: commonEnv
+        }
+      ]
+    }
+  }
+}
 
 output gatewayFqdn string = 'https://${gateway.properties.configuration.ingress.fqdn}'
