@@ -5,7 +5,7 @@
 set -e
 
 RG="${1:-eshop-rg}"
-APPS="gateway product-service order-service notification-service catalog-service"
+APPS="gateway product-service order-service notification-service analytics-service"
 
 echo "Scaling up Container Apps in resource group: $RG"
 
