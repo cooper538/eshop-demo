@@ -1,5 +1,6 @@
-﻿using EShop.DatabaseMigration;
-using EShop.NotificationService.Data;
+﻿using EShop.Common.Infrastructure.Configuration;
+using EShop.DatabaseMigration;
+using EShop.Notification.Data;
 using EShop.Order.Infrastructure.Data;
 using EShop.Products.Infrastructure.Data;
 using EShop.ServiceDefaults;
@@ -8,6 +9,11 @@ var builder = Host.CreateApplicationBuilder(args);
 
 builder.AddSerilog();
 builder.AddServiceDefaults();
+
+if (builder.Environment.IsProduction())
+{
+    builder.AddKeyVaultConfiguration();
+}
 
 builder
     .Services.AddHealthChecks()
