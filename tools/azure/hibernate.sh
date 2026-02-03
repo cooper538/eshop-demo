@@ -1,45 +1,78 @@
 #!/bin/bash
 # Hibernate the demo environment to minimize costs
-# Usage: ./hibernate.sh [resource-group]
+# Usage: ./hibernate.sh [resource-group] [prefix] [--yes]
 
 set -e
 
-RG="${1:-eshop-rg}"
+RG="${1:-eshop-prod-rg}"
+PREFIX="${2:-eshop}"
+AUTO_CONFIRM=false
+
+for arg in "$@"; do
+  if [[ "$arg" == "--yes" || "$arg" == "-y" ]]; then
+    AUTO_CONFIRM=true
+  fi
+done
 
 echo "=== EShop Demo Hibernate ==="
 echo "Resource group: $RG"
 echo ""
-echo "This will stop PostgreSQL and RabbitMQ to minimize costs."
+echo "This will scale down all Container Apps and stop PostgreSQL to minimize costs."
 echo "Estimated cost after hibernation: ~\$9/month"
 echo ""
-read -p "Continue? (y/N) " -n 1 -r
-echo ""
 
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-  echo "Cancelled."
-  exit 0
+if [[ "$AUTO_CONFIRM" != true ]]; then
+  read -p "Continue? (y/N) " -n 1 -r
+  echo ""
+
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Cancelled."
+    exit 0
+  fi
 fi
 
-# Step 1: Scale down Container Apps
-echo "[1/3] Scaling down Container Apps..."
-"$(dirname "$0")/scale-down.sh" "$RG"
+ERRORS=0
 
-# Step 2: Stop RabbitMQ
-echo "[2/3] Stopping RabbitMQ..."
-az container stop \
-  --resource-group "$RG" \
-  --name "${RG//-rg/}-rabbitmq" \
-  --output none 2>/dev/null || echo "  (not found or already stopped)"
+# Step 1: Scale down Container Apps (includes RabbitMQ)
+echo "[1/2] Scaling down Container Apps..."
+"$(dirname "$0")/scale-down.sh" "$RG" "$PREFIX" || ERRORS=$((ERRORS + 1))
 
-# Step 3: Stop PostgreSQL
-echo "[3/3] Stopping PostgreSQL..."
-az postgres flexible-server stop \
+# Step 2: Stop PostgreSQL
+PG_NAME=$(az postgres flexible-server list \
   --resource-group "$RG" \
-  --name "${RG//-rg/}-postgres" \
-  --output none 2>/dev/null || echo "  (not found or already stopped)"
+  --query "[0].name" -o tsv 2>/dev/null)
+
+if [ -z "$PG_NAME" ]; then
+  echo "[2/2] Stopping PostgreSQL..."
+  echo "  ERROR: No PostgreSQL server found in $RG"
+  ERRORS=$((ERRORS + 1))
+else
+  PG_STATE=$(az postgres flexible-server show \
+    --resource-group "$RG" \
+    --name "$PG_NAME" \
+    --query "state" -o tsv 2>/dev/null) || true
+
+  echo "[2/2] Stopping PostgreSQL ($PG_NAME, state: ${PG_STATE:-unknown})..."
+  if [[ "$PG_STATE" == "Stopped" ]]; then
+    echo "  Already stopped"
+  else
+    az postgres flexible-server stop \
+      --resource-group "$RG" \
+      --name "$PG_NAME" \
+      --output none || { echo "  ERROR: Failed to stop PostgreSQL"; ERRORS=$((ERRORS + 1)); }
+  fi
+fi
+
+# Verify final state
+echo ""
+echo "=== Verification ==="
+"$(dirname "$0")/status.sh" "$RG" "$PREFIX"
+
+if [ $ERRORS -gt 0 ]; then
+  echo ""
+  echo "WARNING: $ERRORS error(s) occurred during hibernation"
+  exit 1
+fi
 
 echo ""
-echo "=== Hibernation complete ==="
-echo "Monthly cost: ~\$9 (ACR + storage only)"
-echo ""
-echo "To wake up, run: ./warm-up.sh $RG"
+echo "To wake up, run: ./warm-up.sh $RG $PREFIX"

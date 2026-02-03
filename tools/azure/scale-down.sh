@@ -1,21 +1,34 @@
 #!/bin/bash
-# Scale down all Container Apps to min=0 replicas (scale-to-zero)
-# Usage: ./scale-down.sh [resource-group]
+# Scale down all Container Apps by deactivating their active revisions
+# Usage: ./scale-down.sh [resource-group] [prefix]
 
 set -e
 
-RG="${1:-eshop-rg}"
-APPS="gateway product-service order-service notification-service analytics-service"
+RG="${1:-eshop-prod-rg}"
+PREFIX="${2:-eshop}"
+APPS="gateway product-service order-service notification-service analytics-service rabbitmq"
 
 echo "Scaling down Container Apps in resource group: $RG"
 
 for app in $APPS; do
-  echo "  Setting $app min-replicas=0..."
-  az containerapp update \
-    --name "$app" \
+  FULL_NAME="${PREFIX}-${app}"
+  REVISIONS=$(az containerapp revision list \
+    --name "$FULL_NAME" \
     --resource-group "$RG" \
-    --min-replicas 0 \
-    --output none
+    --query "[?properties.active].name" -o tsv 2>/dev/null)
+
+  if [ -z "$REVISIONS" ]; then
+    echo "  ${FULL_NAME}: no active revision found"
+  else
+    while IFS= read -r rev; do
+      echo "  ${FULL_NAME}: deactivating ${rev}..."
+      az containerapp revision deactivate \
+        --name "$FULL_NAME" \
+        --resource-group "$RG" \
+        --revision "$rev" \
+        --output none
+    done <<< "$REVISIONS"
+  fi
 done
 
-echo "Done. All apps have min-replicas=0 (scale-to-zero enabled)"
+echo "Done. All apps deactivated"
