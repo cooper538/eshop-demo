@@ -156,7 +156,7 @@ jobs:
           path: ${{ runner.temp }}/.dcpctrl/
 
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v2
         if: always()
         with:
           name: ${{ matrix.name }} Results
