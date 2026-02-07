@@ -20,9 +20,14 @@ public sealed class GetProductsBatchQueryHandler
         CancellationToken cancellationToken
     )
     {
-        // Return only products that exist - caller validates completeness (ATOMIC check)
-        var products = await _dbContext
-            .Products.Where(p => request.ProductIds.Contains(p.Id))
+        var query = _dbContext.Products.AsQueryable();
+
+        if (request.ProductIds is not null)
+        {
+            query = query.Where(p => request.ProductIds.Contains(p.Id));
+        }
+
+        var products = await query
             .Join(
                 _dbContext.Stocks,
                 p => p.Id,

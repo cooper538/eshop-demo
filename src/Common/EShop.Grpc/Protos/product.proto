@@ -7,8 +7,9 @@ option csharp_namespace = "EShop.Grpc.Product";
 package product;
 
 service ProductService {
-  // Batch get product info. ATOMIC: fails with NOT_FOUND if any product missing.
-  rpc GetProducts(GetProductsRequest) returns (GetProductsResponse);
+
+  // Get all product info.
+  rpc GetAllProducts(GetAllProductsRequest) returns (GetProductsResponse);
 
   // Reserve stock for order. All-or-nothing: fails if any item has insufficient stock.
   rpc ReserveStock(ReserveStockRequest) returns (ReserveStockResponse);
@@ -17,13 +18,11 @@ service ProductService {
   rpc ReleaseStock(ReleaseStockRequest) returns (ReleaseStockResponse);
 }
 
-message GetProductsRequest {
-  repeated string product_ids = 1;
-}
-
 message GetProductsResponse {
   repeated ProductInfo products = 1;
 }
+
+message GetAllProductsRequest {}
 
 message ProductInfo {
   string product_id = 1;

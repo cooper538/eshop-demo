@@ -22,17 +22,15 @@ public sealed class GrpcProductServiceClient : IProductServiceClient
         _options = options.Value;
     }
 
-    public async Task<GetProductsResult> GetProductsAsync(
-        IReadOnlyList<Guid> productIds,
+    public async Task<GetProductsResult> GetAllProductsAsync(
         CancellationToken cancellationToken = default
     )
     {
         try
         {
-            var request = new GrpcProduct.GetProductsRequest();
-            request.ProductIds.AddRange(productIds.Select(id => id.ToString()));
+            var request = new GrpcProduct.GetAllProductsRequest();
 
-            var response = await _client.GetProductsAsync(
+            var response = await _client.GetAllProductsAsync(
                 request,
                 deadline: DateTime.UtcNow.AddSeconds(_options.TimeoutSeconds),
                 cancellationToken: cancellationToken
