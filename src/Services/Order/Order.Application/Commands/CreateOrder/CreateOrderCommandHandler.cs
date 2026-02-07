@@ -5,6 +5,7 @@ using EShop.Order.Application.Data;
 using EShop.Order.Domain.Entities;
 using EShop.SharedKernel.Services;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace EShop.Order.Application.Commands.CreateOrder;
@@ -37,28 +38,20 @@ public sealed class CreateOrderCommandHandler
     {
         var productIds = request.Items.Select(i => i.ProductId).ToList();
 
-        GetProductsResult productsResult;
-        try
-        {
-            productsResult = await _productServiceClient.GetProductsAsync(
-                productIds,
-                cancellationToken
-            );
-        }
-        catch (ServiceClientException ex) when (ex.ErrorCode == EServiceClientErrorCode.NotFound)
-        {
-            throw new ValidationException("One or more products not found");
-        }
+        var productSnapshots = await _dbContext
+            .ProductSnapshots.Where(p => productIds.Contains(p.ProductId))
+            .ToDictionaryAsync(p => p.ProductId, cancellationToken);
 
-        var productLookup = productsResult.Products.ToDictionary(p => p.ProductId);
+        if (productSnapshots.Count != productIds.Count)
+        {
+            var missingIds = productIds.Except(productSnapshots.Keys);
+            throw new ValidationException($"Products not found: {string.Join(", ", missingIds)}");
+        }
 
         var orderItems = request.Items.Select(i =>
         {
-            if (!productLookup.TryGetValue(i.ProductId, out var product))
-            {
-                throw new ValidationException($"Product {i.ProductId} not found");
-            }
-            return OrderItem.Create(i.ProductId, product.Name, i.Quantity, product.Price);
+            var snapshot = productSnapshots[i.ProductId];
+            return OrderItem.Create(i.ProductId, snapshot.Name, i.Quantity, snapshot.Price);
         });
 
         var order = OrderEntity.Create(

@@ -2,5 +2,5 @@
 
 namespace EShop.Products.Application.Queries.GetProductsBatch;
 
-public sealed record GetProductsBatchQuery(IReadOnlyList<Guid> ProductIds)
+public sealed record GetProductsBatchQuery(IReadOnlyList<Guid>? ProductIds = null)
     : IQuery<GetProductsBatchResult>;

@@ -18,32 +18,8 @@ public sealed class ProductGrpcService : ProductService.ProductServiceBase
         _mediator = mediator;
     }
 
-    // Null validation suppressed: gRPC framework guarantees non-null request/context parameters.
-    // Input validation (GUID format, empty values) is handled by GrpcValidationInterceptor.
-#pragma warning disable CA1062
-    public override async Task<GetProductsResponse> GetProducts(
-        GetProductsRequest request,
-        ServerCallContext context
-    )
+    private static GetProductsResponse MapToResponse(GetProductsBatchResult result)
     {
-        var requestedIds = request.ProductIds.Select(Guid.Parse).ToList();
-        var query = new GetProductsBatchQuery(requestedIds);
-        var result = await _mediator.Send(query, context.CancellationToken);
-
-        // ATOMIC: fail if any product not found (per Google AIP-231)
-        var foundIds = result.Products.Select(p => p.ProductId).ToHashSet();
-        var missingIds = requestedIds.Where(id => !foundIds.Contains(id)).ToList();
-
-        if (missingIds.Count > 0)
-        {
-            throw new RpcException(
-                new Status(
-                    StatusCode.NotFound,
-                    $"Products not found: {string.Join(", ", missingIds)}"
-                )
-            );
-        }
-
         var response = new GetProductsResponse();
         response.Products.AddRange(
             result.Products.Select(p => new ProductInfo
@@ -55,8 +31,32 @@ public sealed class ProductGrpcService : ProductService.ProductServiceBase
                 StockQuantity = p.StockQuantity,
             })
         );
-
         return response;
+    }
+
+    private static ErrorCode MapErrorCode(EStockReservationError errorCode)
+    {
+        return errorCode switch
+        {
+            EStockReservationError.None => ErrorCode.None,
+            EStockReservationError.InsufficientStock => ErrorCode.InsufficientStock,
+            EStockReservationError.ProductNotFound => ErrorCode.ProductNotFound,
+            _ => ErrorCode.None,
+        };
+    }
+
+    // Null validation suppressed: gRPC framework guarantees non-null request/context parameters.
+    // Input validation (GUID format, empty values) is handled by GrpcValidationInterceptor.
+#pragma warning disable CA1062
+    public override async Task<GetProductsResponse> GetAllProducts(
+        GetAllProductsRequest request,
+        ServerCallContext context
+    )
+    {
+        var query = new GetProductsBatchQuery();
+        var result = await _mediator.Send(query, context.CancellationToken);
+
+        return MapToResponse(result);
     }
 
     public override async Task<ReserveStockResponse> ReserveStock(
@@ -96,15 +96,4 @@ public sealed class ProductGrpcService : ProductService.ProductServiceBase
         };
     }
 #pragma warning restore CA1062
-
-    private static ErrorCode MapErrorCode(EStockReservationError errorCode)
-    {
-        return errorCode switch
-        {
-            EStockReservationError.None => ErrorCode.None,
-            EStockReservationError.InsufficientStock => ErrorCode.InsufficientStock,
-            EStockReservationError.ProductNotFound => ErrorCode.ProductNotFound,
-            _ => ErrorCode.None,
-        };
-    }
 }

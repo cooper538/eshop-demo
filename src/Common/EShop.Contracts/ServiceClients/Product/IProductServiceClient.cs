@@ -1,12 +1,9 @@
 ﻿namespace EShop.Contracts.ServiceClients.Product;
 
-// Protocol-agnostic abstraction (gRPC/HTTP based on config)
+// Protocol-agnostic abstraction
 public interface IProductServiceClient
 {
-    Task<GetProductsResult> GetProductsAsync(
-        IReadOnlyList<Guid> productIds,
-        CancellationToken cancellationToken = default
-    );
+    Task<GetProductsResult> GetAllProductsAsync(CancellationToken cancellationToken = default);
 
     Task<StockReservationResult> ReserveStockAsync(
         ReserveStockRequest request,
