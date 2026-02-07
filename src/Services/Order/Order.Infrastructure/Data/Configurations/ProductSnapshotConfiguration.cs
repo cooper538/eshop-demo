@@ -1,4 +1,4 @@
-using EShop.Order.Domain.ReadModels;
+﻿using EShop.Order.Domain.ReadModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

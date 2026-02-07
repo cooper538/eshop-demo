@@ -1,4 +1,4 @@
-using EShop.Contracts.ServiceClients.Product;
+﻿using EShop.Contracts.ServiceClients.Product;
 using EShop.Order.Domain.ReadModels;
 using EShop.Order.Infrastructure.BackgroundJobs;
 using EShop.Order.Infrastructure.Data;

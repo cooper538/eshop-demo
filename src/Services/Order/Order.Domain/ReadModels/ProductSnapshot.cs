@@ -1,4 +1,4 @@
-namespace EShop.Order.Domain.ReadModels;
+﻿namespace EShop.Order.Domain.ReadModels;
 
 public class ProductSnapshot
 {
