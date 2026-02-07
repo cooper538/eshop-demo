@@ -1,22 +1,23 @@
 ﻿using EShop.Common.Application.Events;
+using EShop.Contracts.IntegrationEvents.Product;
 using EShop.Products.Application.Data;
 using EShop.Products.Domain.Entities;
 using EShop.Products.Domain.Events;
+using EShop.SharedKernel.Services;
+using MassTransit;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace EShop.Products.Application.EventHandlers;
 
-public sealed class ProductCreatedEventHandler
-    : INotificationHandler<DomainEventNotification<ProductCreatedDomainEvent>>
+public sealed class ProductCreatedEventHandler(
+    IProductDbContext dbContext,
+    IPublishEndpoint publishEndpoint,
+    IDateTimeProvider dateTimeProvider,
+    ILogger<ProductCreatedEventHandler> logger
+) : INotificationHandler<DomainEventNotification<ProductCreatedDomainEvent>>
 {
-    private readonly IProductDbContext _dbContext;
-
-    public ProductCreatedEventHandler(IProductDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
-    public Task Handle(
+    public async Task Handle(
         DomainEventNotification<ProductCreatedDomainEvent> notification,
         CancellationToken cancellationToken
     )
@@ -29,8 +30,24 @@ public sealed class ProductCreatedEventHandler
             @event.LowStockThreshold
         );
 
-        _dbContext.Stocks.Add(stock);
+        dbContext.Stocks.Add(stock);
 
-        return Task.CompletedTask;
+        var product = await dbContext.Products.FindAsync([@event.ProductId], cancellationToken);
+
+        if (product is null)
+        {
+            logger.LogError(
+                "Cannot publish ProductChangedEvent - Product {ProductId} not found",
+                @event.ProductId
+            );
+            return;
+        }
+
+        var integrationEvent = new ProductChangedEvent(product.Id, product.Name, product.Price)
+        {
+            Timestamp = dateTimeProvider.UtcNow,
+        };
+
+        await publishEndpoint.Publish(integrationEvent, cancellationToken);
     }
 }
