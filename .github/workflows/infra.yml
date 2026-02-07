@@ -27,6 +27,8 @@ env:
   AZURE_LOCATION: westeurope
   BICEP_FILE: ./infra/main.bicep
   PARAMETERS_FILE: ./infra/parameters/main.bicepparam
+  PREFIX: eshop
+  RESOURCE_GROUP: eshop-prod-rg
 
 jobs:
   validate:
@@ -95,6 +97,9 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Ensure infrastructure is ready
+        run: ./tools/azure/ensure-infra-ready.sh "${{ env.RESOURCE_GROUP }}" "${{ env.PREFIX }}"
 
       - name: Deploy Bicep
         id: deploy
