@@ -40,10 +40,10 @@
   </ItemGroup>
 
   <ItemGroup Label="MassTransit">
-    <PackageVersion Include="MassTransit" Version="8.5.7" />
-    <PackageVersion Include="MassTransit.EntityFrameworkCore" Version="8.5.7" />
-    <PackageVersion Include="MassTransit.RabbitMQ" Version="8.5.7" />
-    <PackageVersion Include="MassTransit.TestFramework" Version="8.5.7" />
+    <PackageVersion Include="MassTransit" Version="8.5.8" />
+    <PackageVersion Include="MassTransit.EntityFrameworkCore" Version="8.5.8" />
+    <PackageVersion Include="MassTransit.RabbitMQ" Version="8.5.8" />
+    <PackageVersion Include="MassTransit.TestFramework" Version="8.5.8" />
   </ItemGroup>
 
   <ItemGroup Label="YARP">
@@ -72,7 +72,7 @@
   <ItemGroup Label="OpenAPI">
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.2" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.1" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.2" />
   </ItemGroup>
 
   <ItemGroup Label="Configuration">
