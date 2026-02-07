@@ -5,7 +5,7 @@ Overview of all implementation phases for the EShop microservices demo.
 ## Progress
 
 ```
-[##############] 14/14 phases completed (100%)
+[###############] 15/15 phases completed (100%)
 ```
 
 ## Phases
@@ -26,6 +26,7 @@ Overview of all implementation phases for the EShop microservices demo.
 | 12 | [Azure App Adaptation](#phase-12-azure-app-adaptation-) | ✅ Done |
 | 13 | [Azure Infrastructure](#phase-13-azure-infrastructure-) | ✅ Done |
 | 14 | [Authentication](#phase-14-authentication-) | ✅ Done |
+| 15 | [Order-Product Event Decoupling](#phase-15-order-product-event-decoupling-) | ✅ Done |
 
 ---
 
@@ -242,6 +243,21 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ---
 
+## Phase 15: Order-Product Event Decoupling ✅
+
+**Replace synchronous gRPC catalog lookup with event-driven local read model**
+
+- Publish `ProductCreatedEvent` / `ProductUpdatedEvent` integration events from Product Service
+- Create `ProductSnapshot` read model entity in Order Service
+- Implement MassTransit consumers for product events (upsert with timestamp guard)
+- Replace gRPC `GetProducts` call in `CreateOrderCommandHandler` with local `ProductSnapshot` query
+- Add startup sync job for initial `ProductSnapshot` population (cold start)
+- Update unit/integration tests for new data flow
+
+→ [Details](./phase-15-order-product-decoupling/phase.md)
+
+---
+
 ## Architecture Flow
 
 ```
@@ -262,6 +278,9 @@ Phase 09-11: Gateway, Validation & Improvements
 
 Phase 12-14: Azure & Security
     └── App Adaptation → Bicep IaC → JWT Authentication
+
+Phase 15: Event Decoupling
+    └── Product Events → ProductSnapshot Read Model → Local Query
 ```
 
 ## Quick Commands
