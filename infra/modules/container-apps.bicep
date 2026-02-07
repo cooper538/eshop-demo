@@ -98,6 +98,7 @@ resource gateway 'Microsoft.App/containerApps@2024-03-01' = {
           }
           env: union(commonEnv, [
             { name: 'OTEL_SERVICE_NAME', value: 'gateway' }
+            { name: 'AllowedHosts', value: '*.azurecontainerapps.io' }
             // Service discovery for YARP reverse proxy (internal Container Apps DNS)
             { name: 'services__product-service__http__0', value: 'http://${prefix}-product-service' }
             { name: 'services__order-service__http__0', value: 'http://${prefix}-order-service' }
@@ -182,6 +183,7 @@ resource webApiService 'Microsoft.App/containerApps@2024-03-01' = [
             }
             env: union(commonEnv, [
               { name: 'OTEL_SERVICE_NAME', value: app.otelName }
+              { name: 'AllowedHosts', value: '*.azurecontainerapps.io,localhost' }
               // Order service needs product service URL for gRPC calls
               {
                 name: 'ServiceClients__ProductService__Url'
@@ -261,6 +263,7 @@ resource workerService 'Microsoft.App/containerApps@2024-03-01' = [
             }
             env: union(commonEnv, [
               { name: 'OTEL_SERVICE_NAME', value: app.otelName }
+              { name: 'AllowedHosts', value: '*.azurecontainerapps.io,localhost' }
             ])
           }
         ]

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Scale down all Container Apps by deactivating their active revisions
+# Scale down all Container Apps by setting min-replicas=0 and deactivating revisions
 # Usage: ./scale-down.sh [resource-group] [prefix]
 
 set -e
@@ -12,6 +12,16 @@ echo "Scaling down Container Apps in resource group: $RG"
 
 for app in $APPS; do
   FULL_NAME="${PREFIX}-${app}"
+
+  # Set min-replicas=0 so Azure doesn't restart the app
+  echo "  ${FULL_NAME}: setting min-replicas=0..."
+  az containerapp update \
+    --name "$FULL_NAME" \
+    --resource-group "$RG" \
+    --min-replicas 0 \
+    --output none
+
+  # Deactivate active revisions
   REVISIONS=$(az containerapp revision list \
     --name "$FULL_NAME" \
     --resource-group "$RG" \
@@ -31,4 +41,4 @@ for app in $APPS; do
   fi
 done
 
-echo "Done. All apps deactivated"
+echo "Done. All apps scaled to zero and deactivated"

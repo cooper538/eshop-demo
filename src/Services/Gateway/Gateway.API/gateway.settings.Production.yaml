@@ -1,6 +1,6 @@
 # Gateway - Production
 
-AllowedHosts: "${ALLOWED_HOSTS:-*.azurecontainerapps.io}"
+AllowedHosts: "*.azurecontainerapps.io"
 
 Logging:
   LogLevel:
