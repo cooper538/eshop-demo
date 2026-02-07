@@ -61,7 +61,7 @@ var analyticsService = builder
     .WithReference(rabbitmq)
     .WaitFor(rabbitmq);
 
-var gatewayBuilder = builder
+var gateway = builder
     .AddProject<Projects.EShop_Gateway_API>(ResourceNames.Services.Gateway)
     .WithHttpEndpoint(port: 64887)
     .WithHttpsEndpoint()
@@ -69,29 +69,8 @@ var gatewayBuilder = builder
     .WithReference(orderService)
     .WaitFor(productService)
     .WaitFor(orderService)
-    .WithExternalHttpEndpoints();
-
-// Test auth configuration - enables test JWT scheme when set via args/config
-var authEnabled = builder.Configuration["Gateway:Authentication:Enabled"];
-var useTestScheme = builder.Configuration["Gateway:Authentication:UseTestScheme"];
-var testSecretKey = builder.Configuration["Gateway:Authentication:TestSecretKey"];
-
-if (!string.IsNullOrEmpty(authEnabled))
-{
-    gatewayBuilder.WithEnvironment("Gateway__Authentication__Enabled", authEnabled);
-}
-
-if (!string.IsNullOrEmpty(useTestScheme))
-{
-    gatewayBuilder.WithEnvironment("Gateway__Authentication__UseTestScheme", useTestScheme);
-}
-
-if (!string.IsNullOrEmpty(testSecretKey))
-{
-    gatewayBuilder.WithEnvironment("Gateway__Authentication__TestSecretKey", testSecretKey);
-}
-
-var gateway = gatewayBuilder;
+    .WithExternalHttpEndpoints()
+    .ForwardConfigurationSection(builder.Configuration, "Gateway:Authentication");
 
 builder.ConfigureDockerComposePublishing(
     new AppResources(

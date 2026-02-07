@@ -21,14 +21,10 @@ builder
     .AddPostgresHealthCheck(ResourceNames.Databases.Product)
     .AddPostgresHealthCheck(ResourceNames.Databases.Notification);
 
-builder.AddNpgsqlDbContext<OrderDbContext>(ResourceNames.Databases.Order);
-builder.AddNpgsqlDbContext<ProductDbContext>(ResourceNames.Databases.Product);
-builder.AddNpgsqlDbContext<NotificationDbContext>(ResourceNames.Databases.Notification);
-
 builder.Services.AddSingleton<MigrationTracker>();
-builder.Services.AddHostedService<DbInitializer<OrderDbContext>>();
-builder.Services.AddHostedService<DbInitializer<ProductDbContext>>();
-builder.Services.AddHostedService<DbInitializer<NotificationDbContext>>();
+builder.AddMigratableDatabase<OrderDbContext>(ResourceNames.Databases.Order);
+builder.AddMigratableDatabase<ProductDbContext>(ResourceNames.Databases.Product);
+builder.AddMigratableDatabase<NotificationDbContext>(ResourceNames.Databases.Notification);
 builder.Services.AddHostedService<MigrationCompletionService>();
 
 var host = builder.Build();
