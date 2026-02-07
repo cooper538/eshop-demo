@@ -23,7 +23,7 @@ Replace synchronous gRPC `GetProducts` call in Order service with an event-drive
 |---|------|--------|--------------|
 | 01 | [Publish product integration events](tasks/task-01-publish-product-events.md) | ✅ | - |
 | 02 | [ProductSnapshot entity and migration](tasks/task-02-product-snapshot-entity.md) | ✅ | - |
-| 03 | [Product event consumers](tasks/task-03-product-event-consumers.md) | 🔴 | 02 |
+| 03 | [Product event consumers](tasks/task-03-product-event-consumers.md) | ✅ | 02 |
 | 04 | [Replace gRPC catalog lookup with local query](tasks/task-04-replace-grpc-catalog-lookup.md) | 🔴 | 02 |
 | 05 | [Initial data sync and tests](tasks/task-05-initial-sync-and-tests.md) | 🔴 | 01, 03, 04 |
 
