@@ -1,4 +1,4 @@
-using EShop.Contracts.IntegrationEvents.Product;
+﻿using EShop.Contracts.IntegrationEvents.Product;
 using EShop.Order.Application.Consumers;
 using EShop.Order.Domain.ReadModels;
 using EShop.Order.Infrastructure.Data;
