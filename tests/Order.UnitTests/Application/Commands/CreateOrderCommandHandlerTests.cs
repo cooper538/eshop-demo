@@ -3,6 +3,7 @@ using EShop.Contracts.ServiceClients;
 using EShop.Contracts.ServiceClients.Product;
 using EShop.Order.Application.Commands.CreateOrder;
 using EShop.Order.Domain.Enums;
+using EShop.Order.Domain.ReadModels;
 using EShop.Order.Infrastructure.Data;
 using EShop.Order.UnitTests.Helpers;
 using EShop.SharedKernel.Services;
@@ -44,21 +45,17 @@ public class CreateOrderCommandHandlerTests : IDisposable
         );
     }
 
-    private void SetupGetProductsMock(
+    private async Task SeedProductSnapshotAsync(
+        OrderDbContext context,
         Guid productId,
         string productName = "Test Product",
         decimal price = 50.00m
     )
     {
-        _productClientMock
-            .Setup(x =>
-                x.GetProductsAsync(It.IsAny<IReadOnlyList<Guid>>(), It.IsAny<CancellationToken>())
-            )
-            .ReturnsAsync(
-                new GetProductsResult([
-                    new ProductInfo(productId, productName, "Description", price, 100),
-                ])
-            );
+        context.ProductSnapshots.Add(
+            ProductSnapshot.Create(productId, productName, price, _fixedTime)
+        );
+        await context.SaveChangesAsync();
     }
 
     [Fact]
@@ -70,7 +67,7 @@ public class CreateOrderCommandHandlerTests : IDisposable
         var productId = Guid.NewGuid();
         var command = CreateValidCommand(productId);
 
-        SetupGetProductsMock(productId);
+        await SeedProductSnapshotAsync(context, productId);
         _productClientMock
             .Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())
@@ -95,7 +92,7 @@ public class CreateOrderCommandHandlerTests : IDisposable
         var productId = Guid.NewGuid();
         var command = CreateValidCommand(productId);
 
-        SetupGetProductsMock(productId);
+        await SeedProductSnapshotAsync(context, productId);
         _productClientMock
             .Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())
@@ -130,7 +127,7 @@ public class CreateOrderCommandHandlerTests : IDisposable
         var command = CreateValidCommand(productId);
         const string reason = "Insufficient stock for Product A";
 
-        SetupGetProductsMock(productId);
+        await SeedProductSnapshotAsync(context, productId);
         _productClientMock
             .Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())
@@ -159,7 +156,7 @@ public class CreateOrderCommandHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task Handle_WhenProductNotFoundInGetProducts_ThrowsValidationException()
+    public async Task Handle_WhenProductNotFoundInSnapshot_ThrowsValidationException()
     {
         // Arrange
         await using var context = _dbContextFactory.CreateContext();
@@ -167,25 +164,13 @@ public class CreateOrderCommandHandlerTests : IDisposable
         var productId = Guid.NewGuid();
         var command = CreateValidCommand(productId);
 
-        _productClientMock
-            .Setup(x =>
-                x.GetProductsAsync(It.IsAny<IReadOnlyList<Guid>>(), It.IsAny<CancellationToken>())
-            )
-            .ThrowsAsync(
-                new ServiceClientException(
-                    "Product not found",
-                    null,
-                    EServiceClientErrorCode.NotFound
-                )
-            );
+        // Do NOT seed ProductSnapshot — product not in local catalog
 
         // Act
         var act = () => handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should()
-            .ThrowAsync<ValidationException>()
-            .WithMessage("One or more products not found");
+        await act.Should().ThrowAsync<ValidationException>().WithMessage("Products not found:*");
     }
 
     [Fact]
@@ -197,7 +182,7 @@ public class CreateOrderCommandHandlerTests : IDisposable
         var productId = Guid.NewGuid();
         var command = CreateValidCommand(productId);
 
-        SetupGetProductsMock(productId);
+        await SeedProductSnapshotAsync(context, productId);
         _productClientMock
             .Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())
@@ -218,36 +203,6 @@ public class CreateOrderCommandHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task Handle_WhenGetProductsServiceUnavailable_ThrowsServiceClientException()
-    {
-        // Arrange
-        await using var context = _dbContextFactory.CreateContext();
-        var handler = CreateHandler(context);
-        var productId = Guid.NewGuid();
-        var command = CreateValidCommand(productId);
-
-        _productClientMock
-            .Setup(x =>
-                x.GetProductsAsync(It.IsAny<IReadOnlyList<Guid>>(), It.IsAny<CancellationToken>())
-            )
-            .ThrowsAsync(
-                new ServiceClientException(
-                    "Service unavailable",
-                    null,
-                    EServiceClientErrorCode.ServiceUnavailable
-                )
-            );
-
-        // Act
-        var act = () => handler.Handle(command, CancellationToken.None);
-
-        // Assert - exception should propagate, not be swallowed
-        await act.Should()
-            .ThrowAsync<ServiceClientException>()
-            .Where(ex => ex.ErrorCode == EServiceClientErrorCode.ServiceUnavailable);
-    }
-
-    [Fact]
     public async Task Handle_WhenReserveStockServiceUnavailable_ReturnsCreatedOrderWithError()
     {
         // Arrange
@@ -257,7 +212,7 @@ public class CreateOrderCommandHandlerTests : IDisposable
         var command = CreateValidCommand(productId);
         const string errorMessage = "Service unavailable";
 
-        SetupGetProductsMock(productId);
+        await SeedProductSnapshotAsync(context, productId);
         _productClientMock
             .Setup(x =>
                 x.ReserveStockAsync(It.IsAny<ReserveStockRequest>(), It.IsAny<CancellationToken>())

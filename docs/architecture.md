@@ -16,8 +16,11 @@ System architecture and key design decisions.
                   │  Product   │  │   Order    │
                   │  Service   │  │  Service   │
                   └──────┬─────┘  └──────┬─────┘
-                         │    gRPC       │
+                         │  gRPC (stock) │
                          │◄──────────────┤
+                         │               │
+                         │    Events     │
+                         │──(catalog)───►│
                          │               │
                          ▼               ▼
                   ┌──────────┐    ┌──────────┐
@@ -42,8 +45,8 @@ System architecture and key design decisions.
 
 | Service | Domain | Key Features |
 |---------|--------|--------------|
-| **Product** | Catalog + Inventory | Product CRUD, stock management, gRPC server |
-| **Order** | Order Lifecycle | Order placement, state machine, gRPC client |
+| **Product** | Catalog + Inventory | Product CRUD, stock management, gRPC server, publishes catalog events |
+| **Order** | Order Lifecycle | Order placement, state machine, gRPC client (stock), event consumer (catalog) |
 | **Notification** | Customer Communication | Email notifications via domain events |
 | **Analytics** | Business Intelligence | Event aggregation, metrics tracking |
 | **Gateway** | Request Routing | YARP proxy, rate limiting, correlation ID |
@@ -94,26 +97,40 @@ Controller → Query → Handler → DB (projection)
 
 ## Communication Patterns
 
-### Synchronous: gRPC
+### Synchronous: gRPC (Stock Operations)
 
-Used when immediate response is required (product lookup and stock checks before order placement).
+Used for stock operations where immediate response is required.
 
 ```
-Order Service ──GetProducts──► Product Service
-              ◄──ProductInfo──
-              ──ReserveStock──►
+Order Service ──ReserveStock──► Product Service
+              ◄──Response────
+              ──ReleaseStock──►
               ◄──Response────
 ```
 
-The Order Service first fetches product information (name, price) via `GetProducts`, then reserves stock via `ReserveStock`. This ensures consistent pricing and validated product existence.
+### Asynchronous: Integration Events (Catalog Data)
 
-### Asynchronous: Integration Events
-
-Used for eventual consistency and decoupling via MassTransit + RabbitMQ.
+Product catalog data (name, price) is synced via events to a local read model (`ProductSnapshot`) in the Order service. This decouples Order from Product for catalog lookups.
 
 ```
-Order Service ──OrderCreatedEvent──► RabbitMQ ──► Notification Service
-                                              ──► Analytics Service
+Product Service ──ProductChangedEvent──► RabbitMQ ──► Order Service (ProductSnapshot)
+                                                   ──► Notification Service
+                                                   ──► Analytics Service
+```
+
+**Materialized View: ProductSnapshot**
+
+The Order service maintains a `ProductSnapshot` table — a local read model of product catalog data synced via `ProductChangedEvent`. When creating an order, the handler reads product name and price from this local table instead of making a synchronous gRPC call.
+
+- Consumers use upsert + timestamp guard for natural idempotency
+- On cold start, a background sync job populates initial data from Product service
+- Eventual consistency is acceptable for catalog data (price captured at order time)
+
+### Order Integration Events
+
+```
+Order Service ──OrderConfirmedEvent──► RabbitMQ ──► Notification Service
+                                                ──► Analytics Service
 ```
 
 **Fat events:** Events carry all necessary data to avoid consumer queries.
@@ -136,6 +153,8 @@ CorrelationId flows through HTTP headers, gRPC metadata, and message headers. Al
 
 | Decision | Rationale |
 |----------|-----------|
+| **Hybrid communication** | Catalog data via events (decoupled), stock ops via gRPC (real-time) |
+| **ProductSnapshot read model** | Order service reads catalog data locally, resilient to Product service downtime |
 | **Fat events** | Consumers don't need to query back for data |
 | **No repository pattern** | Simplicity over testability for this demo |
 | **gRPC for stock checks** | Immediate feedback needed for UX |

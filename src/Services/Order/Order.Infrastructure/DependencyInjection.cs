@@ -2,7 +2,9 @@
 using EShop.Common.Infrastructure.Data;
 using EShop.Common.Infrastructure.Data.Interceptors;
 using EShop.Common.Infrastructure.Extensions;
+using EShop.Order.Application.Consumers;
 using EShop.Order.Application.Data;
+using EShop.Order.Infrastructure.BackgroundJobs;
 using EShop.Order.Infrastructure.Data;
 using EShop.ServiceDefaults;
 using Microsoft.EntityFrameworkCore;
@@ -77,11 +79,20 @@ public static class DependencyInjection
 
         builder.Services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<OrderDbContext>());
 
-        builder.Services.AddMessaging<OrderDbContext>(builder.Configuration, "order");
+        builder.Services.AddMessaging<OrderDbContext>(
+            builder.Configuration,
+            "order",
+            configureConsumers: x =>
+            {
+                x.AddConsumer<ProductChangedConsumer>();
+            }
+        );
 
         builder.Services.AddFluentValidation(
             typeof(Order.Application.DependencyInjection).Assembly
         );
+
+        builder.Services.AddHostedService<ProductSnapshotSyncJob>();
 
         return builder;
     }

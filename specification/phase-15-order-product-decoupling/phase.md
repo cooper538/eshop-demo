@@ -3,7 +3,7 @@
 ## Metadata
 | Key | Value |
 |-----|-------|
-| Status | 🔴 not started |
+| Status | ✅ done |
 
 ## Objective
 Replace synchronous gRPC `GetProducts` call in Order service with an event-driven local read model (`ProductSnapshot`) synced via integration events, while keeping stock operations (`ReserveStock`, `ReleaseStock`) synchronous via gRPC.
@@ -25,7 +25,7 @@ Replace synchronous gRPC `GetProducts` call in Order service with an event-drive
 | 02 | [ProductSnapshot entity and migration](tasks/task-02-product-snapshot-entity.md) | ✅ | - |
 | 03 | [Product event consumers](tasks/task-03-product-event-consumers.md) | ✅ | 02 |
 | 04 | [Replace gRPC catalog lookup with local query](tasks/task-04-replace-grpc-catalog-lookup.md) | ✅ | 02 |
-| 05 | [Initial data sync and tests](tasks/task-05-initial-sync-and-tests.md) | 🔴 | 01, 03, 04 |
+| 05 | [Initial data sync and tests](tasks/task-05-initial-sync-and-tests.md) | ✅ | 01, 03, 04 |
 
 ## Related Specs
 - → [messaging-communication.md](../high-level-specs/messaging-communication.md)
