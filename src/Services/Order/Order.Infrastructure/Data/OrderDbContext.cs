@@ -2,6 +2,7 @@
 using EShop.Common.Infrastructure.Data;
 using EShop.Order.Application.Data;
 using EShop.Order.Domain.Entities;
+using EShop.Order.Domain.ReadModels;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -14,6 +15,7 @@ public class OrderDbContext : DbContext, IOrderDbContext, IChangeTrackerAccessor
         : base(options) { }
 
     public DbSet<OrderEntity> Orders => Set<OrderEntity>();
+    public DbSet<ProductSnapshot> ProductSnapshots => Set<ProductSnapshot>();
 
     ChangeTracker IChangeTrackerAccessor.ChangeTracker => ChangeTracker;
 
