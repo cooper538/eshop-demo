@@ -82,7 +82,6 @@ public static class DependencyInjection
         builder.Services.AddMessaging<ProductDbContext>(builder.Configuration, "products");
 
         builder.Services.AddHostedService<StockReservationExpirationJob>();
-        builder.Services.AddHostedService<ProductDatabaseSeeder>();
 
         builder.Services.AddFluentValidation(
             typeof(Products.Application.DependencyInjection).Assembly

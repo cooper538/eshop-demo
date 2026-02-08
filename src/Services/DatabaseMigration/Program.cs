@@ -24,6 +24,7 @@ builder
 builder.Services.AddSingleton<MigrationTracker>();
 builder.AddMigratableDatabase<OrderDbContext>(ResourceNames.Databases.Order);
 builder.AddMigratableDatabase<ProductDbContext>(ResourceNames.Databases.Product);
+builder.AddProductSeeding();
 builder.AddMigratableDatabase<NotificationDbContext>(ResourceNames.Databases.Notification);
 builder.Services.AddHostedService<MigrationCompletionService>();
 

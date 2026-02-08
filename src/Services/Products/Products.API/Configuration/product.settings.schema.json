@@ -118,6 +118,26 @@
               }
             }
           }
+        },
+        "Seeding": {
+          "type": "object",
+          "description": "Database seeding settings",
+          "properties": {
+            "ProductCount": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 100000,
+              "default": 1000,
+              "description": "Number of products to seed"
+            },
+            "BatchSize": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 5000,
+              "default": 500,
+              "description": "Number of products to insert per batch"
+            }
+          }
         }
       }
     }

@@ -41,6 +41,7 @@ public sealed class DbInitializer<TContext> : BackgroundService
                 "Migrations applied successfully for {ContextName}",
                 contextName
             );
+
             _tracker.MarkCompleted(contextName);
         }
         catch (Exception ex)
