@@ -5,7 +5,7 @@ Overview of all implementation phases for the EShop microservices demo.
 ## Progress
 
 ```
-[###############] 15/15 phases completed (100%)
+[###############-] 15/16 phases completed (94%)
 ```
 
 ## Phases
@@ -27,6 +27,7 @@ Overview of all implementation phases for the EShop microservices demo.
 | 13 | [Azure Infrastructure](#phase-13-azure-infrastructure-) | ✅ Done |
 | 14 | [Authentication](#phase-14-authentication-) | ✅ Done |
 | 15 | [Order-Product Event Decoupling](#phase-15-order-product-event-decoupling-) | ✅ Done |
+| 16 | [gRPC Server-Side Streaming](#phase-16-grpc-server-side-streaming-) | ⬜ Pending |
 
 ---
 
@@ -258,6 +259,22 @@ Overview of all implementation phases for the EShop microservices demo.
 
 ---
 
+## Phase 16: gRPC Server-Side Streaming ⬜
+
+**Convert `GetAllProducts` from unary to server-side streaming with constant memory usage**
+
+- Change `GetAllProducts` proto from unary to `stream ProductInfo`
+- Create `StreamAllProductsQuery` MediatR stream handler with `AsAsyncEnumerable()`
+- Add streaming overrides to all server-side and client-side gRPC interceptors
+- Update `ProductGrpcService.GetAllProducts` to streaming with `CreateStream()`
+- Update `IProductServiceClient` to return `IAsyncEnumerable<ProductInfo>`
+- Convert `ProductSnapshotSyncJob` to `await foreach` with batched saves
+- Update unit tests and delete obsolete code
+
+> [Details](./phase-16-grpc-streaming/phase.md)
+
+---
+
 ## Architecture Flow
 
 ```
@@ -281,6 +298,9 @@ Phase 12-14: Azure & Security
 
 Phase 15: Event Decoupling
     └── Product Events → ProductSnapshot Read Model → Local Query
+
+Phase 16: gRPC Streaming
+    └── Server-Side Streaming → Constant Memory → Batched Client Saves
 ```
 
 ## Quick Commands
