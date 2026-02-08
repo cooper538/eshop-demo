@@ -1,6 +1,6 @@
 # Notification Service - Production
 
-AllowedHosts: "notification-service.internal.*.azurecontainerapps.io,localhost"
+AllowedHosts: "*"
 
 Logging:
   LogLevel:

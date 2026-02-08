@@ -1,6 +1,6 @@
 # Gateway - Production
 
-AllowedHosts: "*.azurecontainerapps.io"
+AllowedHosts: "*.azurecontainerapps.io;localhost"
 
 Logging:
   LogLevel:

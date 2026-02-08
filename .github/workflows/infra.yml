@@ -71,6 +71,8 @@ jobs:
             --parameters rabbitMqPassword='${{ secrets.RABBITMQ_PASSWORD }}' \
             --parameters ghcrUsername='${{ secrets.GHCR_USERNAME }}' \
             --parameters ghcrToken='${{ secrets.GHCR_TOKEN }}' \
+            --parameters azureAdTenantId='${{ secrets.AZURE_TENANT_ID }}' \
+            --parameters azureAdClientId='${{ secrets.AZURE_AD_API_CLIENT_ID }}' \
             --no-pretty-print 2>&1) || true
 
           echo "$result" >> $GITHUB_STEP_SUMMARY
@@ -115,6 +117,8 @@ jobs:
             --parameters rabbitMqPassword='${{ secrets.RABBITMQ_PASSWORD }}' \
             --parameters ghcrUsername='${{ secrets.GHCR_USERNAME }}' \
             --parameters ghcrToken='${{ secrets.GHCR_TOKEN }}' \
+            --parameters azureAdTenantId='${{ secrets.AZURE_TENANT_ID }}' \
+            --parameters azureAdClientId='${{ secrets.AZURE_AD_API_CLIENT_ID }}' \
             --name "$DEPLOYMENT_NAME"
 
       - name: Show Outputs

@@ -98,11 +98,12 @@ resource gateway 'Microsoft.App/containerApps@2024-03-01' = {
           }
           env: union(commonEnv, [
             { name: 'OTEL_SERVICE_NAME', value: 'gateway' }
-            { name: 'AllowedHosts', value: '*.azurecontainerapps.io' }
+            { name: 'AllowedHosts', value: '*.azurecontainerapps.io;localhost' }
             // Service discovery for YARP reverse proxy (internal Container Apps DNS)
             { name: 'services__product-service__http__0', value: 'http://${prefix}-product-service' }
             { name: 'services__order-service__http__0', value: 'http://${prefix}-order-service' }
-            // Azure AD configuration (only if provided)
+            // Azure AD - disable auth when credentials are not provided
+            { name: 'Gateway__Authentication__Enabled', value: empty(azureAdTenantId) ? 'false' : 'true' }
             { name: 'Gateway__Authentication__AzureAd__TenantId', value: azureAdTenantId }
             { name: 'Gateway__Authentication__AzureAd__ClientId', value: azureAdClientId }
           ])
@@ -110,7 +111,7 @@ resource gateway 'Microsoft.App/containerApps@2024-03-01' = {
             {
               type: 'Startup'
               httpGet: {
-                path: '/health'
+                path: '/alive'
                 port: 8080
               }
               initialDelaySeconds: 5
@@ -183,7 +184,7 @@ resource webApiService 'Microsoft.App/containerApps@2024-03-01' = [
             }
             env: union(commonEnv, [
               { name: 'OTEL_SERVICE_NAME', value: app.otelName }
-              { name: 'AllowedHosts', value: '*.azurecontainerapps.io,localhost' }
+              { name: 'AllowedHosts', value: '*' }
               // Order service needs product service URL for gRPC calls
               {
                 name: 'ServiceClients__ProductService__Url'
@@ -194,7 +195,7 @@ resource webApiService 'Microsoft.App/containerApps@2024-03-01' = [
               {
                 type: 'Startup'
                 httpGet: {
-                  path: '/health'
+                  path: '/alive'
                   port: 8080
                 }
                 initialDelaySeconds: 5
@@ -263,7 +264,7 @@ resource workerService 'Microsoft.App/containerApps@2024-03-01' = [
             }
             env: union(commonEnv, [
               { name: 'OTEL_SERVICE_NAME', value: app.otelName }
-              { name: 'AllowedHosts', value: '*.azurecontainerapps.io,localhost' }
+              { name: 'AllowedHosts', value: '*' }
             ])
           }
         ]
