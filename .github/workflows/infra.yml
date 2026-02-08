@@ -59,6 +59,13 @@ jobs:
 
       - name: What-If
         id: what-if
+        env:
+          POSTGRES_ADMIN_PASSWORD: ${{ secrets.POSTGRES_ADMIN_PASSWORD }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+          GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          AZURE_AD_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_AD_CLIENT_ID: ${{ secrets.AZURE_AD_API_CLIENT_ID }}
         run: |
           echo "## What-If Results" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
@@ -67,12 +74,12 @@ jobs:
             --location ${{ env.AZURE_LOCATION }} \
             --template-file ${{ env.BICEP_FILE }} \
             --parameters ${{ env.PARAMETERS_FILE }} \
-            --parameters postgresAdminPassword='${{ secrets.POSTGRES_ADMIN_PASSWORD }}' \
-            --parameters rabbitMqPassword='${{ secrets.RABBITMQ_PASSWORD }}' \
-            --parameters ghcrUsername='${{ secrets.GHCR_USERNAME }}' \
-            --parameters ghcrToken='${{ secrets.GHCR_TOKEN }}' \
-            --parameters azureAdTenantId='${{ secrets.AZURE_TENANT_ID }}' \
-            --parameters azureAdClientId='${{ secrets.AZURE_AD_API_CLIENT_ID }}' \
+            --parameters postgresAdminPassword="$POSTGRES_ADMIN_PASSWORD" \
+            --parameters rabbitMqPassword="$RABBITMQ_PASSWORD" \
+            --parameters ghcrUsername="$GHCR_USERNAME" \
+            --parameters ghcrToken="$GHCR_TOKEN" \
+            --parameters azureAdTenantId="$AZURE_AD_TENANT_ID" \
+            --parameters azureAdClientId="$AZURE_AD_CLIENT_ID" \
             --no-pretty-print 2>&1) || true
 
           echo "$result" >> $GITHUB_STEP_SUMMARY
@@ -105,6 +112,13 @@ jobs:
 
       - name: Deploy Bicep
         id: deploy
+        env:
+          POSTGRES_ADMIN_PASSWORD: ${{ secrets.POSTGRES_ADMIN_PASSWORD }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+          GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          AZURE_AD_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_AD_CLIENT_ID: ${{ secrets.AZURE_AD_API_CLIENT_ID }}
         run: |
           DEPLOYMENT_NAME="eshop-$(date +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}"
           echo "deployment_name=$DEPLOYMENT_NAME" >> $GITHUB_OUTPUT
@@ -113,12 +127,12 @@ jobs:
             --location ${{ env.AZURE_LOCATION }} \
             --template-file ${{ env.BICEP_FILE }} \
             --parameters ${{ env.PARAMETERS_FILE }} \
-            --parameters postgresAdminPassword='${{ secrets.POSTGRES_ADMIN_PASSWORD }}' \
-            --parameters rabbitMqPassword='${{ secrets.RABBITMQ_PASSWORD }}' \
-            --parameters ghcrUsername='${{ secrets.GHCR_USERNAME }}' \
-            --parameters ghcrToken='${{ secrets.GHCR_TOKEN }}' \
-            --parameters azureAdTenantId='${{ secrets.AZURE_TENANT_ID }}' \
-            --parameters azureAdClientId='${{ secrets.AZURE_AD_API_CLIENT_ID }}' \
+            --parameters postgresAdminPassword="$POSTGRES_ADMIN_PASSWORD" \
+            --parameters rabbitMqPassword="$RABBITMQ_PASSWORD" \
+            --parameters ghcrUsername="$GHCR_USERNAME" \
+            --parameters ghcrToken="$GHCR_TOKEN" \
+            --parameters azureAdTenantId="$AZURE_AD_TENANT_ID" \
+            --parameters azureAdClientId="$AZURE_AD_CLIENT_ID" \
             --name "$DEPLOYMENT_NAME"
 
       - name: Show Outputs
