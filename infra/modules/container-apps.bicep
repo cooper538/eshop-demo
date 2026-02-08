@@ -32,6 +32,8 @@ var commonEnv = [
   { name: 'KeyVault__ManagedIdentityClientId', value: identityClientId }
   { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: appInsightsConnectionString }
   { name: 'OTEL_EXPORTER_OTLP_PROTOCOL', value: 'grpc' }
+  // Enable HTTP/2 over cleartext (h2c) — Container Apps terminate TLS at the ingress proxy
+  { name: 'Kestrel__EndpointDefaults__Protocols', value: 'Http1AndHttp2' }
 ]
 
 // Web API services (with ingress + health probes)
@@ -168,7 +170,7 @@ resource webApiService 'Microsoft.App/containerApps@2024-03-01' = [
         ingress: {
           external: false
           targetPort: 8080
-          transport: 'http'
+          transport: 'auto'
         }
         secrets: registryConfig.secrets
         registries: registryConfig.registries
@@ -188,7 +190,7 @@ resource webApiService 'Microsoft.App/containerApps@2024-03-01' = [
               // Order service needs product service URL for gRPC calls and service discovery
               {
                 name: 'ServiceClients__ProductService__Url'
-                value: app.name == 'order-service' ? 'http://${prefix}-product-service:8080' : ''
+                value: app.name == 'order-service' ? 'http://${prefix}-product-service' : ''
               }
               {
                 name: 'services__product-service__http__0'
