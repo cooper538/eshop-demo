@@ -185,10 +185,14 @@ resource webApiService 'Microsoft.App/containerApps@2024-03-01' = [
             env: union(commonEnv, [
               { name: 'OTEL_SERVICE_NAME', value: app.otelName }
               { name: 'AllowedHosts', value: '*' }
-              // Order service needs product service URL for gRPC calls
+              // Order service needs product service URL for gRPC calls and service discovery
               {
                 name: 'ServiceClients__ProductService__Url'
                 value: app.name == 'order-service' ? 'http://${prefix}-product-service:8080' : ''
+              }
+              {
+                name: 'services__product-service__http__0'
+                value: app.name == 'order-service' ? 'http://${prefix}-product-service' : ''
               }
             ])
             probes: [

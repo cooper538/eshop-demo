@@ -81,4 +81,4 @@ resource rabbitMq 'Microsoft.App/containerApps@2024-03-01' = {
   }
 }
 
-output rabbitMqHost string = rabbitMq.properties.configuration.ingress.fqdn
+output rabbitMqHost string = rabbitMq.name

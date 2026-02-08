@@ -23,7 +23,7 @@ param postgresAdminLogin string
 @secure()
 param postgresAdminPassword string
 
-@description('RabbitMQ host IP')
+@description('RabbitMQ container app name (short name for internal DNS)')
 param rabbitMqHost string
 
 @description('RabbitMQ username')
