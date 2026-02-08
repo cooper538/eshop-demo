@@ -1,4 +1,4 @@
-using EShop.Product.UnitTests.Helpers;
+﻿using EShop.Product.UnitTests.Helpers;
 using EShop.Products.Infrastructure.Data;
 
 namespace EShop.Product.UnitTests.Infrastructure;

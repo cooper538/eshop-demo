@@ -1,4 +1,4 @@
-using EShop.Products.Infrastructure.Data;
+﻿using EShop.Products.Infrastructure.Data;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
