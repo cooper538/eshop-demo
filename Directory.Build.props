@@ -10,7 +10,7 @@
     <UseArtifactsOutput>true</UseArtifactsOutput>
     <WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
-    <NoWarn>NU1901;NU1902;NU1903;NU1904</NoWarn>
+    <NoWarn>NU1901;NU1902;NU1903;NU1904;CA1873</NoWarn>
     <!-- Enforce IDE analyzers in build (not just in IDE) -->
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <!-- Latest analysis level for consistent warnings -->
