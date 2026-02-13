@@ -4,7 +4,8 @@ using Microsoft.Extensions.Logging;
 
 namespace EShop.Common.Application.Behaviors;
 
-public sealed class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public sealed partial class LoggingBehavior<TRequest, TResponse>
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
     private readonly ILogger<LoggingBehavior<TRequest, TResponse>> _logger;
@@ -23,17 +24,22 @@ public sealed class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRe
         var requestName = typeof(TRequest).Name;
         var stopwatch = Stopwatch.StartNew();
 
-        _logger.LogInformation("Handling {RequestName}", requestName);
+        LogHandling(_logger, requestName);
 
         var response = await next(cancellationToken);
 
         stopwatch.Stop();
-        _logger.LogInformation(
-            "Handled {RequestName} in {ElapsedMs}ms",
-            requestName,
-            stopwatch.ElapsedMilliseconds
-        );
+        LogHandled(_logger, requestName, stopwatch.ElapsedMilliseconds);
 
         return response;
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Handling {RequestName}")]
+    private static partial void LogHandling(ILogger logger, string requestName);
+
+    [LoggerMessage(
+        Level = LogLevel.Information,
+        Message = "Handled {RequestName} in {ElapsedMs}ms"
+    )]
+    private static partial void LogHandled(ILogger logger, string requestName, long elapsedMs);
 }
