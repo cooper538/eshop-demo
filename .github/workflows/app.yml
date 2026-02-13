@@ -33,6 +33,7 @@ env:
   ENVIRONMENT: prod
   RESOURCE_GROUP: eshop-prod-rg  # ${PREFIX}-${ENVIRONMENT}-rg
   CONTAINER_ENV: eshop-env       # ${PREFIX}-env
+  AZURE_LOCATION: westeurope
 
 jobs:
   build:
@@ -87,10 +88,67 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  ensure-infra:
+    name: Ensure Infrastructure
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ !inputs.skip_deploy }}
+    environment: production
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Start PostgreSQL if stopped
+        run: ./tools/azure/ensure-infra-ready.sh "${{ env.RESOURCE_GROUP }}" "${{ env.PREFIX }}"
+
+      - name: Check if Container Apps exist
+        id: check
+        run: |
+          if az containerapp show --name "${{ env.PREFIX }}-gateway" --resource-group "${{ env.RESOURCE_GROUP }}" --query name -o tsv 2>/dev/null; then
+            echo "apps_exist=true" >> $GITHUB_OUTPUT
+          else
+            echo "apps_exist=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy infrastructure
+        if: steps.check.outputs.apps_exist == 'false'
+        env:
+          POSTGRES_ADMIN_PASSWORD: ${{ secrets.POSTGRES_ADMIN_PASSWORD }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+          GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          AZURE_AD_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_AD_CLIENT_ID: ${{ secrets.AZURE_AD_API_CLIENT_ID }}
+        run: |
+          echo "Container Apps not found, deploying infrastructure..."
+          az deployment sub create \
+            --location ${{ env.AZURE_LOCATION }} \
+            --template-file ./infra/main.bicep \
+            --parameters ./infra/parameters/main.bicepparam \
+            --parameters postgresAdminPassword="$POSTGRES_ADMIN_PASSWORD" \
+            --parameters rabbitMqPassword="$RABBITMQ_PASSWORD" \
+            --parameters ghcrUsername="$GHCR_USERNAME" \
+            --parameters ghcrToken="$GHCR_TOKEN" \
+            --parameters azureAdTenantId="$AZURE_AD_TENANT_ID" \
+            --parameters azureAdClientId="$AZURE_AD_CLIENT_ID" \
+            --name "eshop-ensure-$(date +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}"
+
+      - name: Wait for RabbitMQ readiness
+        if: steps.check.outputs.apps_exist == 'false'
+        run: |
+          echo "Waiting 30s for RabbitMQ to be ready..."
+          sleep 30
+
   migrate:
     name: Run Migrations
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, ensure-infra]
     if: ${{ !inputs.skip_deploy }}
     environment: production
     steps:
@@ -102,9 +160,6 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Ensure infrastructure is ready
-        run: ./tools/azure/ensure-infra-ready.sh "${{ env.RESOURCE_GROUP }}" "${{ env.PREFIX }}"
 
       - name: Run Migration Job
         run: |

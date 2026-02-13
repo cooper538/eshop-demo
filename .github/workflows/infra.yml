@@ -107,9 +107,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Ensure infrastructure is ready
-        run: ./tools/azure/ensure-infra-ready.sh "${{ env.RESOURCE_GROUP }}" "${{ env.PREFIX }}"
-
       - name: Deploy Bicep
         id: deploy
         env:

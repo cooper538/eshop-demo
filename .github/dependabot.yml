@@ -42,7 +42,7 @@ updates:
       time: "06:00"
       timezone: "Europe/Prague"
     commit-message:
-      prefix: "[00-00] chore"
+      prefix: "[00-00] chore "
     labels:
       - "dependencies"
       - "github-actions"

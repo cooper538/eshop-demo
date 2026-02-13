@@ -1,5 +1,5 @@
 # Nightly Hibernate
-# Scales down all Container Apps and stops PostgreSQL + RabbitMQ to minimize costs
+# Deletes all Container Apps and stops PostgreSQL to minimize costs
 # Runs every night at 23:00 CET (22:00 UTC)
 
 name: Nightly Hibernate
@@ -32,15 +32,46 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Hibernate
-        run: ./tools/azure/hibernate.sh "${{ env.RESOURCE_GROUP }}" "${{ env.PREFIX }}" --yes
+      - name: Delete Container Apps
+        run: |
+          APPS="gateway product-service order-service notification-service analytics-service rabbitmq"
+          for app in $APPS; do
+            echo "Deleting ${{ env.PREFIX }}-${app}..."
+            az containerapp delete \
+              --name "${{ env.PREFIX }}-${app}" \
+              --resource-group "${{ env.RESOURCE_GROUP }}" \
+              --yes --output none 2>/dev/null || true
+          done
+
+          echo "Deleting migration job..."
+          az containerapp job delete \
+            --name "${{ env.PREFIX }}-migration" \
+            --resource-group "${{ env.RESOURCE_GROUP }}" \
+            --yes --output none 2>/dev/null || true
+
+      - name: Stop PostgreSQL
+        run: |
+          PG_NAME=$(az postgres flexible-server list \
+            --resource-group "${{ env.RESOURCE_GROUP }}" \
+            --query "[0].name" -o tsv 2>/dev/null)
+          if [ -n "$PG_NAME" ]; then
+            PG_STATE=$(az postgres flexible-server show \
+              --resource-group "${{ env.RESOURCE_GROUP }}" \
+              --name "$PG_NAME" --query state -o tsv 2>/dev/null) || true
+            if [[ "$PG_STATE" != "Stopped" ]]; then
+              echo "Stopping $PG_NAME..."
+              az postgres flexible-server stop \
+                --resource-group "${{ env.RESOURCE_GROUP }}" \
+                --name "$PG_NAME" --output none
+            fi
+          fi
 
       - name: Summary
         run: |
           echo "## Nightly Hibernate" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- Container Apps: scaled to 0 replicas" >> $GITHUB_STEP_SUMMARY
-          echo "- RabbitMQ: stopped" >> $GITHUB_STEP_SUMMARY
-          echo "- PostgreSQL: stopped" >> $GITHUB_STEP_SUMMARY
+          echo "- Container Apps: **deleted** (will be recreated on next deploy)" >> $GITHUB_STEP_SUMMARY
+          echo "- Migration Job: **deleted**" >> $GITHUB_STEP_SUMMARY
+          echo "- PostgreSQL: **stopped**" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "To wake up, run \`./tools/azure/warm-up.sh ${{ env.RESOURCE_GROUP }} ${{ env.PREFIX }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "To wake up, run \`./tools/azure/warm-up.sh\` or trigger the Infrastructure + Application workflows" >> $GITHUB_STEP_SUMMARY

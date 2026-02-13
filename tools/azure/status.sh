@@ -38,7 +38,11 @@ for app in $APPS; do
   REPLICAS=$(az containerapp show \
     --name "$FULL_NAME" \
     --resource-group "$RG" \
-    --query "properties.template.scale.minReplicas" -o tsv 2>/dev/null || echo "?")
+    --query "properties.template.scale.minReplicas" -o tsv 2>/dev/null || echo "not-found")
+  if [[ "$REPLICAS" == "not-found" ]]; then
+    printf "  %-30s NOT DEPLOYED\n" "$FULL_NAME"
+    continue
+  fi
   RUNNING=$(az containerapp replica list \
     --name "$FULL_NAME" \
     --resource-group "$RG" \
@@ -54,4 +58,4 @@ else
   echo "  PostgreSQL: ~\$4/month (stopped)"
 fi
 
-echo "  ACR + misc: ~\$5/month"
+echo "  Monitoring + misc: ~\$5/month"
